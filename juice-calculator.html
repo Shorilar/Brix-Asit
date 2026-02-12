@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Brix - Asitlik">
+    <title>Brix - Asitlik - Şurupcular için Profesyonel Hesaplayıcı</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #2d3748;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                /* Dikey çizgiler */
+                repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(0,0,0,0.05) 49px, rgba(0,0,0,0.05) 50px),
+                /* Yatay çizgiler */
+                repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(0,0,0,0.05) 49px, rgba(0,0,0,0.05) 50px),
+                /* Çapraz çizgiler 1 */
+                repeating-linear-gradient(45deg, transparent, transparent 99px, rgba(0,0,0,0.02) 99px, rgba(0,0,0,0.02) 100px),
+                /* Çapraz çizgiler 2 */
+                repeating-linear-gradient(-45deg, transparent, transparent 99px, rgba(0,0,0,0.02) 99px, rgba(0,0,0,0.02) 100px);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .decorative-shapes {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .shape {
+            position: absolute;
+            opacity: 0.04;
+        }
+        
+        .shape-1 {
+            top: 10%;
+            left: 5%;
+            width: 120px;
+            height: 120px;
+            border: 4px solid #000;
+            border-radius: 0;
+        }
+        
+        .shape-2 {
+            bottom: 15%;
+            right: 8%;
+            width: 150px;
+            height: 150px;
+            border: 4px solid #000;
+            border-radius: 0;
+            transform: rotate(45deg);
+        }
+        
+        .shape-3 {
+            top: 50%;
+            left: 3%;
+            width: 100px;
+            height: 100px;
+            border: 4px solid #000;
+            border-radius: 50%;
+        }
+        
+        .shape-4 {
+            top: 25%;
+            right: 5%;
+            width: 80px;
+            height: 80px;
+            border: 4px solid #000;
+            border-radius: 0;
+            transform: rotate(30deg);
+        }
+        
+        .shape-5 {
+            bottom: 45%;
+            right: 12%;
+            width: 0;
+            height: 0;
+            border-left: 60px solid transparent;
+            border-right: 60px solid transparent;
+            border-bottom: 104px solid rgba(0,0,0,0.04);
+        }
+        
+        .shape-6 {
+            top: 65%;
+            left: 8%;
+            width: 90px;
+            height: 90px;
+            border: 4px solid #000;
+            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 20px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+        
+        .menu-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #000;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: all 0.3s;
+            z-index: 1001;
+        }
+        
+        .menu-btn:hover {
+            background: #1a1a1a;
+            transform: scale(1.05);
+        }
+        
+        .menu-btn span {
+            width: 20px;
+            height: 2px;
+            background: white;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+        
+        .menu-btn.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        
+        .menu-btn.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .menu-btn.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+        
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: #000;
+            letter-spacing: -0.5px;
+        }
+        
+        .header p {
+            color: #718096;
+            font-size: 14px;
+            font-weight: 400;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #000;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .tank-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .tank-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8fafc;
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+        
+        .tank-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+            border-color: #cbd5e0;
+        }
+        
+        .tank-card.selected {
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+            border-color: #000;
+            color: white;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+        }
+        
+        .tank-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .tank-card-header {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .tank-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .icon-btn {
+            background: rgba(0, 0, 0, 0.08);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            color: inherit;
+            min-width: 36px;
+            text-align: center;
+        }
+        
+        .icon-btn:hover {
+            background: rgba(0, 0, 0, 0.15);
+            transform: scale(1.1);
+        }
+        
+        .tank-card.selected .icon-btn {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .tank-card.selected .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .tank-card .name {
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 0;
+        }
+        
+        .tank-card .specs {
+            font-size: 12px;
+            opacity: 0.7;
+            line-height: 1.6;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: #718096;
+            margin-bottom: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+        
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px 20px;
+            transition: all 0.3s;
+        }
+        
+        .input-wrapper:focus-within {
+            border-color: #000;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .input-wrapper input {
+            border: none;
+            background: transparent;
+            font-size: 18px;
+            font-weight: 600;
+            flex: 1;
+            outline: none;
+            color: #000;
+        }
+        
+        .input-wrapper .unit {
+            color: #a0aec0;
+            font-size: 14px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        
+        .checkbox-wrapper {
+            margin-top: 12px;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: #718096;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            padding: 10px 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 2px solid transparent;
+        }
+        
+        .checkbox-label:hover {
+            color: #000;
+            border-color: #e2e8f0;
+        }
+        
+        .checkbox-label input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #000;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+        
+        .btn-primary {
+            background: #000;
+            color: white;
+            margin-top: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-primary:hover {
+            background: #1a1a1a;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #000;
+            border: 2px solid #e2e8f0;
+            margin-top: 12px;
+        }
+        
+        .btn-secondary:hover {
+            background: #f8fafc;
+            border-color: #cbd5e0;
+        }
+        
+        .btn-danger {
+            background: white;
+            color: #e53e3e;
+            border: 2px solid #feb2b2;
+            margin-top: 16px;
+        }
+        
+        .btn-danger:hover {
+            background: #fff5f5;
+            border-color: #fc8181;
+        }
+        
+        .results-grid {
+            display: grid;
+            gap: 12px;
+        }
+        
+        .result-item {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .result-item:hover {
+            border-color: #cbd5e0;
+            transform: translateX(4px);
+        }
+        
+        .result-item.highlight {
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+            border-color: #000;
+            color: white;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .result-content {
+            flex: 1;
+        }
+        
+        .result-label {
+            font-size: 11px;
+            color: #718096;
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+        }
+        
+        .result-item.highlight .result-label {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .result-value {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #a0aec0;
+        }
+        
+        .empty-state .icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.15);
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .sidebar.active {
+            right: 0;
+        }
+        
+        .sidebar-header {
+            padding: 30px;
+            border-bottom: 2px solid #e2e8f0;
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+        }
+        
+        .sidebar-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #000;
+            letter-spacing: -0.5px;
+        }
+        
+        .sidebar-content {
+            padding: 30px;
+        }
+        
+        .history-item {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 12px;
+            transition: all 0.3s;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .history-item:hover {
+            border-color: #cbd5e0;
+            transform: translateX(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .history-date {
+            font-size: 11px;
+            color: #718096;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+        
+        .history-detail {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        
+        .history-label {
+            color: #718096;
+            font-weight: 600;
+        }
+        
+        .history-value {
+            color: #000;
+            font-weight: 700;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 999;
+        }
+        
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 640px) {
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 28px;
+            }
+            
+            .sidebar {
+                width: 90%;
+                right: -90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Dekoratif Şekiller -->
+    <div class="decorative-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+        <div class="shape shape-6"></div>
+    </div>
+
+    <!-- iPhone Kurulum Talimatı -->
+    <div id="installPrompt" style="display: none; position: fixed; bottom: 20px; left: 20px; right: 20px; background: white; border: 2px solid #e2e8f0; color: #2d3748; padding: 20px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); z-index: 1000;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+            <strong style="font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">📱 Ana Ekrana Ekle</strong>
+            <button onclick="closeInstallPrompt()" style="background: #f8fafc; border: 2px solid #e2e8f0; color: #2d3748; padding: 4px 12px; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: 700;">✕</button>
+        </div>
+        <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #718096;">Safari'de <strong>Paylaş 🔼</strong> butonuna tıklayın ve <strong>"Ana Ekrana Ekle"</strong> seçin.</p>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <button class="menu-btn" onclick="toggleSidebar()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <h1>Brix - Asitlik</h1>
+            <p>Şurupcular için Profesyonel Brix ve Asitlik Ayarlayıcı</p>
+        </div>
+
+        <!-- Ana Ekran -->
+        <div id="mainScreen">
+            <div class="card">
+                <div class="section-title">
+                    Tank Seçimi
+                </div>
+                
+                <div id="tankGrid" class="tank-grid"></div>
+                
+                <button class="btn btn-secondary" onclick="showAddTankScreen()">
+                    + Yeni Tank Ekle
+                </button>
+            </div>
+
+            <div id="calculationSection" class="hidden">
+                <div class="card">
+                    <div class="section-title">
+                        Mevcut Değerler
+                    </div>
+                    
+                    <div class="input-group">
+                        <div class="input-label">
+                            Tank Yüksekliği
+                        </div>
+                        <div class="input-wrapper">
+                            <input type="number" id="currentHeight" placeholder="0" step="1">
+                            <span class="unit">cm</span>
+                        </div>
+                    </div>
+
+                    <div class="input-row">
+                        <div class="input-group">
+                            <div class="input-label">
+                                Ölçülen Brix
+                            </div>
+                            <div class="input-wrapper">
+                                <input type="number" id="measuredBrix" placeholder="0" step="0.1">
+                                <span class="unit">°Bx</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <div class="input-label">
+                                Ölçülen Asitlik
+                            </div>
+                            <div class="input-wrapper">
+                                <input type="number" id="measuredAcidity" placeholder="0" step="0.01">
+                                <span class="unit">%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="section-title">
+                        Hedef Değerler
+                    </div>
+
+                    <div class="input-row">
+                        <div class="input-group">
+                            <div class="input-label">
+                                Hedef Brix
+                            </div>
+                            <div class="input-wrapper">
+                                <input type="number" id="targetBrix" placeholder="0" step="0.1">
+                                <span class="unit">°Bx</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <div class="input-label">
+                                Hedef Asitlik
+                            </div>
+                            <div class="input-wrapper">
+                                <input type="number" id="targetAcidity" placeholder="0" step="0.01">
+                                <span class="unit">%</span>
+                            </div>
+                            <div class="checkbox-wrapper">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="malikAsit">
+                                    <span>Malik Asit</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="calculate()">
+                        Hesapla
+                    </button>
+                </div>
+
+                <div id="resultsSection" class="card hidden">
+                    <div class="section-title">
+                        Sonuçlar
+                    </div>
+                    
+                    <div class="results-grid" id="resultsGrid"></div>
+                    
+                    <button class="btn btn-danger" onclick="resetCalculation()">
+                        Hesabı Bitir
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tank Ekleme Ekranı -->
+        <div id="addTankScreen" class="hidden">
+            <div class="card">
+                <div class="section-title" id="addTankTitle">
+                    Yeni Tank Ekle
+                </div>
+                
+                <div class="input-group">
+                    <div class="input-label">
+                        Tank Adı
+                    </div>
+                    <div class="input-wrapper">
+                        <input type="text" id="newTankName" placeholder="Örn: Tank D">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-label">
+                        Tank Çapı
+                    </div>
+                    <div class="input-wrapper">
+                        <input type="number" id="newTankDiameter" placeholder="200" step="1">
+                        <span class="unit">cm</span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-label">
+                        Var Olan Fazlalık
+                    </div>
+                    <div class="input-wrapper">
+                        <input type="number" id="newTankExcess" placeholder="5" step="0.1">
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" id="addTankButton" onclick="addTank()">
+                    Tank Ekle
+                </button>
+                
+                <button class="btn btn-secondary" onclick="hideAddTankScreen()">
+                    İptal
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">Geçmiş</div>
+            <button class="btn btn-secondary" style="margin-top: 16px; font-size: 11px; padding: 12px;" onclick="clearHistory()">
+                Geçmişi Temizle
+            </button>
+        </div>
+        <div class="sidebar-content" id="historyContent">
+            <div class="empty-state">
+                <div class="icon">📋</div>
+                <p>Henüz hesaplama yapılmadı</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global değişkenler
+        let tanks = [];
+        let selectedTank = null;
+
+        // Sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.overlay');
+            const menuBtn = document.querySelector('.menu-btn');
+            
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            menuBtn.classList.toggle('active');
+            
+            if (sidebar.classList.contains('active')) {
+                loadHistory();
+            }
+        }
+
+        // Geçmişi kaydet
+        function saveToHistory(data) {
+            let history = JSON.parse(localStorage.getItem('calculationHistory') || '[]');
+            
+            const historyItem = {
+                id: Date.now(),
+                date: new Date().toLocaleString('tr-TR'),
+                tank: selectedTank.name,
+                ...data
+            };
+            
+            history.unshift(historyItem); // Başa ekle
+            history = history.slice(0, 5); // Son 5'i tut
+            
+            localStorage.setItem('calculationHistory', JSON.stringify(history));
+        }
+
+        // Geçmişi yükle
+        function loadHistory() {
+            let history = JSON.parse(localStorage.getItem('calculationHistory') || '[]');
+            
+            // ID'ye göre azalan sırada sırala (en yeni en üstte)
+            history.sort((a, b) => b.id - a.id);
+            
+            const historyContent = document.getElementById('historyContent');
+            
+            if (history.length === 0) {
+                historyContent.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📋</div>
+                        <p>Henüz hesaplama yapılmadı</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            historyContent.innerHTML = history.map((item, index) => `
+                <div class="history-item">
+                    <div class="history-date">
+                        #${index + 1} - ${item.date}
+                    </div>
+                    <div class="history-detail">
+                        <span class="history-label">Tank:</span>
+                        <span class="history-value">${item.tank}</span>
+                    </div>
+                    <div class="history-detail">
+                        <span class="history-label">Yükseklik:</span>
+                        <span class="history-value">${item.currentHeight} cm</span>
+                    </div>
+                    <div class="history-detail">
+                        <span class="history-label">Brix:</span>
+                        <span class="history-value">${item.measuredBrix}°Bx → ${item.targetBrix}°Bx</span>
+                    </div>
+                    <div class="history-detail">
+                        <span class="history-label">Asitlik:</span>
+                        <span class="history-value">${item.measuredAcidity}% → ${item.targetAcidity}%</span>
+                    </div>
+                    ${item.malikAsit ? '<div class="history-detail"><span class="history-label">Malik Asit:</span><span class="history-value">✓ Aktif</span></div>' : ''}
+                    <div class="history-detail">
+                        <span class="history-label">Eklenecek Asit:</span>
+                        <span class="history-value">${item.acidToAdd.toFixed(2)} kg</span>
+                    </div>
+                    <div class="history-detail">
+                        <span class="history-label">Eklenecek Su:</span>
+                        <span class="history-value">${item.waterToAdd.toFixed(2)} kg</span>
+                    </div>
+                    <div class="history-detail">
+                        <span class="history-label">Yeni Yükseklik:</span>
+                        <span class="history-value">${item.newHeight.toFixed(1)} cm</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Geçmişi temizle
+        function clearHistory() {
+            if (confirm('Tüm hesaplama geçmişi silinecek. Emin misiniz?')) {
+                localStorage.removeItem('calculationHistory');
+                loadHistory();
+            }
+        }
+
+        // Sayfa yüklendiğinde
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTanks();
+            renderTanks();
+            
+            // iPhone'da Safari ise ve zaten ana ekrana eklenmemişse, talimatı göster
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            const isStandalone = window.navigator.standalone === true;
+            const promptClosed = localStorage.getItem('installPromptClosed');
+            
+            if (isIOS && !isStandalone && !promptClosed) {
+                setTimeout(() => {
+                    document.getElementById('installPrompt').style.display = 'block';
+                }, 2000);
+            }
+        });
+
+        function closeInstallPrompt() {
+            document.getElementById('installPrompt').style.display = 'none';
+            localStorage.setItem('installPromptClosed', 'true');
+        }
+
+        // Tank yükleme
+        function loadTanks() {
+            const saved = localStorage.getItem('tanks');
+            const version = localStorage.getItem('tanksVersion');
+            
+            // Eğer versiyon güncel değilse veya tank yoksa, yeni tankları yükle
+            if (!saved || version !== '2.0') {
+                // Gerçek SRT tankları
+                tanks = [
+                    { id: '1', name: 'SRT 1-2', diameter: 28.3, excess: 250 },
+                    { id: '2', name: 'SRT 3-4', diameter: 37.47, excess: 285 },
+                    { id: '3', name: 'SRT 6-7', diameter: 37.47, excess: 285 },
+                    { id: '4', name: 'SRT 8-9', diameter: 53.4, excess: 570 },
+                    { id: '5', name: 'SRT 11-12', diameter: 57.4, excess: 690 }
+                ];
+                localStorage.setItem('tanksVersion', '2.0');
+                saveTanks();
+            } else {
+                tanks = JSON.parse(saved);
+            }
+        }
+
+        // Tank kaydetme
+        function saveTanks() {
+            localStorage.setItem('tanks', JSON.stringify(tanks));
+        }
+
+        // Tankları render et
+        function renderTanks() {
+            const grid = document.getElementById('tankGrid');
+            if (!grid) return;
+            
+            grid.innerHTML = '';
+
+            tanks.forEach((tank, index) => {
+                const card = document.createElement('div');
+                card.className = 'tank-card' + (selectedTank?.id === tank.id ? ' selected' : '');
+                card.onclick = () => selectTank(tank);
+                
+                card.innerHTML = `
+                    <div class="tank-info">
+                        <div class="name">${tank.name}</div>
+                        <div class="specs">
+                            Çap: ${tank.diameter} cm<br/>
+                            Fazlalık: ${tank.excess}
+                        </div>
+                    </div>
+                    <div class="tank-actions">
+                        <button class="icon-btn" onclick="window.editTankByIndex(${index}); event.stopPropagation();" title="Düzenle">✏️</button>
+                        <button class="icon-btn" onclick="window.deleteTankByIndex(${index}); event.stopPropagation();" title="Sil">🗑️</button>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        // Tank seçme
+        function selectTank(tank) {
+            selectedTank = tank;
+            renderTanks();
+            document.getElementById('calculationSection').classList.remove('hidden');
+            document.getElementById('resultsSection').classList.add('hidden');
+        }
+
+        // Tank silme - Index ile
+        window.deleteTankByIndex = function(index) {
+            const tank = tanks[index];
+            if (!tank) return;
+            
+            if (confirm(`"${tank.name}" tankını silmek istediğinizden emin misiniz?`)) {
+                // Eğer silinen tank seçiliyse, seçimi kaldır
+                if (selectedTank && selectedTank.id === tank.id) {
+                    selectedTank = null;
+                    document.getElementById('calculationSection').classList.add('hidden');
+                    document.getElementById('resultsSection').classList.add('hidden');
+                }
+                
+                // Tankı diziden çıkar
+                tanks.splice(index, 1);
+                
+                // Kaydet ve yeniden render et
+                saveTanks();
+                renderTanks();
+            }
+        };
+
+        // Tank düzenleme - Index ile
+        window.editTankByIndex = function(index) {
+            const tank = tanks[index];
+            if (!tank) return;
+
+            editingTankId = tank.id;
+            
+            document.getElementById('newTankName').value = tank.name;
+            document.getElementById('newTankDiameter').value = tank.diameter;
+            document.getElementById('newTankExcess').value = tank.excess;
+            
+            document.getElementById('addTankTitle').textContent = 'Tankı Düzenle';
+            document.getElementById('addTankButton').textContent = 'Kaydet';
+            
+            showAddTankScreen();
+        };
+
+        // Tank silme
+        function deleteTank(tankId) {
+            const tankToDelete = tanks.find(t => t.id === tankId);
+            
+            if (!tankToDelete) {
+                alert('Tank bulunamadı!');
+                return;
+            }
+            
+            const userConfirmed = confirm(`"${tankToDelete.name}" tankını silmek istediğinizden emin misiniz?`);
+            
+            if (userConfirmed) {
+                // Tankı diziden çıkar
+                tanks = tanks.filter(t => t.id !== tankId);
+                
+                // Eğer silinen tank seçiliyse, seçimi kaldır
+                if (selectedTank && selectedTank.id === tankId) {
+                    selectedTank = null;
+                    document.getElementById('calculationSection').classList.add('hidden');
+                    document.getElementById('resultsSection').classList.add('hidden');
+                }
+                
+                // Kaydet ve yeniden render et
+                saveTanks();
+                renderTanks();
+            }
+        }
+
+        // Tank düzenleme
+        let editingTankId = null;
+
+        // Tank ekleme ekranını göster
+        function showAddTankScreen() {
+            document.getElementById('mainScreen').classList.add('hidden');
+            document.getElementById('addTankScreen').classList.remove('hidden');
+        }
+
+        // Tank ekleme ekranını gizle
+        function hideAddTankScreen() {
+            document.getElementById('mainScreen').classList.remove('hidden');
+            document.getElementById('addTankScreen').classList.add('hidden');
+            
+            // Formu temizle
+            document.getElementById('newTankName').value = '';
+            document.getElementById('newTankDiameter').value = '';
+            document.getElementById('newTankExcess').value = '';
+            
+            // Başlıkları sıfırla
+            document.getElementById('addTankTitle').textContent = 'Yeni Tank Ekle';
+            document.getElementById('addTankButton').textContent = 'Tank Ekle';
+            
+            editingTankId = null;
+        }
+
+        // Tank ekle veya güncelle
+        function addTank() {
+            const name = document.getElementById('newTankName').value;
+            const diameter = parseFloat(document.getElementById('newTankDiameter').value);
+            const excess = parseFloat(document.getElementById('newTankExcess').value);
+
+            if (!name || !diameter || isNaN(excess)) {
+                alert('Lütfen tüm alanları doldurun!');
+                return;
+            }
+
+            if (editingTankId) {
+                // Düzenleme modu
+                const tankIndex = tanks.findIndex(t => t.id === editingTankId);
+                if (tankIndex !== -1) {
+                    tanks[tankIndex] = {
+                        ...tanks[tankIndex],
+                        name: name,
+                        diameter: diameter,
+                        excess: excess
+                    };
+                    
+                    // Eğer düzenlenen tank seçiliyse, güncelle
+                    if (selectedTank && selectedTank.id === editingTankId) {
+                        selectedTank = tanks[tankIndex];
+                    }
+                }
+                editingTankId = null;
+            } else {
+                // Yeni tank ekleme modu
+                const newTank = {
+                    id: Date.now().toString(),
+                    name: name,
+                    diameter: diameter,
+                    excess: excess
+                };
+                tanks.push(newTank);
+            }
+
+            saveTanks();
+            renderTanks();
+
+            // Formu temizle
+            document.getElementById('newTankName').value = '';
+            document.getElementById('newTankDiameter').value = '';
+            document.getElementById('newTankExcess').value = '';
+            
+            // Başlıkları sıfırla
+            document.getElementById('addTankTitle').textContent = 'Yeni Tank Ekle';
+            document.getElementById('addTankButton').textContent = 'Tank Ekle';
+
+            hideAddTankScreen();
+        }
+
+        // Hesabı sıfırla
+        function resetCalculation() {
+            // Tüm input alanlarını temizle
+            document.getElementById('currentHeight').value = '';
+            document.getElementById('measuredBrix').value = '';
+            document.getElementById('measuredAcidity').value = '';
+            document.getElementById('targetBrix').value = '';
+            document.getElementById('targetAcidity').value = '';
+            document.getElementById('malikAsit').checked = false;
+            
+            // Sonuçları gizle
+            document.getElementById('resultsSection').classList.add('hidden');
+        }
+
+        // Tonaj hesaplama - YENİ FORMÜL
+        // Tank Tonajı = (Anlık Tank Yüksekliği × Tank Çapı) + Var olan Fazlalık
+        function calculateTonnage(tank, height) {
+            return (height * tank.diameter) + tank.excess;
+        }
+
+        // Belirli bir tonaj için gerekli yükseklik
+        function heightForTonnage(tank, tonnage) {
+            return (tonnage - tank.excess) / tank.diameter;
+        }
+
+        // Hesaplama
+        function calculate() {
+            if (!selectedTank) {
+                alert('Lütfen bir tank seçin!');
+                return;
+            }
+
+            const height = parseFloat(document.getElementById('currentHeight').value);
+            const brixM = parseFloat(document.getElementById('measuredBrix').value);
+            const acidityM = parseFloat(document.getElementById('measuredAcidity').value);
+            const brixT = parseFloat(document.getElementById('targetBrix').value);
+            const acidityT = parseFloat(document.getElementById('targetAcidity').value);
+            const malikAsit = document.getElementById('malikAsit').checked;
+
+            if (isNaN(height) || isNaN(brixM) || isNaN(acidityM) || 
+                isNaN(brixT) || isNaN(acidityT)) {
+                alert('Lütfen tüm değerleri girin!');
+                return;
+            }
+
+            // 1. Tank tonajını hesapla
+            const tankTonnage = calculateTonnage(selectedTank, height);
+
+            // 2. Çözünmüş madde miktarını bul
+            const dissolvedMatter = tankTonnage * (brixM / 100);
+
+            // 3. Var olan asit miktarını bul
+            const existingAcid = tankTonnage * (acidityM / 100);
+
+            // 4. İki denklem sistemini çöz
+            const targetBrixRatio = brixT / 100;
+            const targetAcidityRatio = acidityT / 100;
+
+            const ratio = targetBrixRatio / targetAcidityRatio;
+            let x = (dissolvedMatter - ratio * existingAcid) / (ratio - 1);
+            
+            // Malik asit seçiliyse 1.047 ile çarp
+            if (malikAsit) {
+                x = x * 1.047;
+            }
+
+            const y = (dissolvedMatter + x) / targetBrixRatio - tankTonnage - x;
+
+            // 5. Toplam tonajı hesapla
+            const totalTonnage = tankTonnage + x + y;
+
+            // 6. Yeni yüksekliği hesapla
+            const newHeight = heightForTonnage(selectedTank, totalTonnage);
+
+            // Sonuçları göster
+            displayResults({
+                newHeight: newHeight,
+                acidToAdd: x,
+                waterToAdd: y,
+                heightDifference: newHeight - height,
+                totalTonnage: totalTonnage,
+                initialTonnage: tankTonnage
+            });
+            
+            // Geçmişe kaydet
+            saveToHistory({
+                currentHeight: height,
+                measuredBrix: brixM,
+                measuredAcidity: acidityM,
+                targetBrix: brixT,
+                targetAcidity: acidityT,
+                malikAsit: malikAsit,
+                acidToAdd: x,
+                waterToAdd: y,
+                newHeight: newHeight
+            });
+        }
+
+        // Sonuçları göster
+        function displayResults(results) {
+            const grid = document.getElementById('resultsGrid');
+            grid.innerHTML = `
+                <div class="result-item highlight">
+                    <div class="result-content">
+                        <div class="result-label">Tankı Çıkartmanız Gereken Yükseklik</div>
+                        <div class="result-value">${results.newHeight.toFixed(1)} cm</div>
+                    </div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-content">
+                        <div class="result-label">Eklenecek Asit</div>
+                        <div class="result-value">${results.acidToAdd.toFixed(2)} kg</div>
+                    </div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-content">
+                        <div class="result-label">Eklenecek Su</div>
+                        <div class="result-value">${results.waterToAdd.toFixed(2)} kg</div>
+                    </div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-content">
+                        <div class="result-label">Yükseklik Farkı</div>
+                        <div class="result-value">${results.heightDifference.toFixed(1)} cm</div>
+                    </div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-content">
+                        <div class="result-label">Başlangıç Tonajı → Toplam Tonaj</div>
+                        <div class="result-value">${results.initialTonnage.toFixed(2)} → ${results.totalTonnage.toFixed(2)} kg</div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('resultsSection').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

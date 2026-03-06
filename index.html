@@ -18,9 +18,15 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 10px;
             color: #2d3748;
             position: relative;
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                padding: 20px;
+            }
         }
         
         body::before {
@@ -116,20 +122,36 @@
         }
         
         .container {
-            max-width: 600px;
+            max-width: 100%;
+            width: 100%;
             margin: 0 auto;
             position: relative;
             z-index: 1;
+            padding: 0 10px;
+        }
+        
+        @media (min-width: 768px) {
+            .container {
+                max-width: 600px;
+                padding: 0;
+            }
         }
         
         .header {
             text-align: center;
-            margin-bottom: 40px;
-            padding: 30px 20px;
+            margin-bottom: 30px;
+            padding: 20px 15px;
             background: white;
             border-radius: 24px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
             position: relative;
+        }
+        
+        @media (min-width: 768px) {
+            .header {
+                margin-bottom: 40px;
+                padding: 30px 20px;
+            }
         }
         
         .menu-btn {
@@ -177,11 +199,17 @@
         }
         
         .header h1 {
-            font-size: 36px;
+            font-size: 28px;
             margin-bottom: 10px;
             font-weight: 700;
             color: #000;
             letter-spacing: -0.5px;
+        }
+        
+        @media (min-width: 768px) {
+            .header h1 {
+                font-size: 36px;
+            }
         }
         
         .header p {
@@ -193,10 +221,18 @@
         .card {
             background: white;
             border-radius: 20px;
-            padding: 28px;
+            padding: 20px;
             margin-bottom: 20px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
             border: 1px solid rgba(0, 0, 0, 0.05);
+            max-width: 100%;
+            overflow: hidden;
+        }
+        
+        @media (min-width: 768px) {
+            .card {
+                padding: 28px;
+            }
         }
         
         .section-title {
@@ -218,7 +254,7 @@
         .tank-card {
             border: 2px solid #e2e8f0;
             border-radius: 16px;
-            padding: 20px;
+            padding: 16px;
             cursor: pointer;
             transition: all 0.3s;
             background: #f8fafc;
@@ -226,6 +262,43 @@
             display: flex;
             align-items: flex-start;
             justify-content: space-between;
+            gap: 12px;
+        }
+        
+        .recipe-btn {
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s;
+            min-width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .recipe-btn:hover {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            transform: scale(1.05);
+        }
+        
+        .tank-card.selected .recipe-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: #000;
+        }
+        
+        .tank-card.selected .recipe-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        @media (min-width: 768px) {
+            .tank-card {
+                padding: 20px;
+            }
         }
         
         .tank-card:hover {
@@ -257,14 +330,14 @@
         .tank-actions {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 4px;
         }
         
         .icon-btn {
             background: rgba(0, 0, 0, 0.08);
             border: none;
             border-radius: 8px;
-            padding: 8px 10px;
+            padding: 6px 10px;
             cursor: pointer;
             font-size: 14px;
             transition: all 0.2s;
@@ -300,6 +373,8 @@
         
         .input-group {
             margin-bottom: 20px;
+            max-width: 100%;
+            overflow: hidden;
         }
         
         .input-label {
@@ -351,6 +426,13 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 14px;
+        }
+        
+        @media (max-width: 1024px) {
+            .input-row {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
         }
         
         .checkbox-wrapper {
@@ -502,8 +584,9 @@
         .sidebar {
             position: fixed;
             top: 0;
-            right: -400px;
-            width: 400px;
+            right: -100%;
+            width: 90%;
+            max-width: 380px;
             height: 100vh;
             background: white;
             box-shadow: -10px 0 40px rgba(0, 0, 0, 0.15);
@@ -512,14 +595,155 @@
             overflow-y: auto;
         }
         
+        @media (min-width: 768px) {
+            .sidebar {
+                right: -380px;
+                width: 380px;
+            }
+        }
+        
         .sidebar.active {
             right: 0;
+        }
+        
+        /* Recipe Sidebar - Tam Ekran */
+        .recipe-sidebar {
+            width: 100%;
+            max-width: 100%;
+            right: -100%;
+        }
+        
+        .recipe-sidebar.active {
+            right: 0;
+        }
+        
+        .recipe-sidebar .sidebar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        
+        .recipe-inputs {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            border: 2px solid #e2e8f0;
+            flex-wrap: wrap;
+        }
+        
+        .recipe-inputs .input-group {
+            flex: 1;
+            margin-bottom: 0;
+            min-width: 200px;
+        }
+        
+        @media (max-width: 640px) {
+            .recipe-inputs {
+                flex-direction: column;
+            }
+            
+            .recipe-inputs .input-group {
+                width: 100%;
+            }
+            
+            .recipe-sidebar .sidebar-content {
+                padding: 20px;
+            }
+        }
+        
+        .recipe-table-container {
+            background: white;
+            border-radius: 16px;
+            border: 2px solid #e2e8f0;
+            overflow-x: auto;
+        }
+        
+        .recipe-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 400px;
+        }
+        
+        .recipe-table thead {
+            background: #f8fafc;
+        }
+        
+        .recipe-table th {
+            padding: 16px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .recipe-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .recipe-table tbody tr:hover {
+            background: #f8fafc;
+        }
+        
+        .table-input {
+            width: 100%;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 14px;
+            font-weight: 500;
+            background: white;
+            transition: all 0.3s;
+        }
+        
+        .table-input:focus {
+            outline: none;
+            border-color: #000;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .table-input[readonly] {
+            background: #f8fafc;
+            color: #000;
+            font-weight: 700;
+        }
+        
+        .table-delete-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            opacity: 0.5;
+            transition: all 0.2s;
+            padding: 4px;
+        }
+        
+        .table-delete-btn:hover {
+            opacity: 1;
+            transform: scale(1.2);
         }
         
         .sidebar-header {
             padding: 30px;
             border-bottom: 2px solid #e2e8f0;
             background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        @media (max-width: 640px) {
+            .sidebar-header {
+                padding: 20px;
+            }
         }
         
         .sidebar-title {
@@ -527,20 +751,40 @@
             font-weight: 700;
             color: #000;
             letter-spacing: -0.5px;
+            flex: 1 1 100%;
+        }
+        
+        @media (max-width: 640px) {
+            .sidebar-title {
+                font-size: 20px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .sidebar-title {
+                flex: 0 0 auto;
+            }
         }
         
         .sidebar-content {
             padding: 30px;
         }
         
+        @media (max-width: 640px) {
+            .sidebar-content {
+                padding: 20px;
+            }
+        }
+        
         .history-item {
-            background: #f8fafc;
+            background: white;
             border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 12px;
+            border-radius: 16px;
+            padding: 0;
+            margin-bottom: 16px;
             transition: all 0.3s;
             animation: slideIn 0.3s ease-out;
+            overflow: hidden;
         }
         
         @keyframes slideIn {
@@ -560,30 +804,125 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
         
-        .history-date {
-            font-size: 11px;
-            color: #718096;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
-        }
-        
-        .history-detail {
+        .history-header {
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+            padding: 16px 20px;
             display: flex;
             justify-content: space-between;
+            align-items: center;
+        }
+        
+        .history-tank-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .history-time {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+        }
+        
+        .history-highlights {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 8px;
+            padding: 16px;
+            background: #f8fafc;
+        }
+        
+        .highlight-box {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .highlight-label {
+            font-size: 9px;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
             margin-bottom: 6px;
+            line-height: 1.3;
+            min-height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        
+        .highlight-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: #000;
+            word-break: break-word;
+            line-height: 1.2;
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+        
+        .history-changes {
+            padding: 16px 20px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .change-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-size: 13px;
         }
         
-        .history-label {
+        .change-label {
             color: #718096;
             font-weight: 600;
+            min-width: 60px;
         }
         
-        .history-value {
+        .change-arrow {
             color: #000;
             font-weight: 700;
+        }
+        
+        .malik-badge {
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        @media (max-width: 640px) {
+            .history-highlights {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .highlight-box {
+                padding: 14px;
+            }
+            
+            .highlight-label {
+                font-size: 10px;
+                min-height: auto;
+            }
+            
+            .highlight-value {
+                font-size: 17px;
+            }
         }
         
         .overlay {
@@ -597,31 +936,19 @@
             visibility: hidden;
             transition: all 0.3s;
             z-index: 999;
+            pointer-events: none;
         }
         
         .overlay.active {
             opacity: 1;
             visibility: visible;
+            pointer-events: auto;
         }
         
         .hidden {
             display: none;
         }
         
-        @media (max-width: 640px) {
-            .input-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .header h1 {
-                font-size: 28px;
-            }
-            
-            .sidebar {
-                width: 90%;
-                right: -90%;
-            }
-        }
     </style>
 </head>
 <body>
@@ -807,15 +1134,23 @@
     </div>
 
     <!-- Overlay -->
-    <div class="overlay" onclick="toggleSidebar()"></div>
+    <div class="overlay"></div>
 
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
             <div class="sidebar-title">Geçmiş</div>
-            <button class="btn btn-secondary" style="margin-top: 16px; font-size: 11px; padding: 12px;" onclick="clearHistory()">
-                Geçmişi Temizle
-            </button>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; flex: 1;">
+                <button class="btn btn-secondary" style="margin: 0; font-size: 11px; padding: 12px; white-space: nowrap;" onclick="loadHistory()">
+                    🔄 Yenile
+                </button>
+                <button class="btn btn-secondary" style="margin: 0; font-size: 11px; padding: 12px; white-space: nowrap;" onclick="clearHistory()">
+                    Temizle
+                </button>
+                <button class="btn btn-primary" style="margin: 0; font-size: 11px; padding: 12px; white-space: nowrap;" onclick="toggleSidebar()">
+                    ✕ Kapat
+                </button>
+            </div>
         </div>
         <div class="sidebar-content" id="historyContent">
             <div class="empty-state">
@@ -825,16 +1160,205 @@
         </div>
     </div>
 
+    <!-- Reçete Sidebar -->
+    <div class="sidebar recipe-sidebar" id="recipeSidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">Reçete Hesaplama</div>
+            <button class="btn btn-primary" onclick="closeRecipeSidebar()" style="padding: 12px 20px; font-size: 13px; margin: 0;">
+                ✕ Kapat
+            </button>
+        </div>
+        <div class="sidebar-content">
+            <div class="recipe-inputs">
+                <div class="input-group">
+                    <div class="input-label">Reçete Tonajı</div>
+                    <div class="input-wrapper">
+                        <input type="number" id="recipeTonnage" placeholder="0" step="0.1">
+                        <span class="unit">kg</span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-label">İstenilen Tonaj</div>
+                    <div class="input-wrapper">
+                        <input type="number" id="desiredTonnage" placeholder="0" step="0.1">
+                        <span class="unit">kg</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title" style="margin-top: 20px; margin-bottom: 16px;">Hammadde Tablosu</div>
+            
+            <div class="recipe-table-container">
+                <table class="recipe-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40%;">Reçete Miktarı (kg)</th>
+                            <th style="width: 50%;">Hesaplanan Sonuç (kg)</th>
+                            <th style="width: 10%;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="recipeTableBody">
+                        <tr class="recipe-row">
+                            <td><input type="number" class="table-input ingredient-amount" placeholder="0" step="0.01"></td>
+                            <td><input type="text" class="table-input result-field" readonly placeholder="-"></td>
+                            <td><button class="table-delete-btn" onclick="this.closest('tr').remove()">🗑️</button></td>
+                        </tr>
+                        <tr class="recipe-row">
+                            <td><input type="number" class="table-input ingredient-amount" placeholder="0" step="0.01"></td>
+                            <td><input type="text" class="table-input result-field" readonly placeholder="-"></td>
+                            <td><button class="table-delete-btn" onclick="this.closest('tr').remove()">🗑️</button></td>
+                        </tr>
+                        <tr class="recipe-row">
+                            <td><input type="number" class="table-input ingredient-amount" placeholder="0" step="0.01"></td>
+                            <td><input type="text" class="table-input result-field" readonly placeholder="-"></td>
+                            <td><button class="table-delete-btn" onclick="this.closest('tr').remove()">🗑️</button></td>
+                        </tr>
+                        <tr class="recipe-row">
+                            <td><input type="number" class="table-input ingredient-amount" placeholder="0" step="0.01"></td>
+                            <td><input type="text" class="table-input result-field" readonly placeholder="-"></td>
+                            <td><button class="table-delete-btn" onclick="this.closest('tr').remove()">🗑️</button></td>
+                        </tr>
+                        <tr class="recipe-row">
+                            <td><input type="number" class="table-input ingredient-amount" placeholder="0" step="0.01"></td>
+                            <td><input type="text" class="table-input result-field" readonly placeholder="-"></td>
+                            <td><button class="table-delete-btn" onclick="this.closest('tr').remove()">🗑️</button></td>
+                        </tr>
+                        <tr class="recipe-row">
+                            <td><input type="number" class="table-input ingredient-amount" placeholder="0" step="0.01"></td>
+                            <td><input type="text" class="table-input result-field" readonly placeholder="-"></td>
+                            <td><button class="table-delete-btn" onclick="this.closest('tr').remove()">🗑️</button></td>
+                        </tr>
+                        <tr class="recipe-row">
+                            <td><input type="number" class="table-input ingredient-amount" placeholder="0" step="0.01"></td>
+                            <td><input type="text" class="table-input result-field" readonly placeholder="-"></td>
+                            <td><button class="table-delete-btn" onclick="this.closest('tr').remove()">🗑️</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button class="btn btn-secondary" onclick="resetRecipe()" style="flex: 1;">
+                    🗑️ Her Şeyi Temizle
+                </button>
+                <button class="btn btn-secondary" onclick="addRecipeRow()" style="flex: 1;">
+                    + Satır Ekle
+                </button>
+                <button class="btn btn-primary" onclick="calculateRecipe()" style="flex: 2;">
+                    Hesapla
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Global değişkenler
         let tanks = [];
         let selectedTank = null;
 
+        // Reçeteyi temizle
+        function resetRecipe() {
+            // Input'ları temizle
+            document.getElementById('recipeTonnage').value = '';
+            document.getElementById('desiredTonnage').value = '';
+            
+            // Tabloyu temizle ve 7 satır ekle
+            const tableBody = document.getElementById('recipeTableBody');
+            tableBody.innerHTML = '';
+            
+            for (let i = 0; i < 7; i++) {
+                const row = document.createElement('tr');
+                row.className = 'recipe-row';
+                row.innerHTML = `
+                    <td><input type="number" class="table-input ingredient-amount" placeholder="0" step="0.01"></td>
+                    <td><input type="text" class="table-input result-field" readonly placeholder="-"></td>
+                    <td><button class="table-delete-btn" onclick="this.closest('tr').remove()">🗑️</button></td>
+                `;
+                tableBody.appendChild(row);
+            }
+        }
+
+        // Reçete hesaplama sidebar'ını aç
+        function openRecipeCalculator() {
+            const recipeSidebar = document.getElementById('recipeSidebar');
+            const overlay = document.querySelector('.overlay');
+            
+            // Diğer sidebar'ı kapat
+            document.querySelector('.sidebar').classList.remove('active');
+            document.querySelector('.menu-btn').classList.remove('active');
+            
+            recipeSidebar.classList.add('active');
+            overlay.classList.add('active');
+        }
+
+        // Reçete sidebar'ını kapat
+        function closeRecipeSidebar() {
+            const recipeSidebar = document.getElementById('recipeSidebar');
+            const overlay = document.querySelector('.overlay');
+            
+            recipeSidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+
+        // Yeni satır ekle
+        function addRecipeRow() {
+            const tableBody = document.getElementById('recipeTableBody');
+            const newRow = document.createElement('tr');
+            newRow.className = 'recipe-row';
+            newRow.innerHTML = `
+                <td><input type="number" class="table-input ingredient-amount" placeholder="0" step="0.01"></td>
+                <td><input type="text" class="table-input result-field" readonly placeholder="-"></td>
+                <td><button class="table-delete-btn" onclick="this.closest('tr').remove()">🗑️</button></td>
+            `;
+            tableBody.appendChild(newRow);
+        }
+
+        // Reçete hesapla - Excel tarzı
+        function calculateRecipe() {
+            const recipeTonnage = parseFloat(document.getElementById('recipeTonnage').value);
+            const desiredTonnage = parseFloat(document.getElementById('desiredTonnage').value);
+
+            if (isNaN(recipeTonnage) || isNaN(desiredTonnage) || recipeTonnage === 0) {
+                alert('Lütfen reçete tonajı ve istenilen tonajı girin!');
+                return;
+            }
+
+            // Katsayıyı hesapla
+            const coefficient = desiredTonnage / recipeTonnage;
+
+            // Tüm satırları işle
+            const rows = document.querySelectorAll('.recipe-row');
+            let hasData = false;
+            
+            rows.forEach(row => {
+                const amountInput = row.querySelector('.ingredient-amount');
+                const resultInput = row.querySelector('.result-field');
+                const amount = parseFloat(amountInput.value);
+                
+                if (!isNaN(amount) && amount > 0) {
+                    hasData = true;
+                    const result = amount * coefficient;
+                    resultInput.value = result.toFixed(2);
+                } else {
+                    resultInput.value = '-';
+                }
+            });
+
+            if (!hasData) {
+                alert('Lütfen en az bir hammadde miktarı girin!');
+            }
+        }
+
         // Sidebar toggle
         function toggleSidebar() {
             const sidebar = document.querySelector('.sidebar');
+            const recipeSidebar = document.getElementById('recipeSidebar');
             const overlay = document.querySelector('.overlay');
             const menuBtn = document.querySelector('.menu-btn');
+            
+            // Reçete sidebar'ını kapat
+            recipeSidebar.classList.remove('active');
             
             sidebar.classList.toggle('active');
             overlay.classList.toggle('active');
@@ -847,76 +1371,112 @@
 
         // Geçmişi kaydet
         function saveToHistory(data) {
-            let history = JSON.parse(localStorage.getItem('calculationHistory') || '[]');
-            
-            const historyItem = {
-                id: Date.now(),
-                date: new Date().toLocaleString('tr-TR'),
-                tank: selectedTank.name,
-                ...data
-            };
-            
-            history.unshift(historyItem); // Başa ekle
-            history = history.slice(0, 5); // Son 5'i tut
-            
-            localStorage.setItem('calculationHistory', JSON.stringify(history));
+            try {
+                let history = JSON.parse(localStorage.getItem('calculationHistory') || '[]');
+                
+                const historyItem = {
+                    id: Date.now(),
+                    date: new Date().toLocaleString('tr-TR'),
+                    tank: selectedTank.name,
+                    ...data
+                };
+                
+                history.unshift(historyItem); // Başa ekle
+                history = history.slice(0, 5); // Son 5'i tut
+                
+                localStorage.setItem('calculationHistory', JSON.stringify(history));
+            } catch (error) {
+                console.error('Geçmiş kaydedilirken hata:', error);
+            }
         }
 
         // Geçmişi yükle
         function loadHistory() {
-            let history = JSON.parse(localStorage.getItem('calculationHistory') || '[]');
-            
-            // ID'ye göre azalan sırada sırala (en yeni en üstte)
-            history.sort((a, b) => b.id - a.id);
-            
-            const historyContent = document.getElementById('historyContent');
-            
-            if (history.length === 0) {
-                historyContent.innerHTML = `
-                    <div class="empty-state">
-                        <div class="icon">📋</div>
-                        <p>Henüz hesaplama yapılmadı</p>
-                    </div>
-                `;
-                return;
+            try {
+                let history = JSON.parse(localStorage.getItem('calculationHistory') || '[]');
+                
+                // ID'ye göre azalan sırada sırala (en yeni en üstte)
+                history.sort((a, b) => b.id - a.id);
+                
+                const historyContent = document.getElementById('historyContent');
+                
+                if (!historyContent) {
+                    console.error('History content element not found');
+                    return;
+                }
+                
+                if (history.length === 0) {
+                    historyContent.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">📋</div>
+                            <p>Henüz hesaplama yapılmadı</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                historyContent.innerHTML = history.map((item, index) => {
+                    // Güvenli değer kontrolü
+                    const tank = item.tank || 'Bilinmeyen Tank';
+                    const date = item.date || '-';
+                    const currentHeight = item.currentHeight || 0;
+                    const newHeight = item.newHeight || 0;
+                    const acidToAdd = item.acidToAdd || 0;
+                    const totalTonnage = item.totalTonnage || 0;
+                    const measuredBrix = item.measuredBrix || 0;
+                    const targetBrix = item.targetBrix || 0;
+                    const measuredAcidity = item.measuredAcidity || 0;
+                    const targetAcidity = item.targetAcidity || 0;
+                    const malikAsit = item.malikAsit || false;
+                    
+                    return `
+                        <div class="history-item">
+                            <div class="history-header">
+                                <div class="history-tank-name">${tank}</div>
+                                <div class="history-time">${date}</div>
+                            </div>
+                            
+                            <div class="history-highlights">
+                                <div class="highlight-box">
+                                    <div class="highlight-label">Yeni Yükseklik</div>
+                                    <div class="highlight-value">${newHeight.toFixed(1)} cm</div>
+                                </div>
+                                <div class="highlight-box">
+                                    <div class="highlight-label">Eklenecek Asit</div>
+                                    <div class="highlight-value">${acidToAdd.toFixed(2)} kg</div>
+                                </div>
+                                <div class="highlight-box">
+                                    <div class="highlight-label">Yeni Tonaj</div>
+                                    <div class="highlight-value">${totalTonnage.toFixed(2)} kg</div>
+                                </div>
+                            </div>
+                            
+                            <div class="history-changes">
+                                <div class="change-item">
+                                    <span class="change-label">Brix:</span>
+                                    <span class="change-arrow">${measuredBrix}°Bx → ${targetBrix}°Bx</span>
+                                </div>
+                                <div class="change-item">
+                                    <span class="change-label">Asitlik:</span>
+                                    <span class="change-arrow">${measuredAcidity}% → ${targetAcidity}%</span>
+                                </div>
+                                ${malikAsit ? '<div class="change-item"><span class="malik-badge">✓ Malik Asit</span></div>' : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Geçmiş yüklenirken hata:', error);
+                const historyContent = document.getElementById('historyContent');
+                if (historyContent) {
+                    historyContent.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">⚠️</div>
+                            <p>Geçmiş yüklenirken hata oluştu</p>
+                        </div>
+                    `;
+                }
             }
-            
-            historyContent.innerHTML = history.map((item, index) => `
-                <div class="history-item">
-                    <div class="history-date">
-                        #${index + 1} - ${item.date}
-                    </div>
-                    <div class="history-detail">
-                        <span class="history-label">Tank:</span>
-                        <span class="history-value">${item.tank}</span>
-                    </div>
-                    <div class="history-detail">
-                        <span class="history-label">Yükseklik:</span>
-                        <span class="history-value">${item.currentHeight} cm</span>
-                    </div>
-                    <div class="history-detail">
-                        <span class="history-label">Brix:</span>
-                        <span class="history-value">${item.measuredBrix}°Bx → ${item.targetBrix}°Bx</span>
-                    </div>
-                    <div class="history-detail">
-                        <span class="history-label">Asitlik:</span>
-                        <span class="history-value">${item.measuredAcidity}% → ${item.targetAcidity}%</span>
-                    </div>
-                    ${item.malikAsit ? '<div class="history-detail"><span class="history-label">Malik Asit:</span><span class="history-value">✓ Aktif</span></div>' : ''}
-                    <div class="history-detail">
-                        <span class="history-label">Eklenecek Asit:</span>
-                        <span class="history-value">${item.acidToAdd.toFixed(2)} kg</span>
-                    </div>
-                    <div class="history-detail">
-                        <span class="history-label">Eklenecek Su:</span>
-                        <span class="history-value">${item.waterToAdd.toFixed(2)} kg</span>
-                    </div>
-                    <div class="history-detail">
-                        <span class="history-label">Yeni Yükseklik:</span>
-                        <span class="history-value">${item.newHeight.toFixed(1)} cm</span>
-                    </div>
-                </div>
-            `).join('');
         }
 
         // Geçmişi temizle
@@ -931,6 +1491,14 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadTanks();
             renderTanks();
+            
+            // Overlay'e tıklayınca her iki sidebar'ı da kapat
+            document.querySelector('.overlay').addEventListener('click', function() {
+                document.querySelector('.sidebar').classList.remove('active');
+                document.getElementById('recipeSidebar').classList.remove('active');
+                document.querySelector('.overlay').classList.remove('active');
+                document.querySelector('.menu-btn').classList.remove('active');
+            });
             
             // iPhone'da Safari ise ve zaten ana ekrana eklenmemişse, talimatı göster
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -989,6 +1557,7 @@
                 card.onclick = () => selectTank(tank);
                 
                 card.innerHTML = `
+                    <button class="recipe-btn" onclick="openRecipeCalculator(); event.stopPropagation();" title="Reçete Hesapla">📋</button>
                     <div class="tank-info">
                         <div class="name">${tank.name}</div>
                         <div class="specs">
@@ -997,6 +1566,8 @@
                         </div>
                     </div>
                     <div class="tank-actions">
+                        <button class="icon-btn" onclick="window.moveTankUp(${index}); event.stopPropagation();" title="Yukarı Taşı" ${index === 0 ? 'style="opacity:0.3;pointer-events:none;"' : ''}>▲</button>
+                        <button class="icon-btn" onclick="window.moveTankDown(${index}); event.stopPropagation();" title="Aşağı Taşı" ${index === tanks.length - 1 ? 'style="opacity:0.3;pointer-events:none;"' : ''}>▼</button>
                         <button class="icon-btn" onclick="window.editTankByIndex(${index}); event.stopPropagation();" title="Düzenle">✏️</button>
                         <button class="icon-btn" onclick="window.deleteTankByIndex(${index}); event.stopPropagation();" title="Sil">🗑️</button>
                     </div>
@@ -1034,6 +1605,30 @@
                 saveTanks();
                 renderTanks();
             }
+        };
+
+        // Tank yukarı taşı
+        window.moveTankUp = function(index) {
+            if (index === 0) return; // Zaten en üstte
+            
+            // Tankları yer değiştir
+            [tanks[index - 1], tanks[index]] = [tanks[index], tanks[index - 1]];
+            
+            // Kaydet ve yeniden render et
+            saveTanks();
+            renderTanks();
+        };
+
+        // Tank aşağı taşı
+        window.moveTankDown = function(index) {
+            if (index === tanks.length - 1) return; // Zaten en altta
+            
+            // Tankları yer değiştir
+            [tanks[index], tanks[index + 1]] = [tanks[index + 1], tanks[index]];
+            
+            // Kaydet ve yeniden render et
+            saveTanks();
+            renderTanks();
         };
 
         // Tank düzenleme - Index ile
@@ -1255,7 +1850,8 @@
                 malikAsit: malikAsit,
                 acidToAdd: x,
                 waterToAdd: y,
-                newHeight: newHeight
+                newHeight: newHeight,
+                totalTonnage: totalTonnage
             });
         }
 

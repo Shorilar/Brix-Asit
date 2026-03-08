@@ -266,8 +266,8 @@
         }
         
         .recipe-btn {
-            background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
-            color: white;
+            background: #e2e8f0;
+            color: #1a202c;
             border: none;
             border-radius: 8px;
             padding: 8px;
@@ -282,7 +282,7 @@
         }
         
         .recipe-btn:hover {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            background: #cbd5e0;
             transform: scale(1.05);
         }
         
@@ -658,13 +658,12 @@
             background: white;
             border-radius: 16px;
             border: 2px solid #e2e8f0;
-            overflow-x: auto;
+            overflow: visible;
         }
         
         .recipe-table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 400px;
         }
         
         .recipe-table thead {
@@ -826,7 +825,7 @@
         
         .history-highlights {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 8px;
             padding: 16px;
             background: #f8fafc;
@@ -859,7 +858,7 @@
         }
         
         .highlight-value {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
             color: #000;
             word-break: break-word;
@@ -892,6 +891,13 @@
         .change-arrow {
             color: #000;
             font-weight: 700;
+        }
+        
+        .change-detail {
+            color: #718096;
+            font-size: 11px;
+            font-weight: 400;
+            font-style: italic;
         }
         
         .malik-badge {
@@ -937,12 +943,121 @@
             transition: all 0.3s;
             z-index: 999;
             pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding-left: 0;
         }
         
         .overlay.active {
             opacity: 1;
             visibility: visible;
             pointer-events: auto;
+        }
+        
+        .overlay-close-btn {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10%;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-left: none;
+            border-radius: 0 20px 20px 0;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            user-select: none;
+        }
+        
+        .overlay.active .overlay-close-btn {
+            opacity: 1;
+            visibility: visible;
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+        
+        .overlay-close-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-50%) scale(1.05);
+            box-shadow: 4px 0 30px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+        
+        .overlay-close-btn:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
+            }
+            50% {
+                box-shadow: 4px 0 25px rgba(255, 255, 255, 0.3);
+            }
+        }
+        
+        .close-icon {
+            font-size: 20px;
+        }
+        
+        .close-text {
+            font-size: 13px;
+        }
+        
+        @media (min-width: 768px) {
+            .close-icon {
+                font-size: 36px;
+            }
+            
+            .close-text {
+                font-size: 22px;
+            }
+            
+            .overlay-close-btn {
+                width: calc(100% - 380px);
+                writing-mode: horizontal-tb;
+                height: 100%;
+                top: 0;
+                transform: none;
+                border-radius: 0;
+                letter-spacing: 4px;
+                border: none;
+                background: rgba(0, 0, 0, 0.3);
+                backdrop-filter: blur(5px);
+                color: #fff;
+                flex-direction: column;
+                gap: 12px;
+                text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            }
+            
+            .overlay-close-btn:hover {
+                background: rgba(0, 0, 0, 0.5);
+                transform: none;
+                text-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+            }
+            
+            .overlay-close-btn:active {
+                background: rgba(0, 0, 0, 0.6);
+                transform: none;
+            }
         }
         
         .hidden {
@@ -1134,23 +1249,20 @@
     </div>
 
     <!-- Overlay -->
-    <div class="overlay"></div>
+    <div class="overlay">
+        <button class="overlay-close-btn" onclick="toggleSidebar()">
+            <span class="close-icon">✕</span>
+            <span class="close-text">KAPAT</span>
+        </button>
+    </div>
 
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
             <div class="sidebar-title">Geçmiş</div>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; flex: 1;">
-                <button class="btn btn-secondary" style="margin: 0; font-size: 11px; padding: 12px; white-space: nowrap;" onclick="loadHistory()">
-                    🔄 Yenile
-                </button>
-                <button class="btn btn-secondary" style="margin: 0; font-size: 11px; padding: 12px; white-space: nowrap;" onclick="clearHistory()">
-                    Temizle
-                </button>
-                <button class="btn btn-primary" style="margin: 0; font-size: 11px; padding: 12px; white-space: nowrap;" onclick="toggleSidebar()">
-                    ✕ Kapat
-                </button>
-            </div>
+            <button class="btn btn-secondary" style="margin: 0; font-size: 11px; padding: 12px; white-space: nowrap;" onclick="clearHistory()">
+                Temizle
+            </button>
         </div>
         <div class="sidebar-content" id="historyContent">
             <div class="empty-state">
@@ -1193,46 +1305,38 @@
                 <table class="recipe-table">
                     <thead>
                         <tr>
-                            <th style="width: 40%;">Reçete Miktarı (kg)</th>
+                            <th style="width: 50%;">Reçete Miktarı (kg)</th>
                             <th style="width: 50%;">Hesaplanan Sonuç (kg)</th>
-                            <th style="width: 10%;"></th>
                         </tr>
                     </thead>
                     <tbody id="recipeTableBody">
                         <tr class="recipe-row">
                             <td><input type="number" class="table-input ingredient-amount" placeholder="0" step="0.01"></td>
                             <td><input type="text" class="table-input result-field" readonly placeholder="-"></td>
-                            <td><button class="table-delete-btn" onclick="this.closest('tr').remove()">🗑️</button></td>
                         </tr>
                         <tr class="recipe-row">
                             <td><input type="number" class="table-input ingredient-amount" placeholder="0" step="0.01"></td>
                             <td><input type="text" class="table-input result-field" readonly placeholder="-"></td>
-                            <td><button class="table-delete-btn" onclick="this.closest('tr').remove()">🗑️</button></td>
                         </tr>
                         <tr class="recipe-row">
                             <td><input type="number" class="table-input ingredient-amount" placeholder="0" step="0.01"></td>
                             <td><input type="text" class="table-input result-field" readonly placeholder="-"></td>
-                            <td><button class="table-delete-btn" onclick="this.closest('tr').remove()">🗑️</button></td>
                         </tr>
                         <tr class="recipe-row">
                             <td><input type="number" class="table-input ingredient-amount" placeholder="0" step="0.01"></td>
                             <td><input type="text" class="table-input result-field" readonly placeholder="-"></td>
-                            <td><button class="table-delete-btn" onclick="this.closest('tr').remove()">🗑️</button></td>
                         </tr>
                         <tr class="recipe-row">
                             <td><input type="number" class="table-input ingredient-amount" placeholder="0" step="0.01"></td>
                             <td><input type="text" class="table-input result-field" readonly placeholder="-"></td>
-                            <td><button class="table-delete-btn" onclick="this.closest('tr').remove()">🗑️</button></td>
                         </tr>
                         <tr class="recipe-row">
                             <td><input type="number" class="table-input ingredient-amount" placeholder="0" step="0.01"></td>
                             <td><input type="text" class="table-input result-field" readonly placeholder="-"></td>
-                            <td><button class="table-delete-btn" onclick="this.closest('tr').remove()">🗑️</button></td>
                         </tr>
                         <tr class="recipe-row">
                             <td><input type="number" class="table-input ingredient-amount" placeholder="0" step="0.01"></td>
                             <td><input type="text" class="table-input result-field" readonly placeholder="-"></td>
-                            <td><button class="table-delete-btn" onclick="this.closest('tr').remove()">🗑️</button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -1273,7 +1377,6 @@
                 row.innerHTML = `
                     <td><input type="number" class="table-input ingredient-amount" placeholder="0" step="0.01"></td>
                     <td><input type="text" class="table-input result-field" readonly placeholder="-"></td>
-                    <td><button class="table-delete-btn" onclick="this.closest('tr').remove()">🗑️</button></td>
                 `;
                 tableBody.appendChild(row);
             }
@@ -1309,7 +1412,6 @@
             newRow.innerHTML = `
                 <td><input type="number" class="table-input ingredient-amount" placeholder="0" step="0.01"></td>
                 <td><input type="text" class="table-input result-field" readonly placeholder="-"></td>
-                <td><button class="table-delete-btn" onclick="this.closest('tr').remove()">🗑️</button></td>
             `;
             tableBody.appendChild(newRow);
         }
@@ -1422,6 +1524,7 @@
                     const currentHeight = item.currentHeight || 0;
                     const newHeight = item.newHeight || 0;
                     const acidToAdd = item.acidToAdd || 0;
+                    const waterToAdd = item.waterToAdd || 0;
                     const totalTonnage = item.totalTonnage || 0;
                     const measuredBrix = item.measuredBrix || 0;
                     const targetBrix = item.targetBrix || 0;
@@ -1446,6 +1549,10 @@
                                     <div class="highlight-value">${acidToAdd.toFixed(2)} kg</div>
                                 </div>
                                 <div class="highlight-box">
+                                    <div class="highlight-label">Eklenecek Su</div>
+                                    <div class="highlight-value">${waterToAdd.toFixed(2)} kg</div>
+                                </div>
+                                <div class="highlight-box">
                                     <div class="highlight-label">Yeni Tonaj</div>
                                     <div class="highlight-value">${totalTonnage.toFixed(2)} kg</div>
                                 </div>
@@ -1459,6 +1566,9 @@
                                 <div class="change-item">
                                     <span class="change-label">Asitlik:</span>
                                     <span class="change-arrow">${measuredAcidity}% → ${targetAcidity}%</span>
+                                </div>
+                                <div class="change-item">
+                                    <span class="change-detail">Yüks: ${currentHeight} → ${newHeight.toFixed(1)} cm</span>
                                 </div>
                                 ${malikAsit ? '<div class="change-item"><span class="malik-badge">✓ Malik Asit</span></div>' : ''}
                             </div>

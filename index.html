@@ -7,6 +7,11 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Brix - Asitlik">
     <title>Brix - Asitlik - Şurupcular için Profesyonel Hesaplayıcı</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -138,13 +143,39 @@
         }
         
         .header {
-            text-align: center;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            grid-template-areas: 
+                "menu title user"
+                "menu subtitle user";
+            gap: 8px 12px;
+            align-items: center;
             margin-bottom: 30px;
             padding: 20px 15px;
             background: white;
             border-radius: 24px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
             position: relative;
+        }
+        
+        .header h1 {
+            margin: 0;
+            text-align: center;
+            grid-area: title;
+        }
+        
+        .header p {
+            margin: 0;
+            text-align: center;
+            grid-area: subtitle;
+        }
+        
+        .header .menu-btn {
+            grid-area: menu;
+        }
+        
+        .header #currentUserDisplay {
+            grid-area: user;
         }
         
         @media (min-width: 768px) {
@@ -154,14 +185,33 @@
             }
         }
         
+        @media (max-width: 640px) {
+            .header {
+                grid-template-columns: auto 1fr;
+                grid-template-areas: 
+                    "menu user"
+                    "title title"
+                    "subtitle subtitle";
+                gap: 12px;
+                padding: 16px;
+            }
+            
+            .header h1 {
+                font-size: 22px !important;
+                margin-top: 8px;
+            }
+            
+            .header p {
+                font-size: 12px;
+                line-height: 1.4;
+            }
+        }
+        
         .menu-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
             background: #000;
             border: none;
-            width: 40px;
-            height: 40px;
+            width: 44px; /* 44x44 minimum touch target */
+            height: 44px;
             border-radius: 12px;
             cursor: pointer;
             display: flex;
@@ -171,11 +221,18 @@
             gap: 5px;
             transition: all 0.3s;
             z-index: 1001;
+            -webkit-tap-highlight-color: transparent;
+            flex-shrink: 0;
         }
         
         .menu-btn:hover {
             background: #1a1a1a;
             transform: scale(1.05);
+        }
+        
+        .menu-btn:active {
+            transform: scale(0.95);
+            background: #333;
         }
         
         .menu-btn span {
@@ -216,6 +273,65 @@
             color: #718096;
             font-size: 14px;
             font-weight: 400;
+        }
+        
+        #currentUserDisplay {
+            position: relative;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 2px solid #dee2e6;
+            color: #212529;
+            padding: 12px 20px 12px 45px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9);
+            min-width: 120px;
+            text-align: left;
+            white-space: nowrap;
+            -webkit-tap-highlight-color: transparent;
+            letter-spacing: 0.3px;
+            flex-shrink: 0;
+        }
+        
+        #currentUserDisplay::before {
+            content: '👤';
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            opacity: 0.8;
+        }
+        
+        #currentUserDisplay:hover {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-color: #adb5bd;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.9);
+        }
+        
+        #currentUserDisplay:hover::before {
+            opacity: 1;
+        }
+        
+        #currentUserDisplay:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9);
+        }
+        
+        @media (max-width: 640px) {
+            #currentUserDisplay {
+                font-size: 12px;
+                padding: 10px 16px 10px 38px;
+                min-width: 100px;
+            }
+            
+            #currentUserDisplay::before {
+                left: 12px;
+                font-size: 14px;
+            }
         }
         
         .card {
@@ -263,6 +379,15 @@
             align-items: flex-start;
             justify-content: space-between;
             gap: 12px;
+            min-height: 80px; /* Minimum touch target */
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        .tank-card:active {
+            transform: scale(0.98);
+            background: #e2e8f0;
         }
         
         .recipe-btn {
@@ -274,16 +399,22 @@
             cursor: pointer;
             font-size: 18px;
             transition: all 0.2s;
-            min-width: 40px;
-            height: 40px;
+            min-width: 44px; /* Touch target */
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
+            -webkit-tap-highlight-color: transparent;
         }
         
         .recipe-btn:hover {
             background: #cbd5e0;
             transform: scale(1.05);
+        }
+        
+        .recipe-btn:active {
+            transform: scale(0.95);
+            background: #b3bfcc;
         }
         
         .tank-card.selected .recipe-btn {
@@ -395,8 +526,9 @@
             background: #f8fafc;
             border: 2px solid #e2e8f0;
             border-radius: 12px;
-            padding: 16px 20px;
+            padding: 18px 20px; /* Daha büyük touch target */
             transition: all 0.3s;
+            min-height: 56px; /* Minimum touch target */
         }
         
         .input-wrapper:focus-within {
@@ -481,6 +613,13 @@
             gap: 8px;
             text-transform: uppercase;
             letter-spacing: 1.5px;
+            min-height: 50px; /* Touch target */
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        
+        .btn:active {
+            transform: scale(0.97);
         }
         
         .btn-primary {
@@ -494,6 +633,11 @@
             background: #1a1a1a;
             transform: translateY(-2px);
             box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.97);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
         
         .btn-secondary {
@@ -807,20 +951,60 @@
             background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
             padding: 16px 20px;
             display: flex;
-            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px 12px;
             align-items: center;
+            justify-content: space-between;
         }
         
         .history-tank-name {
             font-size: 18px;
             font-weight: 700;
             color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .history-user-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            background: rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .history-time {
             font-size: 11px;
             color: rgba(255, 255, 255, 0.7);
             font-weight: 500;
+            white-space: nowrap;
+        }
+        
+        @media (max-width: 640px) {
+            .history-header {
+                padding: 14px 16px;
+            }
+            
+            .history-tank-name {
+                font-size: 16px;
+                width: 100%;
+            }
+            
+            .history-time {
+                font-size: 10px;
+                width: 100%;
+                text-align: left;
+                margin-top: -4px;
+            }
         }
         
         .history-highlights {
@@ -1067,6 +1251,49 @@
     </style>
 </head>
 <body>
+    <!-- Login Ekranı -->
+    <div id="loginScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px;">
+        <div style="background: white; border-radius: 24px; padding: 48px 40px; max-width: 480px; width: 100%; box-shadow: 0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #e9ecef;">
+            <div style="text-align: center; margin-bottom: 36px;">
+                <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #495057 0%, #212529 100%); border-radius: 16px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-size: 32px;">🔐</div>
+                <h1 style="font-size: 28px; font-weight: 700; color: #212529; margin-bottom: 8px; letter-spacing: -0.5px;">Hoş Geldiniz</h1>
+                <p style="font-size: 15px; color: #6c757d; line-height: 1.5;">Hesaplamalarınız otomatik senkronize edilir</p>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; color: #495057; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Hesap Adı</label>
+                <input type="text" id="loginUsername" placeholder="Örn: fabrika" style="width: 100%; padding: 14px 16px; border: 2px solid #dee2e6; border-radius: 12px; font-size: 15px; outline: none; transition: all 0.2s; background: #f8f9fa; color: #212529;" onfocus="this.style.borderColor='#495057'; this.style.background='white'" onblur="this.style.borderColor='#dee2e6'; this.style.background='#f8f9fa'">
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; color: #495057; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Şifre</label>
+                <input type="password" id="loginPassword" placeholder="Şifreniz" style="width: 100%; padding: 14px 16px; border: 2px solid #dee2e6; border-radius: 12px; font-size: 15px; outline: none; transition: all 0.2s; background: #f8f9fa; color: #212529;" onfocus="this.style.borderColor='#495057'; this.style.background='white'" onblur="this.style.borderColor='#dee2e6'; this.style.background='#f8f9fa'">
+            </div>
+            
+            <div style="margin-bottom: 28px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; color: #495057; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Oturumda Kullanılacak İsim</label>
+                <input type="text" id="loginDisplayName" placeholder="Örn: Yusuf" style="width: 100%; padding: 14px 16px; border: 2px solid #dee2e6; border-radius: 12px; font-size: 15px; outline: none; transition: all 0.2s; background: #f8f9fa; color: #212529;" onfocus="this.style.borderColor='#495057'; this.style.background='white'" onblur="this.style.borderColor='#dee2e6'; this.style.background='#f8f9fa'">
+                <p style="font-size: 12px; color: #868e96; margin-top: 6px; line-height: 1.4;">Bu isim hesaplama geçmişinde tank isimlerinin yanında görünecektir</p>
+            </div>
+            
+            <button onclick="handleLogin()" style="width: 100%; padding: 16px; background: linear-gradient(135deg, #495057 0%, #212529 100%); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,0.25)'" onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'">
+                Giriş Yap →
+            </button>
+            
+            <div id="loginError" style="margin-top: 16px; padding: 14px; background: #fff5f5; border: 2px solid #fc8181; border-radius: 10px; color: #c53030; font-size: 13px; text-align: center; display: none; font-weight: 600;">
+            </div>
+            
+            <div style="margin-top: 24px; padding: 20px; background: #f8f9fa; border-radius: 12px; border-left: 4px solid #495057;">
+                <div style="font-size: 13px; color: #495057; line-height: 1.7; margin-bottom: 12px;">
+                    <strong style="display: block; margin-bottom: 8px; color: #212529;">💡 Önemli Bilgiler:</strong>
+                    <span style="display: block; margin-bottom: 6px;">• Aynı hesap adı ve şifreyi kullanan tüm cihazlar <strong>otomatik senkronize</strong> olur</span>
+                    <span style="display: block; margin-bottom: 6px;">• Hesap oluşturmaya gerek yok, <strong>istediğiniz bilgileri girin</strong></span>
+                    <span style="display: block;">• Oturumda kullanılacak isim <strong>kişiselleştirme</strong> içindir</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Dekoratif Şekiller -->
     <div class="decorative-shapes">
         <div class="shape shape-1"></div>
@@ -1095,6 +1322,9 @@
             </button>
             <h1>Brix - Asitlik</h1>
             <p>Şurupcular için Profesyonel Brix ve Asitlik Ayarlayıcı</p>
+            <button onclick="logout()" id="currentUserDisplay">
+                Kullanıcı
+            </button>
         </div>
 
         <!-- Ana Ekran -->
@@ -1357,6 +1587,141 @@
     </div>
 
     <script>
+        // ==================== FİREBASE YAPILANDIRMA ====================
+        
+        // Firebase config - TAMAMLANDI! ✅
+        const firebaseConfig = {
+            apiKey: "AIzaSyAddhajykg9Qt3qRp9E9PoMXjOGnOjN3hs",
+            authDomain: "brix-asitlik.firebaseapp.com",
+            databaseURL: "https://brix-asitlik-default-rtdb.europe-west1.firebasedatabase.app/",
+            projectId: "brix-asitlik",
+            storageBucket: "brix-asitlik.firebasestorage.app",
+            messagingSenderId: "888166162687",
+            appId: "1:888166162687:web:56728ccbe9a42ca4ad2cca",
+            measurementId: "G-28T56W7ZZF"
+        };
+        
+        // Firebase'i başlat
+        let app, database;
+        let isFirebaseReady = false;
+        let currentUser = null;
+        
+        try {
+            // Config kontrolü - Realtime Database açılmış mı?
+            if (firebaseConfig.databaseURL === "REALTIME_DATABASE_ACTIKTAN_SONRA_BURAYA_URL_EKLEYIN") {
+                isFirebaseReady = false;
+            } else {
+                app = firebase.initializeApp(firebaseConfig);
+                database = firebase.database();
+                isFirebaseReady = true;
+            }
+        } catch (error) {
+            isFirebaseReady = false;
+        }
+        
+        // ==================== KULLANICI GİRİŞİ ====================
+        
+        // Login işle
+        function handleLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const displayName = document.getElementById('loginDisplayName').value.trim();
+            const errorDiv = document.getElementById('loginError');
+            
+            if (!username || !password || !displayName) {
+                errorDiv.textContent = 'Lütfen tüm alanları doldurun!';
+                errorDiv.style.display = 'block';
+                setTimeout(() => { errorDiv.style.display = 'none'; }, 3000);
+                return;
+            }
+            
+            // Kullanıcı bilgilerini kaydet
+            currentUser = {
+                username: username,
+                password: password, // Basit auth - production'da hash'lenmeli
+                displayName: displayName, // Oturumda görünecek isim
+                loginTime: new Date().toISOString()
+            };
+            
+            // Session'ı kaydet (localStorage - offline çalışma için)
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // Login ekranını gizle
+            document.getElementById('loginScreen').style.display = 'none';
+            
+            // Kullanıcı adını header'da göster
+            const userDisplay = document.getElementById('currentUserDisplay');
+            if (userDisplay) {
+                userDisplay.textContent = currentUser.displayName;
+            }
+            
+            // Verileri yükle
+            loadUserData();
+        }
+        
+        // Çıkış yap
+        function logout() {
+            if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
+                localStorage.removeItem('currentUser');
+                currentUser = null;
+                location.reload();
+            }
+        }
+        
+        // Session kontrolü
+        function checkSession() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                document.getElementById('loginScreen').style.display = 'none';
+                
+                // Kullanıcı adını header'da göster (displayName varsa onu, yoksa username)
+                const userDisplay = document.getElementById('currentUserDisplay');
+                if (userDisplay) {
+                    userDisplay.textContent = currentUser.displayName || currentUser.username;
+                }
+                
+                loadUserData();
+            }
+        }
+        
+        // Kullanıcı verilerini yükle
+        function loadUserData() {
+            if (isFirebaseReady && currentUser) {
+                // Firebase'den verileri çek
+                const userRef = database.ref(`users/${currentUser.username}`);
+                
+                // Tankları dinle
+                userRef.child('tanks').on('value', (snapshot) => {
+                    if (snapshot.exists()) {
+                        tanks = snapshot.val() || [];
+                        // localStorage'a da kaydet (offline için)
+                        localStorage.setItem('tanks', JSON.stringify(tanks));
+                        renderTanks();
+                    } else {
+                        // İlk kez giriş yapıyorsa örnek tankları yükle
+                        loadTanks();
+                    }
+                });
+                
+                // Geçmişi dinle
+                userRef.child('history').on('value', (snapshot) => {
+                    // Her durumda güncelleme yap (boş array veya null olabilir)
+                    const history = snapshot.val() || [];
+                    // localStorage'a kaydet
+                    localStorage.setItem('calculationHistory', JSON.stringify(history));
+                    // Render et
+                    loadHistory();
+                });
+            } else {
+                // Firebase yoksa localStorage'dan yükle
+                loadTanks();
+                loadHistory();
+            }
+        }
+        
+        // ==================== GLOBAL DEĞİŞKENLER ====================
+        
         // Global değişkenler
         let tanks = [];
         let selectedTank = null;
@@ -1480,15 +1845,22 @@
                     id: Date.now(),
                     date: new Date().toLocaleString('tr-TR'),
                     tank: selectedTank.name,
+                    user: currentUser ? currentUser.displayName : 'Bilinmeyen', // Oturumda kullanılan isim
                     ...data
                 };
                 
                 history.unshift(historyItem); // Başa ekle
-                history = history.slice(0, 5); // Son 5'i tut
+                history = history.slice(0, 30); // Son 30'u tut
                 
+                // localStorage'a kaydet (offline çalışma için)
                 localStorage.setItem('calculationHistory', JSON.stringify(history));
+                
+                // Firebase'e de kaydet (senkronizasyon için)
+                if (isFirebaseReady && currentUser) {
+                    database.ref(`users/${currentUser.username}/history`).set(history);
+                }
             } catch (error) {
-                console.error('Geçmiş kaydedilirken hata:', error);
+                // Hata sessizce yoksayılır
             }
         }
 
@@ -1503,7 +1875,6 @@
                 const historyContent = document.getElementById('historyContent');
                 
                 if (!historyContent) {
-                    console.error('History content element not found');
                     return;
                 }
                 
@@ -1520,6 +1891,7 @@
                 historyContent.innerHTML = history.map((item, index) => {
                     // Güvenli değer kontrolü
                     const tank = item.tank || 'Bilinmeyen Tank';
+                    const user = item.user || ''; // Oturumda kullanılan isim
                     const date = item.date || '-';
                     const currentHeight = item.currentHeight || 0;
                     const newHeight = item.newHeight || 0;
@@ -1535,7 +1907,10 @@
                     return `
                         <div class="history-item">
                             <div class="history-header">
-                                <div class="history-tank-name">${tank}</div>
+                                <div class="history-tank-name">
+                                    <span>${tank}</span>
+                                    ${user ? `<span class="history-user-badge">${user}</span>` : ''}
+                                </div>
                                 <div class="history-time">${date}</div>
                             </div>
                             
@@ -1576,7 +1951,6 @@
                     `;
                 }).join('');
             } catch (error) {
-                console.error('Geçmiş yüklenirken hata:', error);
                 const historyContent = document.getElementById('historyContent');
                 if (historyContent) {
                     historyContent.innerHTML = `
@@ -1592,13 +1966,36 @@
         // Geçmişi temizle
         function clearHistory() {
             if (confirm('Tüm hesaplama geçmişi silinecek. Emin misiniz?')) {
+                // localStorage'dan sil
                 localStorage.removeItem('calculationHistory');
+                
+                // Firebase'den de sil (senkronizasyon için)
+                if (isFirebaseReady && currentUser) {
+                    database.ref(`users/${currentUser.username}/history`).set([]);
+                }
+                
                 loadHistory();
             }
         }
 
         // Sayfa yüklendiğinde
         document.addEventListener('DOMContentLoaded', function() {
+            // Session kontrolü yap
+            checkSession();
+            
+            // Login inputlarına Enter tuşu desteği ekle
+            const loginInputs = ['loginUsername', 'loginPassword', 'loginDisplayName'];
+            loginInputs.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            handleLogin();
+                        }
+                    });
+                }
+            });
+            
             loadTanks();
             renderTanks();
             
@@ -1651,7 +2048,13 @@
 
         // Tank kaydetme
         function saveTanks() {
+            // localStorage'a kaydet (offline çalışma için)
             localStorage.setItem('tanks', JSON.stringify(tanks));
+            
+            // Firebase'e de kaydet (senkronizasyon için)
+            if (isFirebaseReady && currentUser) {
+                database.ref(`users/${currentUser.username}/tanks`).set(tanks);
+            }
         }
 
         // Tankları render et

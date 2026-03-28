@@ -2668,8 +2668,9 @@
             }
         }
         
-        // Kayıtlı lisans kontrolü (hesap adına bağlı, şifreden bağımsız kalıcı)
-        // Hesap adı için kayıtlı lisans var mı? (şifreden bağımsız)
+        // Lisans kontrolü — hesap adına bağlı, cihazdan bağımsız
+        // Firebase'den kontrol eder, localStorage sadece cache
+        
         function _licenseExistsForUser(username) {
             try {
                 const stored = JSON.parse(localStorage.getItem('brix_validated_licenses') || '{}');
@@ -2677,19 +2678,42 @@
             } catch { return false; }
         }
         
-        // Kayıtlı lisansın şifresi doğru mu?
         async function _isStoredPasswordCorrect(username, password) {
             try {
+                const passHash = (await _sha256hex(password)).substring(0, 16);
+                
+                // Önce localStorage'dan bak (hızlı)
                 const stored = JSON.parse(localStorage.getItem('brix_validated_licenses') || '{}');
                 const entry = stored[username.toLowerCase()];
-                if (!entry) return false;
-                const passHash = (await _sha256hex(password)).substring(0, 16);
-                return entry.ph === passHash;
+                if (entry && entry.ph === passHash) return true;
+                
+                // localStorage'da yoksa Firebase'den kontrol et
+                if (isFirebaseReady) {
+                    return new Promise((resolve) => {
+                        database.ref('users/' + username.toLowerCase() + '/licenseValidated').once('value', (snap) => {
+                            if (snap.exists()) {
+                                const fbData = snap.val();
+                                if (fbData.ph === passHash) {
+                                    // Firebase'de var, localStorage'a da kaydet (cache)
+                                    const s = JSON.parse(localStorage.getItem('brix_validated_licenses') || '{}');
+                                    s[username.toLowerCase()] = fbData;
+                                    localStorage.setItem('brix_validated_licenses', JSON.stringify(s));
+                                    resolve(true);
+                                } else {
+                                    resolve(false);
+                                }
+                            } else {
+                                resolve(false);
+                            }
+                        }, () => resolve(false));
+                    });
+                }
+                
+                return false;
             } catch { return false; }
         }
         
-        // Firebase'den lisans durumunu kontrol et (iptal edilmiş mi?)
-        // users/{username} yolunu kullanıyor — tanklar/geçmiş ile aynı yol, izinler çalışıyor
+        // Firebase'den iptal kontrolü
         function _checkFirebaseLicenseStatus(username) {
             return new Promise((resolve) => {
                 if (!isFirebaseReady) { resolve('active'); return; }
@@ -2701,27 +2725,38 @@
                         resolve('active');
                     }
                 }, () => {
-                    resolve('active'); // Firebase erişim hatası, offline mod
+                    resolve('active');
                 });
             });
         }
         
-        // Lisans iptal edilmişse local kaydı temizle
+        // Lisans iptal — hem local hem Firebase
         function _clearLocalLicense(username) {
             try {
                 const stored = JSON.parse(localStorage.getItem('brix_validated_licenses') || '{}');
                 delete stored[username.toLowerCase()];
                 localStorage.setItem('brix_validated_licenses', JSON.stringify(stored));
             } catch {}
+            if (isFirebaseReady) {
+                database.ref('users/' + username.toLowerCase() + '/licenseValidated').set(null);
+            }
         }
         
-        // Lisansı kalıcı olarak kaydet (hesap adı + şifre hash)
+        // Lisans kaydet — hem local hem Firebase (tüm cihazlar görsün)
         async function _storeLicense(username, password, licenseKey) {
             try {
-                const stored = JSON.parse(localStorage.getItem('brix_validated_licenses') || '{}');
                 const passHash = (await _sha256hex(password)).substring(0, 16);
-                stored[username.toLowerCase()] = { key: licenseKey, ph: passHash, validatedAt: new Date().toISOString() };
+                const data = { ph: passHash, validatedAt: new Date().toISOString() };
+                
+                // localStorage
+                const stored = JSON.parse(localStorage.getItem('brix_validated_licenses') || '{}');
+                stored[username.toLowerCase()] = data;
                 localStorage.setItem('brix_validated_licenses', JSON.stringify(stored));
+                
+                // Firebase (diğer cihazlar da görsün)
+                if (isFirebaseReady) {
+                    database.ref('users/' + username.toLowerCase() + '/licenseValidated').set(data);
+                }
             } catch {}
         }
         
@@ -2867,27 +2902,23 @@
                 return;
             }
             
-            // 1) Bu hesap adı için lisans var mı?
-            if (_licenseExistsForUser(username)) {
-                // 2) Şifre doğru mu?
-                if (await _isStoredPasswordCorrect(username, password)) {
-                    // 3) Firebase'den iptal kontrolü
-                    const fbStatus = await _checkFirebaseLicenseStatus(username);
-                    if (fbStatus === 'revoked') {
-                        _clearLocalLicense(username);
-                        _showLoginError('🚫 Bu hesabın lisansı iptal edilmiş. Yöneticinize başvurun.');
-                        return;
-                    }
-                    // Her şey tamam, direkt giriş
-                    hideLicenseSection();
-                    _completeLogin(username, password, displayName);
-                } else {
-                    // Lisans var ama şifre yanlış
-                    _showLoginError('❌ Bu hesap için şifre yanlış girildi.');
+            // Lisans kontrolü (localStorage + Firebase — cihazdan bağımsız)
+            if (await _isStoredPasswordCorrect(username, password)) {
+                // Lisans + şifre doğru, iptal kontrolü
+                const fbStatus = await _checkFirebaseLicenseStatus(username);
+                if (fbStatus === 'revoked') {
+                    _clearLocalLicense(username);
+                    _showLoginError('Bu hesabın lisansı iptal edilmiş. Yöneticinize başvurun.');
+                    return;
                 }
+                hideLicenseSection();
+                _completeLogin(username, password, displayName);
+            } else if (_licenseExistsForUser(username)) {
+                // localStorage'da lisans var ama şifre yanlış
+                _showLoginError('Bu hesap için şifre yanlış girildi.');
             } else {
-                // Lisans doğrulanmamış: hata göster ve lisans bölümünü aç
-                _showLoginError('🔒 Bu hesap için lisans doğrulanmamış. Lütfen aşağıdan lisans anahtarınızı girin.');
+                // Hiç lisans yok (ne local ne Firebase)
+                _showLoginError('Bu hesap için lisans doğrulanmamış. Lütfen aşağıdan lisans anahtarınızı girin.');
                 showLicenseSection(username);
             }
         }
@@ -2908,8 +2939,8 @@
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
                 
-                // Lisans kontrolü (hesap adı + şifre)
-                if (_licenseExistsForUser(currentUser.username) && await _isStoredPasswordCorrect(currentUser.username, currentUser.password)) {
+                // Lisans kontrolü (localStorage + Firebase — cihazdan bağımsız)
+                if (await _isStoredPasswordCorrect(currentUser.username, currentUser.password)) {
                     // Firebase'den iptal kontrolü
                     const fbStatus = await _checkFirebaseLicenseStatus(currentUser.username);
                     if (fbStatus === 'revoked') {

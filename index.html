@@ -12,6 +12,12 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     
+    <!-- ExcelJS (Professional Excel export with styling) -->
+    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+    
+    <!-- Tesseract.js (Free OCR - runs in browser) -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -1248,53 +1254,859 @@
             display: none;
         }
         
+        /* ===== VARDİYA SİSTEMİ ===== */
+        .vardiya-btn {
+            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 14px 20px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            min-height: 50px;
+            box-shadow: 0 6px 20px rgba(56, 161, 105, 0.25);
+            font-family: inherit;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+        .vardiya-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(56, 161, 105, 0.35);
+        }
+        .vardiya-btn:active {
+            transform: scale(0.97);
+        }
+        .vardiya-btn.active-shift {
+            background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+            box-shadow: 0 6px 20px rgba(229, 62, 62, 0.25);
+        }
+        .vardiya-btn.active-shift:hover {
+            box-shadow: 0 10px 28px rgba(229, 62, 62, 0.35);
+        }
+        
+        .vardiya-edit-btn {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 14px 16px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex-shrink: 0;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .vardiya-edit-btn:hover {
+            border-color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .vardiya-edit-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .vardiya-banner {
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+            border: 2px solid #9ae6b4;
+            border-radius: 16px;
+            padding: 14px 18px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .vardiya-banner .vb-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .vardiya-banner .vb-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #276749;
+        }
+        .vardiya-banner .vb-detail {
+            font-size: 11px;
+            color: #38a169;
+            font-weight: 500;
+        }
+        .vardiya-banner .vb-badge {
+            background: #38a169;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        
+        /* Vardiya Sidebar */
+        .vardiya-sidebar {
+            width: 100%;
+            max-width: 100%;
+            right: -100%;
+        }
+        .vardiya-sidebar.active {
+            right: 0;
+        }
+        .vardiya-sidebar .sidebar-content {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        
+        .v-step {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        .v-step-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .v-step-num {
+            width: 28px;
+            height: 28px;
+            background: #000;
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .v-step-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #000;
+        }
+        
+        .v-category {
+            margin-bottom: 14px;
+        }
+        .v-category:last-child {
+            margin-bottom: 0;
+        }
+        .v-cat-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .v-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        .v-chip {
+            background: #f0f4f8;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #718096;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .v-chip:active {
+            transform: scale(0.95);
+        }
+        .v-chip.selected {
+            background: linear-gradient(135deg, #000, #1a1a1a);
+            border-color: #000;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .v-chip .remove-chip {
+            cursor: pointer;
+            opacity: 0.5;
+            font-size: 14px;
+            transition: opacity 0.2s;
+            line-height: 1;
+        }
+        .v-chip .remove-chip:hover {
+            opacity: 1;
+        }
+        .v-add-row {
+            display: flex;
+            gap: 6px;
+        }
+        .v-add-input {
+            flex: 1;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 13px;
+            outline: none;
+            font-family: inherit;
+            transition: border-color 0.2s;
+            background: #f8fafc;
+        }
+        .v-add-input:focus {
+            border-color: #000;
+            background: white;
+        }
+        .v-add-btn {
+            background: #000;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .v-add-btn:hover {
+            background: #1a1a1a;
+        }
+        
+        .v-shift-options {
+            display: flex;
+            gap: 10px;
+        }
+        .v-shift-opt {
+            flex: 1;
+            padding: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            background: #f8fafc;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        .v-shift-opt:hover {
+            border-color: #cbd5e0;
+            transform: translateY(-2px);
+        }
+        .v-shift-opt.selected {
+            border-color: #000;
+            background: linear-gradient(135deg, #000, #1a1a1a);
+            color: white;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        .v-shift-opt .shift-num {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .v-shift-opt .shift-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+        }
+        
+        /* ===== ÜRÜN SİSTEMİ ===== */
+        .urun-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+        .urun-card:hover {
+            border-color: #cbd5e0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+        .urun-card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        .urun-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #000;
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .urun-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 6px;
+            background: #f0f4f8;
+            color: #718096;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .urun-hammadde-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .urun-hm-chip {
+            font-size: 11px;
+            padding: 3px 8px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            color: #4a5568;
+        }
+        .urun-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 10px;
+        }
+        .urun-act-btn {
+            padding: 6px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+            color: #4a5568;
+        }
+        .urun-act-btn:hover {
+            border-color: #000;
+        }
+        .urun-act-btn.del:hover {
+            border-color: #fc8181;
+            color: #c53030;
+        }
+
+        /* Hammadde satırları (sidebar'da) */
+        .hm-row {
+            display: grid;
+            grid-template-columns: 1fr 80px 100px 32px;
+            gap: 6px;
+            margin-bottom: 6px;
+            align-items: center;
+        }
+        @media (max-width: 500px) {
+            .hm-row {
+                grid-template-columns: 1fr 70px 32px;
+            }
+            .hm-row .hm-parti {
+                grid-column: 1 / -1;
+            }
+        }
+        .hm-input {
+            width: 100%;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 13px;
+            font-weight: 500;
+            background: white;
+            outline: none;
+            transition: border-color 0.2s;
+            font-family: inherit;
+        }
+        .hm-input:focus {
+            border-color: #000;
+        }
+        .hm-input::placeholder {
+            color: #a0aec0;
+        }
+        .hm-del {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 16px;
+            opacity: 0.4;
+            transition: opacity 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hm-del:hover { opacity: 1; }
+        .hm-header {
+            display: grid;
+            grid-template-columns: 1fr 80px 100px 32px;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        @media (max-width: 500px) {
+            .hm-header {
+                grid-template-columns: 1fr 70px 32px;
+            }
+            .hm-header .hm-h-parti { display: none; }
+        }
+        .hm-h {
+            font-size: 10px;
+            font-weight: 700;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* ===== TANK ONAY SİSTEMİ ===== */
+        .tank-onay-btn {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #9ae6b4;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+            color: #276749;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .tank-onay-btn:hover {
+            background: linear-gradient(135deg, #c6f6d5 0%, #9ae6b4 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(72, 187, 120, 0.2);
+        }
+        .tank-onay-btn:active {
+            transform: scale(0.97);
+        }
+        .tank-onay-btn.approved {
+            background: #e2e8f0;
+            border-color: #cbd5e0;
+            color: #718096;
+            cursor: default;
+            pointer-events: none;
+        }
+        .tank-onay-btn.approved:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* ===== PAYLAŞIM MODAL ===== */
+        .share-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 10002;
+            background: rgba(0,0,0,0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .share-modal.active { display: flex; }
+        .share-modal-card {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 320px;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+            animation: modalIn 0.3s ease;
+            padding: 32px 24px;
+            text-align: center;
+        }
+        .share-modal-card .sm-title { font-size: 17px; font-weight: 700; color: #000; margin-bottom: 4px; }
+        .share-modal-card .sm-sub { font-size: 12px; color: #718096; margin-bottom: 24px; }
+        .share-modal-card .sm-btns { display: flex; flex-direction: column; gap: 8px; }
+        .sm-btn {
+            padding: 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+            color: #2d3748;
+        }
+        .sm-btn:active { transform: scale(0.97); }
+        .sm-btn.primary {
+            background: #000;
+            border-color: #000;
+            color: white;
+        }
+        .sm-btn.green {
+            background: #25d366;
+            border-color: #25d366;
+            color: white;
+        }
+
+        /* ===== BİLDİRİM BANNER ===== */
+        .notif-banner {
+            position: fixed;
+            top: -120px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 14px 18px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            z-index: 10003;
+            transition: top 0.4s cubic-bezier(0.34,1.56,0.64,1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+        .notif-banner.show {
+            top: 16px;
+        }
+        .notif-banner .notif-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #000, #1a1a1a);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+            color: white;
+        }
+        .notif-banner .notif-body {
+            flex: 1;
+            min-width: 0;
+        }
+        .notif-banner .notif-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 2px;
+        }
+        .notif-banner .notif-text {
+            font-size: 11px;
+            color: #718096;
+            line-height: 1.3;
+        }
+        .notif-banner .notif-time {
+            font-size: 10px;
+            color: #a0aec0;
+            flex-shrink: 0;
+        }
+
+        /* Kalite Modal */
+        .kalite-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 10001;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .kalite-modal.active {
+            display: flex;
+        }
+        .kalite-modal-card {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            margin: auto 0;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            animation: modalIn 0.3s ease;
+            overflow: hidden;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .kalite-modal-header {
+            background: linear-gradient(135deg, #000, #1a1a1a);
+            color: white;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .kalite-modal-title {
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .kalite-modal-close {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            width: 36px;
+            height: 36px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .kalite-modal-close:hover { background: rgba(255,255,255,0.25); }
+        .kalite-modal-body {
+            padding: 24px;
+        }
+        .kalite-step { display: none; }
+        .kalite-step.active { display: block; }
+        
+        /* Ürün seçim listesi (modal içinde) */
+        .urun-select-item {
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .urun-select-item:hover {
+            border-color: #000;
+            background: #f8fafc;
+            transform: translateX(4px);
+        }
+        .urun-select-item:active {
+            transform: scale(0.98);
+        }
+        
+        /* Kalite input grid */
+        .kalite-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        @media (max-width: 400px) {
+            .kalite-grid { grid-template-columns: 1fr; }
+        }
+        .kalite-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .kalite-group.full {
+            grid-column: 1 / -1;
+        }
+        .kalite-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .kalite-input {
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 15px;
+            font-weight: 600;
+            outline: none;
+            transition: border-color 0.2s;
+            font-family: inherit;
+            width: 100%;
+            background: #f8fafc;
+        }
+        .kalite-input:focus {
+            border-color: #000;
+            background: white;
+        }
+        
     </style>
 </head>
 <body>
     <!-- Login Ekranı -->
-    <div id="loginScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px;">
-        <div style="background: white; border-radius: 24px; padding: 48px 40px; max-width: 480px; width: 100%; box-shadow: 0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #e9ecef;">
-            <div style="text-align: center; margin-bottom: 36px;">
-                <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #495057 0%, #212529 100%); border-radius: 16px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-size: 32px;">🔐</div>
-                <h1 style="font-size: 28px; font-weight: 700; color: #212529; margin-bottom: 8px; letter-spacing: -0.5px;">Hoş Geldiniz</h1>
-                <p style="font-size: 15px; color: #6c757d; line-height: 1.5;">Hesaplamalarınız otomatik senkronize edilir</p>
+    <div id="loginScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); z-index: 10000; display: flex; align-items: flex-start; justify-content: center; padding: 20px; overflow-y: auto; -webkit-overflow-scrolling: touch;">
+        <div style="background: white; border-radius: 24px; padding: 36px 28px; max-width: 480px; width: 100%; box-shadow: 0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #e9ecef; margin: auto 0;">
+            <div style="text-align: center; margin-bottom: 28px;">
+                <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #495057 0%, #212529 100%); border-radius: 14px; margin: 0 auto 14px; display: flex; align-items: center; justify-content: center; font-size: 28px;">🔐</div>
+                <h1 style="font-size: 24px; font-weight: 700; color: #212529; margin-bottom: 6px; letter-spacing: -0.5px;">Hoş Geldiniz</h1>
+                <p style="font-size: 14px; color: #6c757d; line-height: 1.5;">Hesaplamalarınız otomatik senkronize edilir</p>
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 12px; font-weight: 600; color: #495057; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Hesap Adı</label>
+                <input type="text" id="loginUsername" placeholder="Örn: fabrika" style="width: 100%; padding: 12px 14px; border: 2px solid #dee2e6; border-radius: 12px; font-size: 15px; outline: none; transition: all 0.2s; background: #f8f9fa; color: #212529; box-sizing: border-box;" onfocus="this.style.borderColor='#495057'; this.style.background='white'" onblur="this.style.borderColor='#dee2e6'; this.style.background='#f8f9fa'">
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 12px; font-weight: 600; color: #495057; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Şifre</label>
+                <input type="password" id="loginPassword" placeholder="Şifreniz" style="width: 100%; padding: 12px 14px; border: 2px solid #dee2e6; border-radius: 12px; font-size: 15px; outline: none; transition: all 0.2s; background: #f8f9fa; color: #212529; box-sizing: border-box;" onfocus="this.style.borderColor='#495057'; this.style.background='white'" onblur="this.style.borderColor='#dee2e6'; this.style.background='#f8f9fa'">
             </div>
             
             <div style="margin-bottom: 20px;">
-                <label style="display: block; font-size: 13px; font-weight: 600; color: #495057; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Hesap Adı</label>
-                <input type="text" id="loginUsername" placeholder="Örn: fabrika" style="width: 100%; padding: 14px 16px; border: 2px solid #dee2e6; border-radius: 12px; font-size: 15px; outline: none; transition: all 0.2s; background: #f8f9fa; color: #212529;" onfocus="this.style.borderColor='#495057'; this.style.background='white'" onblur="this.style.borderColor='#dee2e6'; this.style.background='#f8f9fa'">
+                <label style="display: block; font-size: 12px; font-weight: 600; color: #495057; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Oturumda Kullanılacak İsim</label>
+                <input type="text" id="loginDisplayName" placeholder="Örn: Yusuf" style="width: 100%; padding: 12px 14px; border: 2px solid #dee2e6; border-radius: 12px; font-size: 15px; outline: none; transition: all 0.2s; background: #f8f9fa; color: #212529; box-sizing: border-box;" onfocus="this.style.borderColor='#495057'; this.style.background='white'" onblur="this.style.borderColor='#dee2e6'; this.style.background='#f8f9fa'">
+                <p style="font-size: 11px; color: #868e96; margin-top: 5px; line-height: 1.4;">Bu isim hesaplama geçmişinde tank isimlerinin yanında görünecektir</p>
             </div>
             
-            <div style="margin-bottom: 20px;">
-                <label style="display: block; font-size: 13px; font-weight: 600; color: #495057; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Şifre</label>
-                <input type="password" id="loginPassword" placeholder="Şifreniz" style="width: 100%; padding: 14px 16px; border: 2px solid #dee2e6; border-radius: 12px; font-size: 15px; outline: none; transition: all 0.2s; background: #f8f9fa; color: #212529;" onfocus="this.style.borderColor='#495057'; this.style.background='white'" onblur="this.style.borderColor='#dee2e6'; this.style.background='#f8f9fa'">
-            </div>
-            
-            <div style="margin-bottom: 28px;">
-                <label style="display: block; font-size: 13px; font-weight: 600; color: #495057; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Oturumda Kullanılacak İsim</label>
-                <input type="text" id="loginDisplayName" placeholder="Örn: Yusuf" style="width: 100%; padding: 14px 16px; border: 2px solid #dee2e6; border-radius: 12px; font-size: 15px; outline: none; transition: all 0.2s; background: #f8f9fa; color: #212529;" onfocus="this.style.borderColor='#495057'; this.style.background='white'" onblur="this.style.borderColor='#dee2e6'; this.style.background='#f8f9fa'">
-                <p style="font-size: 12px; color: #868e96; margin-top: 6px; line-height: 1.4;">Bu isim hesaplama geçmişinde tank isimlerinin yanında görünecektir</p>
-            </div>
-            
-            <button onclick="handleLogin()" style="width: 100%; padding: 16px; background: linear-gradient(135deg, #495057 0%, #212529 100%); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,0.25)'" onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'">
+            <button onclick="handleLogin()" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #495057 0%, #212529 100%); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-family: inherit;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,0.25)'" onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'">
                 Giriş Yap →
             </button>
             
-            <div id="loginError" style="margin-top: 16px; padding: 14px; background: #fff5f5; border: 2px solid #fc8181; border-radius: 10px; color: #c53030; font-size: 13px; text-align: center; display: none; font-weight: 600;">
+            <div id="loginError" style="margin-top: 14px; padding: 12px; background: #fff5f5; border: 2px solid #fc8181; border-radius: 10px; color: #c53030; font-size: 13px; text-align: center; display: none; font-weight: 600;">
             </div>
             
-            <div style="margin-top: 24px; padding: 20px; background: #f8f9fa; border-radius: 12px; border-left: 4px solid #495057;">
-                <div style="font-size: 13px; color: #495057; line-height: 1.7; margin-bottom: 12px;">
+            <div style="margin-top: 16px; padding: 14px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #495057;">
+                <div style="font-size: 12px; color: #495057; line-height: 1.6;">
                     <strong style="display: block; margin-bottom: 8px; color: #212529;">💡 Önemli Bilgiler:</strong>
                     <span style="display: block; margin-bottom: 6px;">• Aynı hesap adı ve şifreyi kullanan tüm cihazlar <strong>otomatik senkronize</strong> olur</span>
-                    <span style="display: block; margin-bottom: 6px;">• Hesap oluşturmaya gerek yok, <strong>istediğiniz bilgileri girin</strong></span>
+                    <span style="display: block; margin-bottom: 6px;">• İlk girişte <strong>lisans anahtarı</strong> gerekir, sonraki girişlerde sorulmaz</span>
                     <span style="display: block;">• Oturumda kullanılacak isim <strong>kişiselleştirme</strong> içindir</span>
                 </div>
+            </div>
+            
+            <!-- Lisans Doğrulama Bölümü (gizli, gerektiğinde açılır) -->
+            <div id="licenseSection" style="display:none; margin-top:20px; padding:20px; background:#f0f4f8; border-radius:16px; border:2px solid #cbd5e0; animation: slideDown 0.3s ease;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:20px;">🔑</span>
+                        <strong style="font-size:14px; color:#212529;">Lisans Doğrulama</strong>
+                    </div>
+                    <button onclick="hideLicenseSection()" style="background:#e2e8f0; border:none; border-radius:8px; padding:6px 14px; font-size:12px; font-weight:700; cursor:pointer; color:#495057; font-family:inherit; transition:all 0.2s;" onmouseover="this.style.background='#cbd5e0'" onmouseout="this.style.background='#e2e8f0'">← Geri</button>
+                </div>
+                <p id="licenseUserLabel" style="font-size:12px; color:#6c757d; margin-bottom:12px;"></p>
+                <textarea id="licenseKeyInput" placeholder="BRIX-XXXX-XXXX-XXXX...&#10;Lisans anahtarınızı buraya yapıştırın" style="width:100%;min-height:80px;padding:12px 14px;border:2px solid #dee2e6;border-radius:10px;font-size:12px;font-family:'Courier New',monospace;outline:none;transition:all 0.2s;background:white;color:#212529;resize:vertical;line-height:1.6;" onfocus="this.style.borderColor='#495057'" onblur="this.style.borderColor='#dee2e6'"></textarea>
+                <div style="display:flex;gap:8px;margin-top:12px;">
+                    <button onclick="pasteAndValidate()" style="flex:1;padding:11px;background:white;border:2px solid #dee2e6;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;color:#495057;font-family:inherit;transition:all 0.2s;" onmouseover="this.style.borderColor='#495057'" onmouseout="this.style.borderColor='#dee2e6'">📋 Yapıştır</button>
+                    <button onclick="validateAndLogin()" style="flex:2;padding:11px;background:linear-gradient(135deg,#495057,#212529);color:white;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.3s;box-shadow:0 4px 12px rgba(0,0,0,0.15);" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">🔓 Doğrula ve Giriş Yap</button>
+                </div>
+                <p style="font-size:11px; color:#868e96; margin-top:10px; line-height:1.5;">Lisans anahtarınız yoksa yöneticinize başvurun. Anahtar bir kez doğrulanır, tekrar sorulmaz.</p>
             </div>
         </div>
     </div>
 
     <!-- Dekoratif Şekiller -->
+    
+    <!-- Bildirim Banner -->
+    <div class="notif-banner" id="notifBanner" onclick="this.classList.remove('show')">
+        <div class="notif-icon">B</div>
+        <div class="notif-body">
+            <div class="notif-title" id="notifTitle"></div>
+            <div class="notif-text" id="notifText"></div>
+        </div>
+        <div class="notif-time" id="notifTime">şimdi</div>
+    </div>
+
+    <!-- Paylaşım Modal -->
+    <div class="share-modal" id="shareModal">
+        <div class="share-modal-card">
+            <div class="sm-title">Rapor Hazır</div>
+            <div class="sm-sub" id="shareFileName"></div>
+            <div class="sm-btns">
+                <button class="sm-btn primary" onclick="doShare('download')">Dosyayı İndir</button>
+                <button class="sm-btn green" onclick="doShare('whatsapp')">WhatsApp ile Gönder</button>
+                <button class="sm-btn" onclick="doShare('both')">İndir + WhatsApp</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kalite Değerleri Modal -->
+    <div class="kalite-modal" id="kaliteModal">
+        <div class="kalite-modal-card">
+            <div class="kalite-modal-header">
+                <div class="kalite-modal-title" id="kaliteModalTitle">Tank Onayla</div>
+                <button class="kalite-modal-close" onclick="closeKaliteModal()">✕</button>
+            </div>
+            <div class="kalite-modal-body">
+                <!-- Adım 1: Ürün Seçimi -->
+                <div class="kalite-step active" id="kaliteStep1">
+                    <div style="font-size:13px; color:#718096; margin-bottom:14px; font-weight:600;">Hangi ürüne ait?</div>
+                    <div id="kaliteUrunList"></div>
+                </div>
+                
+                <!-- Adım 2: Kalite Değerleri -->
+                <div class="kalite-step" id="kaliteStep2">
+                    <div style="font-size:13px; color:#718096; margin-bottom:14px; font-weight:600;">
+                        <span id="kaliteSelectedUrun"></span> — Kalite Değerleri
+                    </div>
+                    <div class="kalite-grid">
+                        <div class="kalite-group">
+                            <div class="kalite-label">Gerçek Brix (°Bx)</div>
+                            <input type="number" class="kalite-input" id="kBrix" placeholder="0" step="0.1">
+                        </div>
+                        <div class="kalite-group">
+                            <div class="kalite-label">Gerçek Asitlik (%)</div>
+                            <input type="number" class="kalite-input" id="kAsitlik" placeholder="0" step="0.01">
+                        </div>
+                        <div class="kalite-group">
+                            <div class="kalite-label">pH</div>
+                            <input type="number" class="kalite-input" id="kPH" placeholder="0" step="0.01">
+                        </div>
+                        <div class="kalite-group">
+                            <div class="kalite-label">Bulanıklık (NTU)</div>
+                            <input type="number" class="kalite-input" id="kBulaniklik" placeholder="0" step="0.1">
+                        </div>
+                        <div class="kalite-group">
+                            <div class="kalite-label">Renk (440nm %T)</div>
+                            <input type="number" class="kalite-input" id="kRenk" placeholder="0" step="0.1">
+                        </div>
+                        <div class="kalite-group">
+                            <div class="kalite-label">HUE (520/430nm)</div>
+                            <input type="number" class="kalite-input" id="kHUE" placeholder="0" step="0.01">
+                        </div>
+                        <div class="kalite-group">
+                            <div class="kalite-label">Tat</div>
+                            <select class="kalite-input" id="kTat" style="appearance:auto; cursor:pointer;">
+                                <option value="">Seçin</option>
+                                <option value="+">+ (Uygun)</option>
+                                <option value="-">- (Uygun Değil)</option>
+                            </select>
+                        </div>
+                        <div class="kalite-group">
+                            <div class="kalite-label">Koku</div>
+                            <select class="kalite-input" id="kKoku" style="appearance:auto; cursor:pointer;">
+                                <option value="">Seçin</option>
+                                <option value="+">+ (Uygun)</option>
+                                <option value="-">- (Uygun Değil)</option>
+                            </select>
+                        </div>
+                        <div class="kalite-group full">
+                            <div class="kalite-label">Tank Sayısı</div>
+                            <input type="number" class="kalite-input" id="kTankSayisi" placeholder="0" step="1">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveKaliteData()" style="margin-top:20px;">
+                        ✅ Onayla ve Kaydet
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="decorative-shapes">
         <div class="shape shape-1"></div>
         <div class="shape shape-2"></div>
@@ -1329,6 +2141,39 @@
 
         <!-- Ana Ekran -->
         <div id="mainScreen">
+            <!-- Aktif Vardiya Banner -->
+            <div id="vardiyaBanner" class="vardiya-banner hidden">
+                <div class="vb-info">
+                    <div class="vb-title" id="vbTitle">Vardiya Aktif</div>
+                    <div class="vb-detail" id="vbDetail"></div>
+                </div>
+                <div class="vb-badge" id="vbBadge">1. Vardiya</div>
+            </div>
+            
+            <!-- Vardiya Başlat / Bitir Butonu -->
+            <div style="display:flex; gap:8px; margin-bottom:16px;">
+                <button class="vardiya-btn" id="vardiyaBtn" onclick="onVardiyaBtnClick()" style="margin-bottom:0;">
+                    🏭 Vardiya Başlat
+                </button>
+                <button class="vardiya-edit-btn hidden" id="vardiyaEditBtn" onclick="editVardiya()">
+                    ✏️
+                </button>
+            </div>
+            
+            <!-- Ürün Yönetimi (vardiya aktifken görünür) -->
+            <div id="urunSection" class="card hidden">
+                <div class="section-title" style="display:flex; align-items:center; justify-content:space-between;">
+                    <span>📦 Vardiya Ürünleri</span>
+                    <span id="urunCount" style="font-size:11px; color:#718096; font-weight:600; text-transform:none; letter-spacing:0;">0 ürün</span>
+                </div>
+                <div id="urunList"></div>
+                <button class="btn btn-secondary" onclick="openUrunSidebar()" style="margin-top:8px;">
+                    + Yeni Ürün Ekle
+                </button>
+                    🧪 Test Verisi Yükle (Geliştirme)
+                </button>
+            </div>
+            
             <div class="card">
                 <div class="section-title">
                     Tank Seçimi
@@ -1502,6 +2347,154 @@
         </div>
     </div>
 
+    <!-- Vardiya Sidebar -->
+    <div class="sidebar vardiya-sidebar" id="vardiyaSidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">🏭 Vardiya Başlat</div>
+            <button class="btn btn-primary" onclick="closeVardiyaSidebar()" style="padding: 12px 20px; font-size: 13px; margin: 0;">
+                ✕ Kapat
+            </button>
+        </div>
+        <div class="sidebar-content">
+            <!-- Adım 1: Personel Seçimi -->
+            <div class="v-step">
+                <div class="v-step-header">
+                    <div class="v-step-num">1</div>
+                    <div class="v-step-title">Personel Seçimi</div>
+                </div>
+                <p style="font-size:11px; color:#718096; margin-bottom:14px; line-height:1.5;">İsimleri ekleyin, ardından bu vardiyada çalışanları <strong>tıklayarak seçin</strong>. Seçili isimler siyah olarak görünür.</p>
+                
+                <div class="v-category">
+                    <div class="v-cat-label">Ürün Çeken Kişi(ler)</div>
+                    <div class="v-chips" id="chips-ceken"></div>
+                    <div class="v-add-row">
+                        <input type="text" class="v-add-input" id="input-ceken" placeholder="İsim ekle...">
+                        <button class="v-add-btn" onclick="addPersonel('ceken')">+ Ekle</button>
+                    </div>
+                </div>
+                
+                <div class="v-category">
+                    <div class="v-cat-label">Ürün Hazırlayan Kişi(ler)</div>
+                    <div class="v-chips" id="chips-hazirlayan"></div>
+                    <div class="v-add-row">
+                        <input type="text" class="v-add-input" id="input-hazirlayan" placeholder="İsim ekle...">
+                        <button class="v-add-btn" onclick="addPersonel('hazirlayan')">+ Ekle</button>
+                    </div>
+                </div>
+                
+                <div class="v-category">
+                    <div class="v-cat-label">Onaylayan Kalite Personeli</div>
+                    <div class="v-chips" id="chips-kalite"></div>
+                    <div class="v-add-row">
+                        <input type="text" class="v-add-input" id="input-kalite" placeholder="İsim ekle...">
+                        <button class="v-add-btn" onclick="addPersonel('kalite')">+ Ekle</button>
+                    </div>
+                </div>
+                
+                <div class="v-category">
+                    <div class="v-cat-label">Ürün Hazırlama Sorumlusu</div>
+                    <div class="v-chips" id="chips-sorumlu"></div>
+                    <div class="v-add-row">
+                        <input type="text" class="v-add-input" id="input-sorumlu" placeholder="İsim ekle...">
+                        <button class="v-add-btn" onclick="addPersonel('sorumlu')">+ Ekle</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Adım 2: Vardiya Seçimi -->
+            <div class="v-step">
+                <div class="v-step-header">
+                    <div class="v-step-num">2</div>
+                    <div class="v-step-title">Vardiya Seçimi</div>
+                </div>
+                <div class="v-shift-options" id="shiftOptions">
+                    <button class="v-shift-opt" onclick="selectShift(1, this)">
+                        <div class="shift-num">1</div>
+                        <div class="shift-label">Vardiya</div>
+                    </button>
+                    <button class="v-shift-opt" onclick="selectShift(2, this)">
+                        <div class="shift-num">2</div>
+                        <div class="shift-label">Vardiya</div>
+                    </button>
+                    <button class="v-shift-opt" onclick="selectShift(3, this)">
+                        <div class="shift-num">3</div>
+                        <div class="shift-label">Vardiya</div>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Başlat Butonu -->
+            <button class="btn btn-primary" id="vardiyaStartBtn" onclick="startVardiya()" style="margin-top: 8px;">
+                ✅ Vardiyayı Başlat
+            </button>
+        </div>
+    </div>
+
+    <!-- Ürün Ekleme/Düzenleme Sidebar -->
+    <div class="sidebar recipe-sidebar" id="urunSidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title" id="urunSidebarTitle">📦 Yeni Ürün Ekle</div>
+            <button class="btn btn-primary" onclick="closeUrunSidebar()" style="padding: 12px 20px; font-size: 13px; margin: 0;">
+                ✕ Kapat
+            </button>
+        </div>
+        <div class="sidebar-content" style="max-width:600px; margin:0 auto;">
+            <!-- Reçeteden Oku -->
+            <div style="background:white; border:2px solid #e2e8f0; border-radius:16px; padding:16px; margin-bottom:16px;">
+                <div style="display:flex; gap:8px;">
+                    <button class="btn btn-secondary" onclick="captureRecipe('camera')" style="flex:1; margin:0; padding:12px; font-size:12px;">
+                        Fotoğraf Çek
+                    </button>
+                    <button class="btn btn-secondary" onclick="captureRecipe('gallery')" style="flex:1; margin:0; padding:12px; font-size:12px;">
+                        Dosyadan Yükle
+                    </button>
+                </div>
+                <input type="file" id="recipeCamera" accept="image/*" capture="environment" style="display:none;">
+                <input type="file" id="recipeGallery" accept="image/*" style="display:none;">
+                <!-- Fotoğraf önizleme -->
+                <div id="recipePreview" style="display:none; margin-top:12px;">
+                    <img id="recipePreviewImg" style="width:100%; border-radius:10px; border:2px solid #e2e8f0; max-height:200px; object-fit:cover;">
+                    <div id="ocrProgress" style="display:none; margin-top:10px; height:6px; background:#e2e8f0; border-radius:3px; overflow:hidden;">
+                        <div id="ocrProgressFill" style="height:100%; width:0%; background:linear-gradient(90deg,#000,#4a5568); border-radius:3px; transition:width 0.3s;"></div>
+                    </div>
+                    <div id="ocrStatus" style="margin-top:10px; text-align:center; font-size:13px; color:#718096; font-weight:600;"></div>
+                </div>
+            </div>
+            
+            <div style="background:white; border:2px solid #e2e8f0; border-radius:16px; padding:20px; margin-bottom:20px;">
+                <div class="input-group" style="margin-bottom:0;">
+                    <div class="input-label">Ürün İsmi *</div>
+                    <div class="input-wrapper">
+                        <input type="text" id="urunName" placeholder="Örn: Vişne Suyu Konsantresi">
+                    </div>
+                </div>
+            </div>
+            
+            <div style="background:white; border:2px solid #e2e8f0; border-radius:16px; padding:20px;">
+                <div class="section-title" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+                    <span>Hammaddeler</span>
+                </div>
+                
+                <div class="hm-header">
+                    <div class="hm-h">Hammadde Adı</div>
+                    <div class="hm-h">Miktar (kg)</div>
+                    <div class="hm-h hm-h-parti">Parti No</div>
+                    <div></div>
+                </div>
+                
+                <div id="hammaddeRows"></div>
+                
+                <button class="btn btn-secondary" onclick="addHammaddeRow()" style="margin-top:10px; padding:10px; font-size:11px;">
+                    + Hammadde Satırı Ekle
+                </button>
+            </div>
+            
+            <button class="btn btn-primary" id="urunSaveBtn" onclick="saveUrun()" style="margin-top:16px;">
+                ✅ Ürünü Kaydet
+            </button>
+        </div>
+    </div>
+
     <!-- Reçete Sidebar -->
     <div class="sidebar recipe-sidebar" id="recipeSidebar">
         <div class="sidebar-header">
@@ -1619,49 +2612,290 @@
             isFirebaseReady = false;
         }
         
-        // ==================== KULLANICI GİRİŞİ ====================
+        // ==================== LİSANS SİSTEMİ ====================
         
-        // Login işle
-        function handleLogin() {
-            const username = document.getElementById('loginUsername').value.trim();
-            const password = document.getElementById('loginPassword').value;
-            const displayName = document.getElementById('loginDisplayName').value.trim();
+        const LICENSE_SECRET = 'BrixMaster2024!';
+        
+        // HTML escape helper
+        function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+        
+        async function _sha256hex(str) {
+            const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+        }
+        
+        async function _hmacSign(data, secret) {
+            const enc = new TextEncoder();
+            const key = await crypto.subtle.importKey('raw', enc.encode(secret),
+                {name:'HMAC',hash:'SHA-256'}, false, ['sign']);
+            const sig = await crypto.subtle.sign('HMAC', key, enc.encode(data));
+            return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2,'0')).join('');
+        }
+        
+        function _hexToStr(hex) {
+            const bytes = [];
+            for (let i = 0; i < hex.length; i += 2) bytes.push(parseInt(hex.substr(i,2),16));
+            return new TextDecoder().decode(new Uint8Array(bytes));
+        }
+        
+        // Lisans anahtarını doğrula (kullanıcı adı + şifre eşleşmeli)
+        async function _validateLicenseKey(rawKey, username, password) {
+            try {
+                let clean = rawKey.replace(/^BRIX[-]?/i,'').replace(/[-\s\n\r]/g,'').toLowerCase();
+                if (clean.length < 68) throw new Error('Anahtar çok kısa');
+                
+                const sig = clean.slice(-64);
+                const sep = clean.slice(-66,-64);
+                const dataHex = clean.slice(0,-66);
+                if (sep !== 'ff') throw new Error('Geçersiz format');
+                
+                const dataStr = _hexToStr(dataHex);
+                const expectedSig = await _hmacSign(dataStr, LICENSE_SECRET);
+                if (sig !== expectedSig) throw new Error('Geçersiz lisans anahtarı');
+                
+                const data = JSON.parse(dataStr);
+                
+                // Kullanıcı adı kontrolü
+                if (data.u !== username.toLowerCase()) throw new Error('Bu lisans "' + data.u + '" hesabına ait, "' + username + '" için kullanılamaz');
+                
+                // Şifre hash kontrolü
+                const passHash = (await _sha256hex(password)).substring(0,16);
+                if (data.ph !== passHash) throw new Error('Lisans bu şifreyle eşleşmiyor');
+                
+                return { valid: true, data };
+            } catch (e) {
+                return { valid: false, error: e.message || 'Geçersiz lisans' };
+            }
+        }
+        
+        // Kayıtlı lisans kontrolü (hesap adına bağlı, şifreden bağımsız kalıcı)
+        // Hesap adı için kayıtlı lisans var mı? (şifreden bağımsız)
+        function _licenseExistsForUser(username) {
+            try {
+                const stored = JSON.parse(localStorage.getItem('brix_validated_licenses') || '{}');
+                return stored[username.toLowerCase()] ? true : false;
+            } catch { return false; }
+        }
+        
+        // Kayıtlı lisansın şifresi doğru mu?
+        async function _isStoredPasswordCorrect(username, password) {
+            try {
+                const stored = JSON.parse(localStorage.getItem('brix_validated_licenses') || '{}');
+                const entry = stored[username.toLowerCase()];
+                if (!entry) return false;
+                const passHash = (await _sha256hex(password)).substring(0, 16);
+                return entry.ph === passHash;
+            } catch { return false; }
+        }
+        
+        // Firebase'den lisans durumunu kontrol et (iptal edilmiş mi?)
+        // users/{username} yolunu kullanıyor — tanklar/geçmiş ile aynı yol, izinler çalışıyor
+        function _checkFirebaseLicenseStatus(username) {
+            return new Promise((resolve) => {
+                if (!isFirebaseReady) { resolve('active'); return; }
+                const ref = database.ref('users/' + username.toLowerCase() + '/licenseRevoked');
+                ref.once('value', (snap) => {
+                    if (snap.exists() && snap.val() === true) {
+                        resolve('revoked');
+                    } else {
+                        resolve('active');
+                    }
+                }, () => {
+                    resolve('active'); // Firebase erişim hatası, offline mod
+                });
+            });
+        }
+        
+        // Lisans iptal edilmişse local kaydı temizle
+        function _clearLocalLicense(username) {
+            try {
+                const stored = JSON.parse(localStorage.getItem('brix_validated_licenses') || '{}');
+                delete stored[username.toLowerCase()];
+                localStorage.setItem('brix_validated_licenses', JSON.stringify(stored));
+            } catch {}
+        }
+        
+        // Lisansı kalıcı olarak kaydet (hesap adı + şifre hash)
+        async function _storeLicense(username, password, licenseKey) {
+            try {
+                const stored = JSON.parse(localStorage.getItem('brix_validated_licenses') || '{}');
+                const passHash = (await _sha256hex(password)).substring(0, 16);
+                stored[username.toLowerCase()] = { key: licenseKey, ph: passHash, validatedAt: new Date().toISOString() };
+                localStorage.setItem('brix_validated_licenses', JSON.stringify(stored));
+            } catch {}
+        }
+        
+        // Login hata mesajı göster
+        function _showLoginError(msg) {
             const errorDiv = document.getElementById('loginError');
+            errorDiv.textContent = msg;
+            errorDiv.style.display = 'block';
+        }
+        
+        function _hideLoginError() {
+            document.getElementById('loginError').style.display = 'none';
+        }
+        
+        // Lisans bölümünü göster (login ekranında)
+        function showLicenseSection(username) {
+            document.getElementById('licenseSection').style.display = 'block';
+            document.getElementById('licenseUserLabel').textContent = '"' + username + '" hesabı için lisans anahtarı gerekli';
+            document.getElementById('licenseKeyInput').value = '';
+            document.getElementById('licenseKeyInput').focus();
+        }
+        
+        // Lisans bölümünü gizle (geri butonu)
+        function hideLicenseSection() {
+            document.getElementById('licenseSection').style.display = 'none';
+            _hideLoginError();
+        }
+        
+        // Yapıştır butonu
+        async function pasteAndValidate() {
+            try {
+                const text = await navigator.clipboard.readText();
+                document.getElementById('licenseKeyInput').value = text;
+            } catch {
+                _showLoginError('📋 Panoya erişim izni gerekli. Lütfen anahtarı manuel yapıştırın.');
+            }
+        }
+        
+        // Lisans doğrula ve giriş yap (lisans bölümündeki buton)
+        async function validateAndLogin() {
+            const keyInput = document.getElementById('licenseKeyInput').value.trim();
             
-            if (!username || !password || !displayName) {
-                errorDiv.textContent = 'Lütfen tüm alanları doldurun!';
-                errorDiv.style.display = 'block';
-                setTimeout(() => { errorDiv.style.display = 'none'; }, 3000);
+            if (!keyInput) {
+                _showLoginError('⚠️ Lütfen lisans anahtarınızı girin');
                 return;
             }
             
-            // Kullanıcı bilgilerini kaydet
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const displayName = document.getElementById('loginDisplayName').value.trim();
+            
+            if (!username || !password || !displayName) {
+                _showLoginError('Lütfen önce tüm giriş alanlarını doldurun!');
+                return;
+            }
+            
+            const result = await _validateLicenseKey(keyInput, username, password);
+            
+            if (result.valid) {
+                // Firebase'den iptal kontrolü (yeni anahtar giriliyor olsa bile)
+                const fbStatus = await _checkFirebaseLicenseStatus(username);
+                if (fbStatus === 'revoked') {
+                    _showLoginError('🚫 Bu hesabın lisansı iptal edilmiş. Yöneticinize başvurun.');
+                    return;
+                }
+                
+                // Lisansı kalıcı kaydet (hesap adı + şifre hash)
+                await _storeLicense(username, password, keyInput);
+                
+                // Firebase'de iptal bayrağını kaldır
+                if (isFirebaseReady) {
+                    database.ref('users/' + username.toLowerCase() + '/licenseRevoked').set(false);
+                }
+                
+                _hideLoginError();
+                
+                // Artık normal giriş yap
+                _completeLogin(username, password, displayName);
+            } else {
+                _showLoginError('❌ ' + result.error);
+            }
+        }
+        
+        // Giriş işlemini tamamla (lisans doğrulandıktan sonra)
+        function _completeLogin(username, password, displayName) {
             currentUser = {
                 username: username,
-                password: password, // Basit auth - production'da hash'lenmeli
-                displayName: displayName, // Oturumda görünecek isim
+                password: password,
+                displayName: displayName,
                 loginTime: new Date().toISOString()
             };
             
-            // Session'ı kaydet (localStorage - offline çalışma için)
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            
-            // Login ekranını gizle
             document.getElementById('loginScreen').style.display = 'none';
             
-            // Kullanıcı adını header'da göster
             const userDisplay = document.getElementById('currentUserDisplay');
-            if (userDisplay) {
-                userDisplay.textContent = currentUser.displayName;
+            if (userDisplay) userDisplay.textContent = displayName;
+            
+            loadUserData();
+            _startPeriodicLicenseCheck();
+            requestNotificationPermission();
+            startNotificationListener();
+        }
+        
+        // ==================== PERİYODİK LİSANS KONTROLÜ ====================
+        
+        let _licenseCheckInterval = null;
+        
+        function _startPeriodicLicenseCheck() {
+            // Önceki interval varsa temizle
+            if (_licenseCheckInterval) clearInterval(_licenseCheckInterval);
+            
+            // Her 1 saatte bir kontrol et (3600000 ms)
+            _licenseCheckInterval = setInterval(async function() {
+                if (!currentUser || !isFirebaseReady) return;
+                
+                const status = await _checkFirebaseLicenseStatus(currentUser.username);
+                if (status === 'revoked') {
+                    // Lisans iptal edilmiş — kullanıcıyı çıkar
+                    clearInterval(_licenseCheckInterval);
+                    _licenseCheckInterval = null;
+                    _clearLocalLicense(currentUser.username);
+                    localStorage.removeItem('currentUser');
+                    currentUser = null;
+                    
+                    alert('🚫 Lisansınız iptal edilmiş. Uygulama kapatılıyor.\nLütfen yöneticinize başvurun.');
+                    location.reload();
+                }
+            }, 3600000); // 1 saat = 3.600.000 ms
+        }
+        
+        // ==================== KULLANICI GİRİŞİ ====================
+        
+        // Login işle
+        async function handleLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const displayName = document.getElementById('loginDisplayName').value.trim();
+            _hideLoginError();
+            
+            if (!username || !password || !displayName) {
+                _showLoginError('Lütfen tüm alanları doldurun!');
+                return;
             }
             
-            // Verileri yükle
-            loadUserData();
+            // 1) Bu hesap adı için lisans var mı?
+            if (_licenseExistsForUser(username)) {
+                // 2) Şifre doğru mu?
+                if (await _isStoredPasswordCorrect(username, password)) {
+                    // 3) Firebase'den iptal kontrolü
+                    const fbStatus = await _checkFirebaseLicenseStatus(username);
+                    if (fbStatus === 'revoked') {
+                        _clearLocalLicense(username);
+                        _showLoginError('🚫 Bu hesabın lisansı iptal edilmiş. Yöneticinize başvurun.');
+                        return;
+                    }
+                    // Her şey tamam, direkt giriş
+                    hideLicenseSection();
+                    _completeLogin(username, password, displayName);
+                } else {
+                    // Lisans var ama şifre yanlış
+                    _showLoginError('❌ Bu hesap için şifre yanlış girildi.');
+                }
+            } else {
+                // Lisans doğrulanmamış: hata göster ve lisans bölümünü aç
+                _showLoginError('🔒 Bu hesap için lisans doğrulanmamış. Lütfen aşağıdan lisans anahtarınızı girin.');
+                showLicenseSection(username);
+            }
         }
         
         // Çıkış yap
         function logout() {
             if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
+                if (_licenseCheckInterval) clearInterval(_licenseCheckInterval);
                 localStorage.removeItem('currentUser');
                 currentUser = null;
                 location.reload();
@@ -1669,19 +2903,40 @@
         }
         
         // Session kontrolü
-        function checkSession() {
+        async function checkSession() {
             const savedUser = localStorage.getItem('currentUser');
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
-                document.getElementById('loginScreen').style.display = 'none';
                 
-                // Kullanıcı adını header'da göster (displayName varsa onu, yoksa username)
-                const userDisplay = document.getElementById('currentUserDisplay');
-                if (userDisplay) {
-                    userDisplay.textContent = currentUser.displayName || currentUser.username;
+                // Lisans kontrolü (hesap adı + şifre)
+                if (_licenseExistsForUser(currentUser.username) && await _isStoredPasswordCorrect(currentUser.username, currentUser.password)) {
+                    // Firebase'den iptal kontrolü
+                    const fbStatus = await _checkFirebaseLicenseStatus(currentUser.username);
+                    if (fbStatus === 'revoked') {
+                        _clearLocalLicense(currentUser.username);
+                        localStorage.removeItem('currentUser');
+                        document.getElementById('loginUsername').value = currentUser.username || '';
+                        document.getElementById('loginDisplayName').value = currentUser.displayName || '';
+                        currentUser = null;
+                        return;
+                    }
+                    // Lisans doğrulanmış, direkt giriş
+                    document.getElementById('loginScreen').style.display = 'none';
+                    const userDisplay = document.getElementById('currentUserDisplay');
+                    if (userDisplay) {
+                        userDisplay.textContent = currentUser.displayName || currentUser.username;
+                    }
+                    loadUserData();
+                    _startPeriodicLicenseCheck();
+                    requestNotificationPermission();
+                    startNotificationListener();
+                } else {
+                    // Lisans yok veya şifre uyuşmuyor
+                    document.getElementById('loginUsername').value = currentUser.username || '';
+                    document.getElementById('loginDisplayName').value = currentUser.displayName || '';
+                    localStorage.removeItem('currentUser');
+                    currentUser = null;
                 }
-                
-                loadUserData();
             }
         }
         
@@ -1718,6 +2973,11 @@
                 loadTanks();
                 loadHistory();
             }
+            
+            // Vardiya verilerini yükle
+            loadPersonelData();
+            loadActiveVardiya();
+            loadUrunler();
         }
         
         // ==================== GLOBAL DEĞİŞKENLER ====================
@@ -1845,23 +3105,31 @@
                     id: Date.now(),
                     date: new Date().toLocaleString('tr-TR'),
                     tank: selectedTank.name,
-                    user: currentUser ? currentUser.displayName : 'Bilinmeyen', // Oturumda kullanılan isim
+                    user: currentUser ? currentUser.displayName : 'Bilinmeyen',
                     ...data
                 };
                 
-                history.unshift(historyItem); // Başa ekle
-                history = history.slice(0, 30); // Son 30'u tut
+                history.unshift(historyItem);
+                history = history.slice(0, 30);
                 
-                // localStorage'a kaydet (offline çalışma için)
                 localStorage.setItem('calculationHistory', JSON.stringify(history));
                 
-                // Firebase'e de kaydet (senkronizasyon için)
                 if (isFirebaseReady && currentUser) {
                     database.ref(`users/${currentUser.username}/history`).set(history);
+                    
+                    // Bildirim gönder (diğer cihazlara)
+                    database.ref(`users/${currentUser.username}/lastCalc`).set({
+                        id: historyItem.id,
+                        tank: historyItem.tank,
+                        user: historyItem.user,
+                        newHeight: data.newHeight ? data.newHeight.toFixed(1) : '',
+                        acidToAdd: data.acidToAdd ? data.acidToAdd.toFixed(2) : '',
+                        waterToAdd: data.waterToAdd ? data.waterToAdd.toFixed(2) : '',
+                        ts: Date.now(),
+                        deviceId: _deviceId
+                    });
                 }
-            } catch (error) {
-                // Hata sessizce yoksayılır
-            }
+            } catch (error) {}
         }
 
         // Geçmişi yükle
@@ -1947,6 +3215,11 @@
                                 </div>
                                 ${malikAsit ? '<div class="change-item"><span class="malik-badge">✓ Malik Asit</span></div>' : ''}
                             </div>
+                            ${activeVardiya ? (
+                                item.approved 
+                                ? '<button class="tank-onay-btn approved">✅ Tank Onaylandı — ' + esc(item.approvedUrun || '') + '</button>'
+                                : '<button class="tank-onay-btn" onclick="openKaliteModal(' + index + ')">🔬 Tank Onayla</button>'
+                            ) : ''}
                         </div>
                     `;
                 }).join('');
@@ -1978,6 +3251,1214 @@
             }
         }
 
+        // ==================== BİLDİRİM SİSTEMİ ====================
+        
+        // Cihaz kimliği (kendi hesaplamalarımı ayırt etmek için)
+        const _deviceId = localStorage.getItem('brix_device_id') || (() => {
+            const id = Date.now().toString(36) + Math.random().toString(36).substr(2, 6);
+            localStorage.setItem('brix_device_id', id);
+            return id;
+        })();
+        
+        let _lastSeenCalcId = 0;
+        let _notifListenerActive = false;
+        
+        // Bildirim izni iste
+        function requestNotificationPermission() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        }
+        
+        // Firebase'den bildirim dinle
+        function startNotificationListener() {
+            if (!isFirebaseReady || !currentUser || _notifListenerActive) return;
+            _notifListenerActive = true;
+            
+            const ref = database.ref(`users/${currentUser.username}/lastCalc`);
+            ref.on('value', (snap) => {
+                if (!snap.exists()) return;
+                const data = snap.val();
+                
+                // Kendi cihazımdan geldiyse atla
+                if (data.deviceId === _deviceId) return;
+                
+                // Aynı bildirimi tekrar gösterme
+                if (data.id <= _lastSeenCalcId) return;
+                _lastSeenCalcId = data.id;
+                
+                // İlk yüklemede bildirim gösterme (sayfa açılışı)
+                if (!_notifReady) return;
+                
+                showCalcNotification(data);
+            });
+            
+            // İlk yüklemeden sonra bildirimleri aktif et
+            setTimeout(() => { _notifReady = true; }, 3000);
+        }
+        
+        let _notifReady = false;
+        
+        // Uygulama içi banner göster
+        function showCalcNotification(data) {
+            const banner = document.getElementById('notifBanner');
+            document.getElementById('notifTitle').textContent = (data.user || 'Biri') + ' hesaplama yaptı';
+            
+            let detail = data.tank || '';
+            if (data.newHeight) detail += ' → ' + data.newHeight + ' cm';
+            if (data.acidToAdd && parseFloat(data.acidToAdd) > 0) detail += ' | Asit: ' + data.acidToAdd + ' kg';
+            if (data.waterToAdd && parseFloat(data.waterToAdd) > 0) detail += ' | Su: ' + data.waterToAdd + ' kg';
+            
+            document.getElementById('notifText').textContent = detail;
+            document.getElementById('notifTime').textContent = 'şimdi';
+            
+            banner.classList.add('show');
+            setTimeout(() => banner.classList.remove('show'), 6000);
+            
+            // Tarayıcı bildirimi (arka planda bile çalışır)
+            if ('Notification' in window && Notification.permission === 'granted') {
+                try {
+                    const n = new Notification('Brix - ' + (data.user || 'Hesaplama'), {
+                        body: data.tank + (data.newHeight ? ' → ' + data.newHeight + ' cm' : ''),
+                        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%231a1a1a" width="100" height="100" rx="20"/><text x="50" y="68" font-size="50" text-anchor="middle" fill="white">B</text></svg>',
+                        tag: 'brix-calc-' + data.id,
+                        silent: false
+                    });
+                    setTimeout(() => n.close(), 8000);
+                } catch {}
+            }
+        }
+        
+        // ==================== VARDİYA SİSTEMİ ====================
+        
+        let activeVardiya = null;
+        let selectedShiftNum = null;
+        
+        // Personel kategorileri: kayıtlı isim havuzu (tüm vardiyalar için)
+        let personelListeleri = {
+            ceken: [],
+            hazirlayan: [],
+            kalite: [],
+            sorumlu: []
+        };
+        
+        // Bu vardiya için seçilenler
+        let selectedPersonel = {
+            ceken: [],
+            hazirlayan: [],
+            kalite: [],
+            sorumlu: []
+        };
+        
+        // Personel verilerini yükle
+        function loadPersonelData() {
+            const saved = localStorage.getItem('brix_personel');
+            if (saved) {
+                try { personelListeleri = JSON.parse(saved); } catch {}
+            }
+            if (isFirebaseReady && currentUser) {
+                database.ref(`users/${currentUser.username}/personel`).on('value', (snap) => {
+                    if (snap.exists()) {
+                        personelListeleri = snap.val();
+                        localStorage.setItem('brix_personel', JSON.stringify(personelListeleri));
+                    }
+                });
+            }
+        }
+        
+        function savePersonelData() {
+            localStorage.setItem('brix_personel', JSON.stringify(personelListeleri));
+            if (isFirebaseReady && currentUser) {
+                database.ref(`users/${currentUser.username}/personel`).set(personelListeleri);
+            }
+        }
+        
+        // Aktif vardiya yükle
+        function loadActiveVardiya() {
+            const saved = localStorage.getItem('brix_active_vardiya');
+            if (saved) {
+                try { activeVardiya = JSON.parse(saved); } catch { activeVardiya = null; }
+            }
+            if (isFirebaseReady && currentUser) {
+                database.ref(`users/${currentUser.username}/activeVardiya`).on('value', (snap) => {
+                    if (snap.exists()) {
+                        activeVardiya = snap.val();
+                        localStorage.setItem('brix_active_vardiya', JSON.stringify(activeVardiya));
+                    } else {
+                        activeVardiya = null;
+                        localStorage.removeItem('brix_active_vardiya');
+                    }
+                    updateVardiyaUI();
+                });
+            }
+            updateVardiyaUI();
+        }
+        
+        function saveActiveVardiya() {
+            if (activeVardiya) {
+                localStorage.setItem('brix_active_vardiya', JSON.stringify(activeVardiya));
+            } else {
+                localStorage.removeItem('brix_active_vardiya');
+            }
+            if (isFirebaseReady && currentUser) {
+                database.ref(`users/${currentUser.username}/activeVardiya`).set(activeVardiya);
+            }
+        }
+        
+        // UI güncelle
+        function updateVardiyaUI() {
+            const btn = document.getElementById('vardiyaBtn');
+            const editBtn = document.getElementById('vardiyaEditBtn');
+            const banner = document.getElementById('vardiyaBanner');
+            if (!btn || !banner) return;
+            
+            if (activeVardiya) {
+                btn.innerHTML = '🔴 Vardiyayı Bitir';
+                btn.classList.add('active-shift');
+                editBtn.classList.remove('hidden');
+                
+                banner.classList.remove('hidden');
+                document.getElementById('urunSection').classList.remove('hidden');
+                document.getElementById('vbTitle').textContent = activeVardiya.shiftNum + '. Vardiya Aktif';
+                
+                const startDate = new Date(activeVardiya.startTime);
+                const people = [];
+                if (activeVardiya.personel.sorumlu && activeVardiya.personel.sorumlu.length)
+                    people.push('Sorumlu: ' + activeVardiya.personel.sorumlu.join(', '));
+                
+                document.getElementById('vbDetail').textContent = 
+                    startDate.toLocaleDateString('tr-TR') + ' ' + 
+                    startDate.toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}) +
+                    (people.length ? ' — ' + people[0] : '');
+                
+                document.getElementById('vbBadge').textContent = activeVardiya.shiftNum + '. Vardiya';
+            } else {
+                btn.innerHTML = '🏭 Vardiya Başlat';
+                btn.classList.remove('active-shift');
+                editBtn.classList.add('hidden');
+                banner.classList.add('hidden');
+                document.getElementById('urunSection').classList.add('hidden');
+            }
+        }
+        
+        // Vardiya butonuna tıklanınca
+        let _pendingBlob = null;
+        let _pendingFileName = '';
+        
+        async function onVardiyaBtnClick() {
+            if (activeVardiya) {
+                if (confirm('Vardiyayı bitirmek istediğinize emin misiniz?\nRapor oluşturulacak ve vardiya verileri silinecek.')) {
+                    const blob = await generateVardiyaExcel();
+                    if (!blob) return;
+                    
+                    const vNo = activeVardiya.shiftNum;
+                    const dateStr = new Date(activeVardiya.startTime).toISOString().slice(0,10);
+                    _pendingFileName = 'Goknur_Vardiya' + vNo + '_' + dateStr + '.xlsx';
+                    _pendingBlob = blob;
+                    
+                    // Modal göster
+                    document.getElementById('shareFileName').textContent = _pendingFileName;
+                    document.getElementById('shareModal').classList.add('active');
+                }
+            } else {
+                selectedPersonel = { ceken: [], hazirlayan: [], kalite: [], sorumlu: [] };
+                selectedShiftNum = null;
+                openVardiyaSidebar(false);
+            }
+        }
+        
+        async function doShare(mode) {
+            document.getElementById('shareModal').classList.remove('active');
+            
+            if (!_pendingBlob) return;
+            
+            if (mode === 'download' || mode === 'both') {
+                const url = URL.createObjectURL(_pendingBlob);
+                const a = document.createElement('a');
+                a.href = url; a.download = _pendingFileName; a.click();
+                URL.revokeObjectURL(url);
+            }
+            
+            if (mode === 'whatsapp' || mode === 'both') {
+                const file = new File([_pendingBlob], _pendingFileName, { type: _pendingBlob.type });
+                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({ files: [file], title: _pendingFileName, text: 'Göknur Vardiya Raporu' });
+                    } catch (e) {
+                        if (e.name !== 'AbortError') {
+                            alert('Paylaşım iptal edildi. Dosya indirildi.');
+                            const url = URL.createObjectURL(_pendingBlob);
+                            const a = document.createElement('a');
+                            a.href = url; a.download = _pendingFileName; a.click();
+                            URL.revokeObjectURL(url);
+                        }
+                    }
+                } else {
+                    if (mode === 'whatsapp') {
+                        const url = URL.createObjectURL(_pendingBlob);
+                        const a = document.createElement('a');
+                        a.href = url; a.download = _pendingFileName; a.click();
+                        URL.revokeObjectURL(url);
+                    }
+                    alert('Bu cihaz doğrudan paylaşımı desteklemiyor.\nDosya indirildi, WhatsApp\'tan manuel gönderebilirsiniz.');
+                }
+            }
+            
+            _pendingBlob = null;
+            _pendingFileName = '';
+            clearVardiyaData();
+        }
+        
+        // Vardiya verilerini temizle (ürünler, onaylı tanklar, aktif vardiya)
+        function clearVardiyaData() {
+            // Onaylanan tank geçmişlerini temizle
+            try {
+                let history = JSON.parse(localStorage.getItem('calculationHistory') || '[]');
+                history.forEach(h => {
+                    delete h.approved;
+                    delete h.approvedUrun;
+                    delete h.approvedAt;
+                });
+                localStorage.setItem('calculationHistory', JSON.stringify(history));
+                if (isFirebaseReady && currentUser) {
+                    database.ref(`users/${currentUser.username}/history`).set(history);
+                }
+            } catch {}
+            
+            // Ürünleri sil
+            vardiyaUrunler = [];
+            localStorage.removeItem('brix_vardiya_urunler');
+            if (isFirebaseReady && currentUser) {
+                database.ref(`users/${currentUser.username}/vardiyaUrunler`).set(null);
+            }
+            
+            // Aktif vardiyayı sil
+            activeVardiya = null;
+            localStorage.removeItem('brix_active_vardiya');
+            if (isFirebaseReady && currentUser) {
+                database.ref(`users/${currentUser.username}/activeVardiya`).set(null);
+            }
+            
+            renderUrunList();
+            updateVardiyaUI();
+            loadHistory();
+        }
+        
+        // Aktif vardiyayı düzenle
+        function editVardiya() {
+            if (!activeVardiya) return;
+            // Mevcut seçimleri yükle
+            selectedPersonel = {
+                ceken: [...(activeVardiya.personel.ceken || [])],
+                hazirlayan: [...(activeVardiya.personel.hazirlayan || [])],
+                kalite: [...(activeVardiya.personel.kalite || [])],
+                sorumlu: [...(activeVardiya.personel.sorumlu || [])]
+            };
+            selectedShiftNum = activeVardiya.shiftNum;
+            openVardiyaSidebar(true);
+        }
+        
+        // Vardiya sidebar aç
+        function openVardiyaSidebar(isEdit) {
+            const sidebar = document.getElementById('vardiyaSidebar');
+            const overlay = document.querySelector('.overlay');
+            
+            // Diğer sidebar'ları kapat
+            document.querySelector('.sidebar').classList.remove('active');
+            document.getElementById('recipeSidebar').classList.remove('active');
+            document.getElementById('urunSidebar').classList.remove('active');
+            document.querySelector('.menu-btn').classList.remove('active');
+            
+            // Başlık güncelle
+            const title = sidebar.querySelector('.sidebar-title');
+            const startBtn = document.getElementById('vardiyaStartBtn');
+            if (isEdit) {
+                title.textContent = '✏️ Vardiya Düzenle';
+                startBtn.textContent = '💾 Değişiklikleri Kaydet';
+            } else {
+                title.textContent = '🏭 Vardiya Başlat';
+                startBtn.textContent = '✅ Vardiyayı Başlat';
+            }
+            startBtn.dataset.mode = isEdit ? 'edit' : 'new';
+            
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
+            
+            // Chip'leri renderla
+            renderAllChips();
+            
+            // Shift seçimini ayarla
+            document.querySelectorAll('.v-shift-opt').forEach(o => {
+                o.classList.toggle('selected', parseInt(o.querySelector('.shift-num').textContent) === selectedShiftNum);
+            });
+        }
+        
+        function closeVardiyaSidebar() {
+            document.getElementById('vardiyaSidebar').classList.remove('active');
+            document.querySelector('.overlay').classList.remove('active');
+        }
+        
+        // Personel ekle (havuza)
+        function addPersonel(category) {
+            const input = document.getElementById('input-' + category);
+            const name = input.value.trim();
+            if (!name) return;
+            
+            if (!personelListeleri[category]) personelListeleri[category] = [];
+            if (personelListeleri[category].includes(name)) {
+                input.value = '';
+                return;
+            }
+            
+            personelListeleri[category].push(name);
+            // Yeni eklenen otomatik seçili olsun
+            if (!selectedPersonel[category]) selectedPersonel[category] = [];
+            selectedPersonel[category].push(name);
+            
+            savePersonelData();
+            renderChips(category);
+            input.value = '';
+            input.focus();
+        }
+        
+        // Personel havuzdan sil
+        function removePersonel(category, index, event) {
+            event.stopPropagation();
+            const name = personelListeleri[category][index];
+            personelListeleri[category].splice(index, 1);
+            // Seçililerden de çıkar
+            const selIdx = (selectedPersonel[category] || []).indexOf(name);
+            if (selIdx > -1) selectedPersonel[category].splice(selIdx, 1);
+            savePersonelData();
+            renderChips(category);
+        }
+        
+        // Personel seç/kaldır (toggle)
+        function togglePersonel(category, name) {
+            if (!selectedPersonel[category]) selectedPersonel[category] = [];
+            const idx = selectedPersonel[category].indexOf(name);
+            if (idx > -1) {
+                selectedPersonel[category].splice(idx, 1);
+            } else {
+                selectedPersonel[category].push(name);
+            }
+            renderChips(category);
+        }
+        
+        // Chip'leri renderla (seçilebilir)
+        function renderChips(category) {
+            const container = document.getElementById('chips-' + category);
+            if (!container) return;
+            const list = personelListeleri[category] || [];
+            const selected = selectedPersonel[category] || [];
+            
+            if (list.length === 0) {
+                container.innerHTML = '<span style="font-size:12px;color:#a0aec0;font-style:italic;">Henüz kimse eklenmedi</span>';
+                return;
+            }
+            
+            container.innerHTML = list.map((name, i) => {
+                const isSelected = selected.includes(name);
+                return `
+                <div class="v-chip ${isSelected ? 'selected' : ''}" onclick="togglePersonel('${category}', '${name.replace(/'/g, "\\'")}')">
+                    <span>${isSelected ? '✓ ' : ''}${name}</span>
+                    <span class="remove-chip" onclick="removePersonel('${category}', ${i}, event)">✕</span>
+                </div>`;
+            }).join('');
+        }
+        
+        function renderAllChips() {
+            ['ceken', 'hazirlayan', 'kalite', 'sorumlu'].forEach(cat => renderChips(cat));
+        }
+        
+        // Vardiya numarası seç
+        function selectShift(num, el) {
+            selectedShiftNum = num;
+            document.querySelectorAll('.v-shift-opt').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+        
+        // Vardiya başlat veya güncelle
+        function startVardiya() {
+            const btn = document.getElementById('vardiyaStartBtn');
+            const isEdit = btn.dataset.mode === 'edit';
+            
+            // Seçili kimse var mı?
+            const hasSelected = ['ceken', 'hazirlayan', 'kalite', 'sorumlu'].some(
+                cat => (selectedPersonel[cat] || []).length > 0
+            );
+            
+            if (!hasSelected) {
+                alert('Lütfen en az bir kategoride personel seçin!\n(İsimlere tıklayarak seçebilirsiniz)');
+                return;
+            }
+            
+            if (!selectedShiftNum) {
+                alert('Lütfen vardiya numarasını seçin!');
+                return;
+            }
+            
+            if (isEdit) {
+                // Mevcut vardiyayı güncelle
+                activeVardiya.shiftNum = selectedShiftNum;
+                activeVardiya.personel = {
+                    ceken: [...(selectedPersonel.ceken || [])],
+                    hazirlayan: [...(selectedPersonel.hazirlayan || [])],
+                    kalite: [...(selectedPersonel.kalite || [])],
+                    sorumlu: [...(selectedPersonel.sorumlu || [])]
+                };
+            } else {
+                // Yeni vardiya oluştur
+                activeVardiya = {
+                    shiftNum: selectedShiftNum,
+                    startTime: new Date().toISOString(),
+                    personel: {
+                        ceken: [...(selectedPersonel.ceken || [])],
+                        hazirlayan: [...(selectedPersonel.hazirlayan || [])],
+                        kalite: [...(selectedPersonel.kalite || [])],
+                        sorumlu: [...(selectedPersonel.sorumlu || [])]
+                    },
+                    user: currentUser ? currentUser.displayName : 'Bilinmeyen'
+                };
+            }
+            
+            saveActiveVardiya();
+            updateVardiyaUI();
+            closeVardiyaSidebar();
+            
+            // Test verilerini yükle (ürün yoksa)
+        }
+        
+        // Enter tuşu ile personel ekleme
+        document.addEventListener('keypress', function(e) {
+            if (e.key !== 'Enter') return;
+            const target = e.target;
+            if (target.id && target.id.startsWith('input-')) {
+                const category = target.id.replace('input-', '');
+                addPersonel(category);
+            }
+        });
+
+        // ==================== ÜRÜN SİSTEMİ ====================
+        
+        let vardiyaUrunler = [];
+        let editingUrunIndex = -1;
+        
+        // Ürünleri yükle
+        function loadUrunler() {
+            const saved = localStorage.getItem('brix_vardiya_urunler');
+            if (saved) {
+                try { vardiyaUrunler = JSON.parse(saved); } catch { vardiyaUrunler = []; }
+            }
+            if (isFirebaseReady && currentUser) {
+                database.ref(`users/${currentUser.username}/vardiyaUrunler`).on('value', (snap) => {
+                    vardiyaUrunler = snap.exists() ? (snap.val() || []) : [];
+                    localStorage.setItem('brix_vardiya_urunler', JSON.stringify(vardiyaUrunler));
+                    renderUrunList();
+                });
+            }
+            renderUrunList();
+        }
+        
+        // Ürünleri kaydet
+        function saveUrunler() {
+            localStorage.setItem('brix_vardiya_urunler', JSON.stringify(vardiyaUrunler));
+            if (isFirebaseReady && currentUser) {
+                database.ref(`users/${currentUser.username}/vardiyaUrunler`).set(vardiyaUrunler);
+            }
+        }
+        
+        // Ürün listesini render et
+        function renderUrunList() {
+            const container = document.getElementById('urunList');
+            const countEl = document.getElementById('urunCount');
+            if (!container) return;
+            
+            if (countEl) countEl.textContent = vardiyaUrunler.length + ' ürün';
+            
+            if (vardiyaUrunler.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:24px; color:#a0aec0;"><div style="font-size:32px; margin-bottom:8px; opacity:0.3;">📦</div><p style="font-size:13px;">Henüz ürün eklenmedi</p></div>';
+                return;
+            }
+            
+            container.innerHTML = vardiyaUrunler.map((u, i) => {
+                const hmCount = (u.hammaddeler || []).length;
+                const tkCount = (u.tankKayitlari || []).length;
+                const hmChips = (u.hammaddeler || []).slice(0, 4).map(h => 
+                    `<span class="urun-hm-chip">${esc(h.isim || '?')}${h.miktar ? ' · ' + h.miktar + ' kg' : ''}</span>`
+                ).join('');
+                const moreCount = hmCount > 4 ? `<span class="urun-hm-chip">+${hmCount - 4} daha</span>` : '';
+                
+                return `
+                <div class="urun-card">
+                    <div class="urun-card-head">
+                        <div class="urun-name">${esc(u.isim)}</div>
+                        <div class="urun-badge">${hmCount} hammadde${tkCount ? ' · ' + tkCount + ' tank' : ''}</div>
+                    </div>
+                    <div class="urun-hammadde-list">${hmChips}${moreCount}</div>
+                    <div class="urun-actions">
+                        <button class="urun-act-btn" onclick="editUrun(${i})">✏️ Düzenle</button>
+                        <button class="urun-act-btn del" onclick="deleteUrun(${i})">🗑️ Sil</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+        
+        // Ürün sidebar aç
+        function openUrunSidebar(editIdx) {
+            if (!activeVardiya) {
+                alert('Önce bir vardiya başlatın!');
+                return;
+            }
+            
+            const sidebar = document.getElementById('urunSidebar');
+            const overlay = document.querySelector('.overlay');
+            
+            // Diğer sidebar'ları kapat
+            document.querySelector('.sidebar').classList.remove('active');
+            document.getElementById('recipeSidebar').classList.remove('active');
+            document.getElementById('vardiyaSidebar').classList.remove('active');
+            document.querySelector('.menu-btn').classList.remove('active');
+            
+            editingUrunIndex = (editIdx !== undefined) ? editIdx : -1;
+            
+            if (editingUrunIndex >= 0) {
+                // Düzenleme modu
+                const urun = vardiyaUrunler[editingUrunIndex];
+                document.getElementById('urunSidebarTitle').textContent = '✏️ Ürün Düzenle';
+                document.getElementById('urunSaveBtn').textContent = '💾 Değişiklikleri Kaydet';
+                document.getElementById('urunName').value = urun.isim || '';
+                renderHammaddeRows(urun.hammaddeler || []);
+            } else {
+                // Yeni ürün
+                document.getElementById('urunSidebarTitle').textContent = '📦 Yeni Ürün Ekle';
+                document.getElementById('urunSaveBtn').textContent = '✅ Ürünü Kaydet';
+                document.getElementById('urunName').value = '';
+                renderHammaddeRows([
+                    { isim: '', miktar: '', partiNo: '' },
+                    { isim: '', miktar: '', partiNo: '' },
+                    { isim: '', miktar: '', partiNo: '' }
+                ]);
+            }
+            
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
+            
+            // Kamera önizlemeyi sıfırla
+            document.getElementById('recipePreview').style.display = 'none';
+            document.getElementById('ocrProgress').style.display = 'none';
+            document.getElementById('recipeCamera').value = '';
+            document.getElementById('recipeGallery').value = '';
+        }
+        
+        // Ürün sidebar kapat
+        function closeUrunSidebar() {
+            document.getElementById('urunSidebar').classList.remove('active');
+            document.querySelector('.overlay').classList.remove('active');
+        }
+        
+        // Hammadde satırlarını render et
+        function renderHammaddeRows(data) {
+            const container = document.getElementById('hammaddeRows');
+            container.innerHTML = data.map((h, i) => `
+                <div class="hm-row">
+                    <input type="text" class="hm-input hm-isim" placeholder="Hammadde adı" value="${esc(h.isim || '')}">
+                    <input type="number" class="hm-input hm-miktar" placeholder="0" step="0.01" value="${h.miktar || ''}">
+                    <input type="text" class="hm-input hm-parti" placeholder="Parti no" value="${esc(h.partiNo || '')}">
+                    <button class="hm-del" onclick="removeHammaddeRow(this)" title="Sil">🗑️</button>
+                </div>
+            `).join('');
+        }
+        
+        // Hammadde satırı ekle
+        function addHammaddeRow() {
+            const container = document.getElementById('hammaddeRows');
+            const row = document.createElement('div');
+            row.className = 'hm-row';
+            row.innerHTML = `
+                <input type="text" class="hm-input hm-isim" placeholder="Hammadde adı" value="">
+                <input type="number" class="hm-input hm-miktar" placeholder="0" step="0.01" value="">
+                <input type="text" class="hm-input hm-parti" placeholder="Parti no" value="">
+                <button class="hm-del" onclick="removeHammaddeRow(this)" title="Sil">🗑️</button>
+            `;
+            container.appendChild(row);
+        }
+        
+        // Hammadde satırı sil
+        function removeHammaddeRow(btn) {
+            const row = btn.closest('.hm-row');
+            if (document.querySelectorAll('.hm-row').length <= 1) {
+                alert('En az bir hammadde satırı olmalı!');
+                return;
+            }
+            row.remove();
+        }
+        
+        // Hammadde verilerini formdan oku
+        function getHammaddeData() {
+            const rows = document.querySelectorAll('#hammaddeRows .hm-row');
+            const data = [];
+            rows.forEach(row => {
+                const isim = row.querySelector('.hm-isim').value.trim();
+                const miktar = row.querySelector('.hm-miktar').value;
+                const partiNo = row.querySelector('.hm-parti').value.trim();
+                if (isim || miktar || partiNo) {
+                    data.push({ isim, miktar: miktar ? parseFloat(miktar) : '', partiNo });
+                }
+            });
+            return data;
+        }
+        
+        // Ürün kaydet
+        function saveUrun() {
+            const isim = document.getElementById('urunName').value.trim();
+            if (!isim) {
+                alert('Lütfen ürün ismini girin!');
+                return;
+            }
+            
+            const hammaddeler = getHammaddeData();
+            
+            const urunData = {
+                isim: isim,
+                hammaddeler: hammaddeler,
+                createdAt: new Date().toISOString()
+            };
+            
+            if (editingUrunIndex >= 0) {
+                // Güncelleme
+                urunData.createdAt = vardiyaUrunler[editingUrunIndex].createdAt || urunData.createdAt;
+                vardiyaUrunler[editingUrunIndex] = urunData;
+            } else {
+                // Yeni ekleme
+                vardiyaUrunler.push(urunData);
+            }
+            
+            saveUrunler();
+            renderUrunList();
+            closeUrunSidebar();
+        }
+        
+        // Ürün düzenle
+        function editUrun(i) {
+            openUrunSidebar(i);
+        }
+        
+        // Ürün sil
+        function deleteUrun(i) {
+            if (confirm(`"${vardiyaUrunler[i].isim}" ürünü silinsin mi?`)) {
+                vardiyaUrunler.splice(i, 1);
+                saveUrunler();
+                renderUrunList();
+            }
+        }
+        
+        // ==================== KAMERA / OCR SİSTEMİ ====================
+        
+        function captureRecipe(mode) {
+            const input = mode === 'camera' 
+                ? document.getElementById('recipeCamera') 
+                : document.getElementById('recipeGallery');
+            input.value = '';
+            input.click();
+        }
+        
+        // Input handler'ları bağla
+        document.addEventListener('DOMContentLoaded', function() {
+            ['recipeCamera', 'recipeGallery'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('change', handleRecipeImage);
+            });
+        });
+        
+        async function handleRecipeImage(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const preview = document.getElementById('recipePreview');
+            const img = document.getElementById('recipePreviewImg');
+            const status = document.getElementById('ocrStatus');
+            const progressBar = document.getElementById('ocrProgress');
+            const progressFill = document.getElementById('ocrProgressFill');
+            
+            // Önizleme göster
+            const reader = new FileReader();
+            reader.onload = async function(ev) {
+                img.src = ev.target.result;
+                preview.style.display = 'block';
+                status.textContent = 'Reçete okunuyor...';
+                status.style.color = '#4299e1';
+                progressBar.style.display = 'block';
+                progressFill.style.width = '0%';
+                
+                try {
+                    const text = await runTesseractOCR(ev.target.result, (p) => {
+                        progressFill.style.width = Math.round(p * 100) + '%';
+                    });
+                    
+                    progressBar.style.display = 'none';
+                    
+                    if (text && text.trim().length > 5) {
+                        const parsed = parseRecipeText(text);
+                        
+                        // Ürün ismini doldur
+                        if (parsed.urunIsmi) {
+                            document.getElementById('urunName').value = parsed.urunIsmi;
+                        }
+                        
+                        // Hammaddeleri doldur
+                        if (parsed.hammaddeler && parsed.hammaddeler.length > 0) {
+                            renderHammaddeRows(parsed.hammaddeler);
+                        }
+                        
+                        status.textContent = 'Reçete okundu! ' + parsed.hammaddeler.length + ' hammadde bulundu. Bilgileri kontrol edin.';
+                        status.style.color = '#38a169';
+                    } else {
+                        status.textContent = 'Metin okunamadı. Daha net bir fotoğraf deneyin.';
+                        status.style.color = '#e53e3e';
+                    }
+                } catch (err) {
+                    progressBar.style.display = 'none';
+                    status.textContent = 'Okuma hatası: ' + (err.message || 'Bilinmeyen hata');
+                    status.style.color = '#e53e3e';
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // Tesseract.js ile OCR
+        async function runTesseractOCR(imageSrc, onProgress) {
+            const worker = await Tesseract.createWorker('tur+eng', 1, {
+                logger: m => {
+                    if (m.status === 'recognizing text' && onProgress) {
+                        onProgress(m.progress || 0);
+                    }
+                }
+            });
+            
+            const { data } = await worker.recognize(imageSrc);
+            await worker.terminate();
+            return data.text;
+        }
+        
+        // OCR metnini parse et
+        function parseRecipeText(rawText) {
+            const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 1);
+            
+            let urunIsmi = '';
+            const hammaddeler = [];
+            
+            // Yaygın hammadde anahtar kelimeleri
+            const hmKeywords = ['konsantre', 'kons', 'şeker', 'asit', 'sitrik', 'malik', 'askorbik',
+                'aroma', 'su', 'tuz', 'pektin', 'glikoz', 'fruktoz', 'renklendirici',
+                'koruyucu', 'antioksidan', 'vitamin', 'elma', 'vişne', 'nar', 'kayısı',
+                'şeftali', 'portakal', 'limon', 'üzüm', 'hurma', 'çilek', 'mango',
+                'ananas', 'domates', 'havuç', 'keçiboynuzu', 'böğürtlen', 'frambuaz'];
+            
+            // Ürün ismi bulmaya çalış (ilk birkaç satır)
+            for (let i = 0; i < Math.min(lines.length, 5); i++) {
+                const line = lines[i].toLowerCase();
+                if (line.includes('ürün') || line.includes('reçete') || line.includes('tarif') ||
+                    line.includes('suyu') || line.includes('konsantre') || line.includes('nektar')) {
+                    // Etiket kısmını temizle
+                    urunIsmi = lines[i]
+                        .replace(/ürün\s*(tanımı|adı|ismi)?\s*:?\s*/gi, '')
+                        .replace(/reçete\s*(adı|ismi)?\s*:?\s*/gi, '')
+                        .trim();
+                    if (urunIsmi.length > 2) break;
+                }
+            }
+            
+            // Her satırı tara, hammadde + miktar bulmaya çalış
+            for (const line of lines) {
+                // Rakam içeren satırları hammadde olarak değerlendir
+                const numMatch = line.match(/([\d.,]+)\s*(kg|lt|gr|ml|litre|kilo)?\s*$/i) ||
+                                 line.match(/([\d.,]+)\s*$/);
+                
+                if (numMatch) {
+                    const miktar = parseFloat(numMatch[1].replace(',', '.'));
+                    if (isNaN(miktar) || miktar <= 0) continue;
+                    
+                    // Sayıdan önceki kısmı isim olarak al
+                    let isim = line.substring(0, numMatch.index).trim();
+                    
+                    // Parti no benzeri bir şey varsa ayır
+                    let partiNo = '';
+                    const partiMatch = isim.match(/([A-Z]{1,4}[\-\/]?\d{4,}[\-\/]?\d*)/i);
+                    if (partiMatch) {
+                        partiNo = partiMatch[1];
+                        isim = isim.replace(partiMatch[0], '').trim();
+                    }
+                    
+                    // Gereksiz karakterleri temizle
+                    isim = isim.replace(/[|:;\-–—]+$/, '').replace(/^\d+[\.\)]\s*/, '').trim();
+                    
+                    if (isim.length > 1 && miktar > 0) {
+                        hammaddeler.push({ isim, miktar, partiNo });
+                    }
+                } else {
+                    // Rakamsız satır ama bilinen hammadde adı içeriyor olabilir
+                    const lower = line.toLowerCase();
+                    const isHammadde = hmKeywords.some(k => lower.includes(k));
+                    if (isHammadde && line.length > 2 && line.length < 50) {
+                        // Sadece isim, miktar yok
+                        const isim = line.replace(/^\d+[\.\)]\s*/, '').trim();
+                        if (isim.length > 1 && !hammaddeler.find(h => h.isim === isim)) {
+                            hammaddeler.push({ isim, miktar: '', partiNo: '' });
+                        }
+                    }
+                }
+            }
+            
+            // Ürün ismi bulunamadıysa ilk satırı kullan
+            if (!urunIsmi && lines.length > 0) {
+                urunIsmi = lines[0].replace(/^\d+[\.\)]\s*/, '').substring(0, 40);
+            }
+            
+            return { urunIsmi, hammaddeler };
+        }
+        
+        // ==================== TANK ONAY & KALİTE SİSTEMİ ====================
+        
+        let pendingApprovalIndex = -1; // Hangi history item onaylanacak
+        let selectedKaliteUrunIdx = -1; // Hangi ürün seçildi
+        
+        // Kalite modalını aç (ürün seçim adımı)
+        function openKaliteModal(historyIndex) {
+            if (!activeVardiya) {
+                alert('Aktif bir vardiya yok!');
+                return;
+            }
+            if (vardiyaUrunler.length === 0) {
+                alert('Önce en az bir ürün eklemelisiniz!\n(Vardiya Ürünleri → Yeni Ürün Ekle)');
+                return;
+            }
+            
+            pendingApprovalIndex = historyIndex;
+            selectedKaliteUrunIdx = -1;
+            
+            // Ürün listesini render et
+            const listEl = document.getElementById('kaliteUrunList');
+            listEl.innerHTML = vardiyaUrunler.map((u, i) => `
+                <div class="urun-select-item" onclick="selectKaliteUrun(${i})">
+                    <span style="font-size:20px;">📦</span>
+                    <span>${esc(u.isim)}</span>
+                </div>
+            `).join('');
+            
+            // Adım 1'i göster
+            document.getElementById('kaliteStep1').classList.add('active');
+            document.getElementById('kaliteStep2').classList.remove('active');
+            document.getElementById('kaliteModalTitle').textContent = '🔬 Tank Onayla — Ürün Seç';
+            
+            document.getElementById('kaliteModal').classList.add('active');
+        }
+        
+        // Ürün seçildi → kalite değerleri adımına geç
+        function selectKaliteUrun(urunIdx) {
+            selectedKaliteUrunIdx = urunIdx;
+            
+            document.getElementById('kaliteSelectedUrun').textContent = vardiyaUrunler[urunIdx].isim;
+            document.getElementById('kaliteModalTitle').textContent = '🔬 Kalite Değerleri — ' + vardiyaUrunler[urunIdx].isim;
+            
+            // Inputları temizle
+            ['kBrix','kAsitlik','kPH','kBulaniklik','kRenk','kHUE','kTankSayisi'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            document.getElementById('kTat').value = '';
+            document.getElementById('kKoku').value = '';
+            
+            // Adım 2'ye geç
+            document.getElementById('kaliteStep1').classList.remove('active');
+            document.getElementById('kaliteStep2').classList.add('active');
+        }
+        
+        // Kalite verilerini kaydet
+        function saveKaliteData() {
+            const kaliteData = {
+                brix: document.getElementById('kBrix').value || '',
+                asitlik: document.getElementById('kAsitlik').value || '',
+                ph: document.getElementById('kPH').value || '',
+                bulaniklik: document.getElementById('kBulaniklik').value || '',
+                renk: document.getElementById('kRenk').value || '',
+                hue: document.getElementById('kHUE').value || '',
+                tat: document.getElementById('kTat').value || '',
+                koku: document.getElementById('kKoku').value || '',
+                tankSayisi: document.getElementById('kTankSayisi').value || ''
+            };
+            
+            // History item'ı approved olarak işaretle
+            try {
+                let history = JSON.parse(localStorage.getItem('calculationHistory') || '[]');
+                history.sort((a, b) => b.id - a.id);
+                
+                if (pendingApprovalIndex >= 0 && pendingApprovalIndex < history.length) {
+                    history[pendingApprovalIndex].approved = true;
+                    history[pendingApprovalIndex].approvedUrun = vardiyaUrunler[selectedKaliteUrunIdx].isim;
+                    history[pendingApprovalIndex].approvedAt = new Date().toISOString();
+                    
+                    // Ürüne tank bilgisi ve kalite verisi ekle
+                    if (!vardiyaUrunler[selectedKaliteUrunIdx].tankKayitlari) {
+                        vardiyaUrunler[selectedKaliteUrunIdx].tankKayitlari = [];
+                    }
+                    
+                    vardiyaUrunler[selectedKaliteUrunIdx].tankKayitlari.push({
+                        tank: history[pendingApprovalIndex].tank,
+                        tonaj: history[pendingApprovalIndex].totalTonnage,
+                        hedefBrix: history[pendingApprovalIndex].targetBrix,
+                        hedefAsitlik: history[pendingApprovalIndex].targetAcidity,
+                        yeniYukseklik: history[pendingApprovalIndex].newHeight,
+                        kalite: kaliteData,
+                        onayTarihi: new Date().toISOString()
+                    });
+                    
+                    // History kaydet
+                    localStorage.setItem('calculationHistory', JSON.stringify(history));
+                    if (isFirebaseReady && currentUser) {
+                        database.ref(`users/${currentUser.username}/history`).set(history);
+                    }
+                    
+                    // Ürünleri kaydet
+                    saveUrunler();
+                    renderUrunList();
+                }
+            } catch (e) {
+                console.error('Onay kaydedilemedi:', e);
+            }
+            
+            closeKaliteModal();
+            loadHistory(); // Geçmişi yenile (buton durumunu güncelle)
+        }
+        
+        // Modal kapat
+        function closeKaliteModal() {
+            document.getElementById('kaliteModal').classList.remove('active');
+            pendingApprovalIndex = -1;
+            selectedKaliteUrunIdx = -1;
+        }
+
+        // ==================== EXCEL RAPOR ====================
+        // ==================== EXCEL RAPOR ====================
+        async function generateVardiyaExcel() {
+            if (typeof ExcelJS === 'undefined') { alert('Excel kütüphanesi yüklenemedi.'); return; }
+            if (!activeVardiya || vardiyaUrunler.length === 0) { alert('Vardiyada ürün yok.'); return; }
+            
+            const wb = new ExcelJS.Workbook();
+            const tarih = new Date(activeVardiya.startTime);
+            const tarihStr = tarih.toLocaleDateString('tr-TR');
+            const vNo = activeVardiya.shiftNum;
+            const pers = activeVardiya.personel || {};
+            
+            const dk='FF1a1a1a',dg='FF2d3748',mg='FF4a5568',lg='FFe2e8f0',vlg='FFf7fafc',wh='FFFFFFFF';
+            const bC={argb:'FFadb5bd'};
+            const tB={style:'thin',color:bC};
+            const allB={top:tB,bottom:tB,left:tB,right:tB};
+            
+            const kLabels = ['Briks (Bx)','Toplam Asitlik\n(C.A%)','pH','Bulanıklık\n(NTU)','Renk\n(440 nm %T)',
+                'HUE (520 nm\nAbs/430 nm Abs)','Tat (+/-)','Koku(+/-)','Varsa pastörizeden\nalınan litre'];
+            const kKeys = ['brix','asitlik','ph','bulaniklik','renk','hue','tat','koku','pastorize'];
+            const kRowCount = kLabels.length;
+            
+            vardiyaUrunler.forEach((urun, uIdx) => {
+                let sn = urun.isim.replace(/[\\\/\?\*\[\]:]/g,'').substring(0,28) || ('Urun_'+(uIdx+1));
+                let fn = sn, sf = 2;
+                while (wb.worksheets.find(s=>s.name===fn)) { fn=sn.substring(0,25)+'_'+sf; sf++; }
+                
+                const ws = wb.addWorksheet(fn);
+                const hm = urun.hammaddeler || [];
+                const tk = urun.tankKayitlari || [];
+                const tankCount = Math.max(tk.length, 1);
+                
+                // Sütunlar: A=Vardiya, B=TankNo, C=ÜrünÇeken, D=Girdi, E=PartiNo, F=Miktar, G=KaliteParam, H=KaliteDeger, I=HazMiktar, J=OnayKalite
+                ws.columns = [
+                    { width: 4.5 },  // A: Vardiya No (dikey)
+                    { width: 4.5 },  // B: Tank Sıra No (dikey)
+                    { width: 6 },    // C: Ürün Çeken (dikey)
+                    { width: 22 },   // D: Girdilerin Adı
+                    { width: 18 },   // E: Parti No-Geliş Kodu
+                    { width: 12 },   // F: Kullanılan Miktar (kg)
+                    { width: 16 },   // G: Kalite Parametre
+                    { width: 10 },   // H: Kalite Değer
+                    { width: 12 },   // I: Hazırlanan Miktar (Litre)
+                    { width: 10 },   // J: Onaylayan Kalite Personeli
+                ];
+                
+                let R = 1;
+                
+                // ROW 1: BAŞLIK
+                ws.mergeCells(R,1,R,10);
+                const t1 = ws.getCell(R,1);
+                t1.value = 'ÜRÜN HAZIRLAMA KONTROL FORMU';
+                t1.font = {bold:true,size:14,color:{argb:wh}};
+                t1.fill = {type:'pattern',pattern:'solid',fgColor:{argb:dk}};
+                t1.alignment = {horizontal:'center',vertical:'middle'};
+                ws.getRow(R).height = 32;
+                R++;
+                
+                // ROW 2: Ürün + Tarih
+                ws.mergeCells(R,1,R,6);
+                ws.getCell(R,1).value = 'Ürün: ' + urun.isim;
+                ws.getCell(R,1).font = {bold:true,size:11,color:{argb:wh}};
+                ws.getCell(R,1).fill = {type:'pattern',pattern:'solid',fgColor:{argb:dg}};
+                ws.getCell(R,1).alignment = {horizontal:'left',vertical:'middle'};
+                ws.mergeCells(R,7,R,10);
+                ws.getCell(R,7).value = 'Tarih: ' + tarihStr + '  |  Vardiya: ' + vNo;
+                ws.getCell(R,7).font = {size:10,color:{argb:'FFcbd5e0'}};
+                ws.getCell(R,7).fill = {type:'pattern',pattern:'solid',fgColor:{argb:dg}};
+                ws.getCell(R,7).alignment = {horizontal:'right',vertical:'middle'};
+                ws.getRow(R).height = 24;
+                R++;
+                
+                // ROW 3: TABLO BAŞLIKLARI
+                const hdrs = [
+                    {c:1, v:'Vardiya\nNo', rot:90},
+                    {c:2, v:'Tank\nSıra No', rot:90},
+                    {c:3, v:'Ürün Çeken\nKişi', rot:90},
+                    {c:4, v:'Girdilerin Adı', rot:0},
+                    {c:5, v:'Parti No-Geliş Kodu', rot:0},
+                    {c:6, v:'Kullanılan\nMiktar (kg)', rot:0},
+                    {c:7, v:'Hazırlanan Ürünün\nFiziksel-Kimyasal\nÖzellikleri'},
+                    {c:9, v:'Hazırlanan\nMiktar (Litre)', rot:0},
+                    {c:10, v:'Onaylayan Kalite\nPersoneli', rot:0},
+                ];
+                
+                hdrs.forEach(h => {
+                    const cell = ws.getCell(R, h.c);
+                    cell.value = h.v;
+                    cell.font = {bold:true, size:8, color:{argb:dg}};
+                    cell.fill = {type:'pattern',pattern:'solid',fgColor:{argb:lg}};
+                    cell.alignment = {horizontal:'center', vertical:'middle', wrapText:true, textRotation: h.rot||0};
+                    cell.border = allB;
+                });
+                // Kalite başlığı birleştir (G+H)
+                ws.mergeCells(R, 7, R, 8);
+                ws.getRow(R).height = 70;
+                R++;
+                
+                // TANK BLOKLARI (ALT ALTA)
+                for (let ti = 0; ti < tankCount; ti++) {
+                    const t = tk[ti] || {};
+                    const k = t.kalite || {};
+                    const blockStart = R;
+                    const alt = ti % 2 === 1;
+                    
+                    for (let ri = 0; ri < kRowCount; ri++) {
+                        // Sol dikey hücreler border
+                        for (let c = 1; c <= 3; c++) {
+                            const cell = ws.getCell(R, c);
+                            cell.border = allB;
+                            if (alt) cell.fill = {type:'pattern',pattern:'solid',fgColor:{argb:vlg}};
+                        }
+                        
+                        // Hammadde (D, E, F)
+                        if (ri < hm.length) {
+                            ws.getCell(R,4).value = hm[ri].isim || '';
+                            ws.getCell(R,5).value = hm[ri].partiNo || '';
+                            ws.getCell(R,6).value = hm[ri].miktar || '';
+                        }
+                        [4,5,6].forEach(c => {
+                            const cell = ws.getCell(R,c);
+                            cell.font = {size:9, color:{argb:dg}};
+                            cell.border = allB;
+                            if (alt) cell.fill = {type:'pattern',pattern:'solid',fgColor:{argb:vlg}};
+                            if (c===6) cell.alignment = {horizontal:'center',vertical:'middle'};
+                        });
+                        
+                        // Kalite param (G) ve değer (H)
+                        ws.getCell(R,7).value = kLabels[ri];
+                        ws.getCell(R,7).font = {bold:true, size:8, color:{argb:mg}};
+                        ws.getCell(R,7).alignment = {vertical:'middle', wrapText:true};
+                        ws.getCell(R,7).border = allB;
+                        if (alt) ws.getCell(R,7).fill = {type:'pattern',pattern:'solid',fgColor:{argb:vlg}};
+                        
+                        const kVal = kKeys[ri] === 'pastorize' ? '' : (k[kKeys[ri]] || '');
+                        ws.getCell(R,8).value = kVal;
+                        ws.getCell(R,8).font = {bold:true, size:10, color:{argb:dk}};
+                        ws.getCell(R,8).alignment = {horizontal:'center',vertical:'middle'};
+                        ws.getCell(R,8).border = allB;
+                        if (alt) ws.getCell(R,8).fill = {type:'pattern',pattern:'solid',fgColor:{argb:vlg}};
+                        
+                        // Sağ hücreler border
+                        [9,10].forEach(c => {
+                            ws.getCell(R,c).border = allB;
+                            if (alt) ws.getCell(R,c).fill = {type:'pattern',pattern:'solid',fgColor:{argb:vlg}};
+                        });
+                        
+                        ws.getRow(R).height = 18;
+                        R++;
+                    }
+                    
+                    // Dikey merge'ler
+                    const bEnd = blockStart + kRowCount - 1;
+                    
+                    // A: Vardiya No (dikey)
+                    ws.mergeCells(blockStart,1,bEnd,1);
+                    ws.getCell(blockStart,1).value = vNo;
+                    ws.getCell(blockStart,1).font = {bold:true,size:12,color:{argb:dk}};
+                    ws.getCell(blockStart,1).alignment = {horizontal:'center',vertical:'middle',textRotation:90};
+                    
+                    // B: Tank Sıra No (dikey)
+                    ws.mergeCells(blockStart,2,bEnd,2);
+                    ws.getCell(blockStart,2).value = (ti+1);
+                    ws.getCell(blockStart,2).font = {bold:true,size:11,color:{argb:dk}};
+                    ws.getCell(blockStart,2).alignment = {horizontal:'center',vertical:'middle',textRotation:90};
+                    
+                    // C: Ürün Çeken Kişi (dikey)
+                    ws.mergeCells(blockStart,3,bEnd,3);
+                    ws.getCell(blockStart,3).value = (pers.ceken||[]).join('\n') || '-';
+                    ws.getCell(blockStart,3).font = {size:8,color:{argb:dg}};
+                    ws.getCell(blockStart,3).alignment = {horizontal:'center',vertical:'middle',textRotation:90,wrapText:true};
+                    
+                    // I: Hazırlanan Miktar - YATAY (tonaj)
+                    ws.mergeCells(blockStart,9,bEnd,9);
+                    ws.getCell(blockStart,9).value = t.tonaj ? parseFloat(t.tonaj).toFixed(0) : '';
+                    ws.getCell(blockStart,9).font = {bold:true,size:11,color:{argb:dk}};
+                    ws.getCell(blockStart,9).alignment = {horizontal:'center',vertical:'middle'};
+                    
+                    // J: Onaylayan Kalite - isim DİKEY
+                    ws.mergeCells(blockStart,10,bEnd,10);
+                    ws.getCell(blockStart,10).value = (pers.kalite||[])[0] || '';
+                    ws.getCell(blockStart,10).font = {size:8,color:{argb:dg}};
+                    ws.getCell(blockStart,10).alignment = {horizontal:'center',vertical:'middle',textRotation:90,wrapText:true};
+                }
+                
+                // ALT: Personel
+                R++;
+                ws.mergeCells(R,1,R,3);
+                ws.getCell(R,1).value = 'Ürün Haz. Sorumlusu:';
+                ws.getCell(R,1).font = {bold:true,size:9,color:{argb:mg}};
+                ws.mergeCells(R,4,R,5);
+                ws.getCell(R,4).value = (pers.sorumlu||[]).join(', ') || '-';
+                ws.getCell(R,4).font = {size:10,color:{argb:dk}};
+                ws.getCell(R,4).border = {bottom:{style:'dotted',color:bC}};
+                ws.mergeCells(R,6,R,8);
+                ws.getCell(R,6).value = 'Kalite Sorumlusu:';
+                ws.getCell(R,6).font = {bold:true,size:9,color:{argb:mg}};
+                ws.mergeCells(R,9,R,10);
+                ws.getCell(R,9).value = (pers.kalite||[]).join(', ') || '-';
+                ws.getCell(R,9).font = {size:10,color:{argb:dk}};
+                ws.getCell(R,9).border = {bottom:{style:'dotted',color:bC}};
+                ws.getRow(R).height = 22;
+                R++;
+                
+                ws.mergeCells(R,1,R,3);
+                ws.getCell(R,1).value = 'Fiziksel Kimyasal Öz. Ayarlayan:';
+                ws.getCell(R,1).font = {bold:true,size:9,color:{argb:mg}};
+                ws.mergeCells(R,4,R,5);
+                ws.getCell(R,4).value = (pers.hazirlayan||[]).join(', ') || '-';
+                ws.getCell(R,4).font = {size:10,color:{argb:dk}};
+                ws.getCell(R,4).border = {bottom:{style:'dotted',color:bC}};
+                ws.getRow(R).height = 22;
+                
+                ws.pageSetup = {orientation:'landscape',fitToPage:true,fitToWidth:1,fitToHeight:0,
+                    margins:{left:0.3,right:0.3,top:0.4,bottom:0.4,header:0.2,footer:0.2}};
+            });
+            
+            const buf = await wb.xlsx.writeBuffer();
+            return new Blob([buf], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+        }
+
+
         // Sayfa yüklendiğinde
         document.addEventListener('DOMContentLoaded', function() {
             // Session kontrolü yap
@@ -1999,10 +4480,12 @@
             loadTanks();
             renderTanks();
             
-            // Overlay'e tıklayınca her iki sidebar'ı da kapat
+            // Overlay'e tıklayınca tüm sidebar'ları kapat
             document.querySelector('.overlay').addEventListener('click', function() {
                 document.querySelector('.sidebar').classList.remove('active');
                 document.getElementById('recipeSidebar').classList.remove('active');
+                document.getElementById('vardiyaSidebar').classList.remove('active');
+                document.getElementById('urunSidebar').classList.remove('active');
                 document.querySelector('.overlay').classList.remove('active');
                 document.querySelector('.menu-btn').classList.remove('active');
             });

@@ -1611,15 +1611,47 @@
             display: grid;
             grid-template-columns: 1fr 80px 100px 32px;
             gap: 6px;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             align-items: center;
         }
-        @media (max-width: 500px) {
+        @media (max-width: 520px) {
             .hm-row {
-                grid-template-columns: 1fr 70px 32px;
+                grid-template-columns: 1fr 32px;
+                gap: 0;
+                background: #f8fafc;
+                border: 2px solid #e2e8f0;
+                border-radius: 12px;
+                padding: 10px;
+                margin-bottom: 10px;
+                position: relative;
             }
+            .hm-row .hm-isim {
+                grid-column: 1 / 2;
+                border: none;
+                background: transparent;
+                font-size: 14px;
+                font-weight: 700;
+                padding: 6px 4px;
+                color: #000;
+            }
+            .hm-row .hm-isim::placeholder { font-weight: 400; }
+            .hm-row .hm-del {
+                grid-column: 2;
+                grid-row: 1;
+            }
+            .hm-row .hm-miktar,
             .hm-row .hm-parti {
                 grid-column: 1 / -1;
+                border: 2px solid #e2e8f0;
+                border-radius: 8px;
+                margin-top: 4px;
+                font-size: 13px;
+                padding: 8px 10px;
+                background: white;
+            }
+            .hm-row .hm-miktar::placeholder,
+            .hm-row .hm-parti::placeholder {
+                color: #a0aec0;
             }
         }
         .hm-input {
@@ -1633,6 +1665,7 @@
             outline: none;
             transition: border-color 0.2s;
             font-family: inherit;
+            box-sizing: border-box;
         }
         .hm-input:focus {
             border-color: #000;
@@ -1660,11 +1693,8 @@
             gap: 6px;
             margin-bottom: 8px;
         }
-        @media (max-width: 500px) {
-            .hm-header {
-                grid-template-columns: 1fr 70px 32px;
-            }
-            .hm-header .hm-h-parti { display: none; }
+        @media (max-width: 520px) {
+            .hm-header { display: none; }
         }
         .hm-h {
             font-size: 10px;
@@ -2169,8 +2199,6 @@
                 <div id="urunList"></div>
                 <button class="btn btn-secondary" onclick="openUrunSidebar()" style="margin-top:8px;">
                     + Yeni Ürün Ekle
-                </button>
-                    🧪 Test Verisi Yükle (Geliştirme)
                 </button>
             </div>
             
@@ -3894,9 +3922,9 @@
             container.innerHTML = data.map((h, i) => `
                 <div class="hm-row">
                     <input type="text" class="hm-input hm-isim" placeholder="Hammadde adı" value="${esc(h.isim || '')}">
-                    <input type="number" class="hm-input hm-miktar" placeholder="0" step="0.01" value="${h.miktar || ''}">
-                    <input type="text" class="hm-input hm-parti" placeholder="Parti no" value="${esc(h.partiNo || '')}">
-                    <button class="hm-del" onclick="removeHammaddeRow(this)" title="Sil">🗑️</button>
+                    <input type="number" class="hm-input hm-miktar" placeholder="Miktar (kg)" step="0.01" value="${h.miktar || ''}">
+                    <input type="text" class="hm-input hm-parti" placeholder="Parti no (sonra girilir)" value="${esc(h.partiNo || '')}">
+                    <button class="hm-del" onclick="removeHammaddeRow(this)" title="Sil">✕</button>
                 </div>
             `).join('');
         }
@@ -3908,9 +3936,9 @@
             row.className = 'hm-row';
             row.innerHTML = `
                 <input type="text" class="hm-input hm-isim" placeholder="Hammadde adı" value="">
-                <input type="number" class="hm-input hm-miktar" placeholder="0" step="0.01" value="">
-                <input type="text" class="hm-input hm-parti" placeholder="Parti no" value="">
-                <button class="hm-del" onclick="removeHammaddeRow(this)" title="Sil">🗑️</button>
+                <input type="number" class="hm-input hm-miktar" placeholder="Miktar (kg)" step="0.01" value="">
+                <input type="text" class="hm-input hm-parti" placeholder="Parti no (sonra girilir)" value="">
+                <button class="hm-del" onclick="removeHammaddeRow(this)" title="Sil">✕</button>
             `;
             container.appendChild(row);
         }
@@ -4012,141 +4040,177 @@
             const progressBar = document.getElementById('ocrProgress');
             const progressFill = document.getElementById('ocrProgressFill');
             
-            // Önizleme göster
             const reader = new FileReader();
             reader.onload = async function(ev) {
                 img.src = ev.target.result;
                 preview.style.display = 'block';
-                status.textContent = 'Reçete okunuyor...';
+                status.textContent = 'Reçete okunuyor, lütfen bekleyin...';
                 status.style.color = '#4299e1';
                 progressBar.style.display = 'block';
-                progressFill.style.width = '0%';
+                progressFill.style.width = '5%';
                 
                 try {
-                    const text = await runTesseractOCR(ev.target.result, (p) => {
-                        progressFill.style.width = Math.round(p * 100) + '%';
+                    // Tesseract worker oluştur
+                    status.textContent = 'Dil dosyası yükleniyor...';
+                    progressFill.style.width = '10%';
+                    
+                    const worker = await Tesseract.createWorker(['tur', 'eng'], 1, {
+                        logger: m => {
+                            if (m.status === 'recognizing text') {
+                                progressFill.style.width = (10 + Math.round((m.progress || 0) * 80)) + '%';
+                                status.textContent = 'Metin okunuyor... %' + Math.round((m.progress || 0) * 100);
+                            }
+                        }
                     });
                     
-                    progressBar.style.display = 'none';
+                    status.textContent = 'Metin tanınıyor...';
+                    const result = await worker.recognize(ev.target.result);
+                    const text = result.data.text;
+                    await worker.terminate();
                     
-                    if (text && text.trim().length > 5) {
+                    progressFill.style.width = '95%';
+                    status.textContent = 'Metin ayrıştırılıyor...';
+                    
+                    if (text && text.trim().length > 3) {
                         const parsed = parseRecipeText(text);
                         
-                        // Ürün ismini doldur
                         if (parsed.urunIsmi) {
                             document.getElementById('urunName').value = parsed.urunIsmi;
                         }
                         
-                        // Hammaddeleri doldur
-                        if (parsed.hammaddeler && parsed.hammaddeler.length > 0) {
-                            renderHammaddeRows(parsed.hammaddeler);
+                        if (parsed.hammaddeler.length > 0) {
+                            // Parti no boş bırak — kullanıcı sonra girer
+                            renderHammaddeRows(parsed.hammaddeler.map(h => ({
+                                isim: h.isim,
+                                miktar: h.miktar,
+                                partiNo: ''
+                            })));
                         }
                         
-                        status.textContent = 'Reçete okundu! ' + parsed.hammaddeler.length + ' hammadde bulundu. Bilgileri kontrol edin.';
-                        status.style.color = '#38a169';
+                        progressFill.style.width = '100%';
+                        
+                        const count = parsed.hammaddeler.length;
+                        if (count > 0) {
+                            status.textContent = count + ' hammadde bulundu. Kontrol edip parti numaralarını girin.';
+                            status.style.color = '#38a169';
+                        } else {
+                            status.textContent = 'Hammadde bulunamadı. Lütfen manuel girin veya daha net fotoğraf deneyin.';
+                            status.style.color = '#c53030';
+                        }
                     } else {
-                        status.textContent = 'Metin okunamadı. Daha net bir fotoğraf deneyin.';
-                        status.style.color = '#e53e3e';
+                        progressFill.style.width = '100%';
+                        status.textContent = 'Metin okunamadı. Daha net ve yakın bir fotoğraf deneyin.';
+                        status.style.color = '#c53030';
                     }
+                    
+                    setTimeout(() => { progressBar.style.display = 'none'; }, 1000);
+                    
                 } catch (err) {
                     progressBar.style.display = 'none';
-                    status.textContent = 'Okuma hatası: ' + (err.message || 'Bilinmeyen hata');
-                    status.style.color = '#e53e3e';
+                    console.error('OCR Hata:', err);
+                    status.textContent = 'Okuma hatası oluştu. Lütfen tekrar deneyin.';
+                    status.style.color = '#c53030';
                 }
             };
             reader.readAsDataURL(file);
         }
         
-        // Tesseract.js ile OCR
-        async function runTesseractOCR(imageSrc, onProgress) {
-            const worker = await Tesseract.createWorker('tur+eng', 1, {
-                logger: m => {
-                    if (m.status === 'recognizing text' && onProgress) {
-                        onProgress(m.progress || 0);
-                    }
-                }
-            });
-            
-            const { data } = await worker.recognize(imageSrc);
-            await worker.terminate();
-            return data.text;
-        }
-        
-        // OCR metnini parse et
+        // OCR metninden ürün ismi ve hammaddeleri çıkar
         function parseRecipeText(rawText) {
-            const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 1);
+            // Satırları temizle
+            const lines = rawText.split('\n')
+                .map(l => l.trim())
+                .filter(l => l.length > 1);
             
             let urunIsmi = '';
             const hammaddeler = [];
             
-            // Yaygın hammadde anahtar kelimeleri
-            const hmKeywords = ['konsantre', 'kons', 'şeker', 'asit', 'sitrik', 'malik', 'askorbik',
-                'aroma', 'su', 'tuz', 'pektin', 'glikoz', 'fruktoz', 'renklendirici',
-                'koruyucu', 'antioksidan', 'vitamin', 'elma', 'vişne', 'nar', 'kayısı',
-                'şeftali', 'portakal', 'limon', 'üzüm', 'hurma', 'çilek', 'mango',
-                'ananas', 'domates', 'havuç', 'keçiboynuzu', 'böğürtlen', 'frambuaz'];
-            
-            // Ürün ismi bulmaya çalış (ilk birkaç satır)
-            for (let i = 0; i < Math.min(lines.length, 5); i++) {
-                const line = lines[i].toLowerCase();
-                if (line.includes('ürün') || line.includes('reçete') || line.includes('tarif') ||
-                    line.includes('suyu') || line.includes('konsantre') || line.includes('nektar')) {
-                    // Etiket kısmını temizle
-                    urunIsmi = lines[i]
-                        .replace(/ürün\s*(tanımı|adı|ismi)?\s*:?\s*/gi, '')
-                        .replace(/reçete\s*(adı|ismi)?\s*:?\s*/gi, '')
-                        .trim();
-                    if (urunIsmi.length > 2) break;
+            // 1) Ürün ismini bul
+            for (let i = 0; i < Math.min(lines.length, 8); i++) {
+                const low = lines[i].toLowerCase();
+                // "ürün", "reçete", "tarif" gibi başlık satırlarını atla
+                if (low.includes('ürün tanı') || low.includes('reçete ad') || 
+                    low.includes('form') || low.includes('kontrol') ||
+                    low.includes('doküman') || low.includes('tarih') ||
+                    low.includes('sayfa') || low.includes('revizyon')) continue;
+                
+                // İçinde ürün tipi geçen satır
+                if (low.includes('suyu') || low.includes('konsantre') || low.includes('nektar') ||
+                    low.includes('şurup') || low.includes('püre') || low.includes('ekşi') ||
+                    low.includes('pekmez') || low.includes('marmelat') || low.includes('salça')) {
+                    urunIsmi = lines[i].replace(/^\d+[\.\)\-]\s*/, '').trim();
+                    break;
                 }
             }
             
-            // Her satırı tara, hammadde + miktar bulmaya çalış
+            // 2) Hammaddeleri bul (isim + sayı olan satırlar)
             for (const line of lines) {
-                // Rakam içeren satırları hammadde olarak değerlendir
-                const numMatch = line.match(/([\d.,]+)\s*(kg|lt|gr|ml|litre|kilo)?\s*$/i) ||
-                                 line.match(/([\d.,]+)\s*$/);
+                // Tarih, saat, sayfa no gibi şeyleri atla
+                if (/^\d{1,2}[\.\/-]\d{1,2}[\.\/-]\d{2,4}/.test(line)) continue;
+                if (/saat|sayfa|tarih|vardiya|no|rev/i.test(line) && !/kons|asit|şeker|su|aroma/i.test(line)) continue;
                 
-                if (numMatch) {
-                    const miktar = parseFloat(numMatch[1].replace(',', '.'));
-                    if (isNaN(miktar) || miktar <= 0) continue;
-                    
-                    // Sayıdan önceki kısmı isim olarak al
-                    let isim = line.substring(0, numMatch.index).trim();
-                    
-                    // Parti no benzeri bir şey varsa ayır
-                    let partiNo = '';
-                    const partiMatch = isim.match(/([A-Z]{1,4}[\-\/]?\d{4,}[\-\/]?\d*)/i);
-                    if (partiMatch) {
-                        partiNo = partiMatch[1];
-                        isim = isim.replace(partiMatch[0], '').trim();
-                    }
-                    
-                    // Gereksiz karakterleri temizle
-                    isim = isim.replace(/[|:;\-–—]+$/, '').replace(/^\d+[\.\)]\s*/, '').trim();
-                    
-                    if (isim.length > 1 && miktar > 0) {
-                        hammaddeler.push({ isim, miktar, partiNo });
-                    }
-                } else {
-                    // Rakamsız satır ama bilinen hammadde adı içeriyor olabilir
-                    const lower = line.toLowerCase();
-                    const isHammadde = hmKeywords.some(k => lower.includes(k));
-                    if (isHammadde && line.length > 2 && line.length < 50) {
-                        // Sadece isim, miktar yok
-                        const isim = line.replace(/^\d+[\.\)]\s*/, '').trim();
-                        if (isim.length > 1 && !hammaddeler.find(h => h.isim === isim)) {
-                            hammaddeler.push({ isim, miktar: '', partiNo: '' });
+                // Satırda sayı ara (miktar olabilecek)
+                // Patern: isim kısmı ... sayı [birim]
+                const patterns = [
+                    // "Elma Konsantresi 1100" veya "Elma Kons. 1100 kg"
+                    /^(.+?)\s+([\d]+[.,]?\d*)\s*(kg|lt|gr|ml|litre|kilo)?\s*$/i,
+                    // "1100 Elma Konsantresi" (sayı önce)
+                    /^([\d]+[.,]?\d*)\s*(kg|lt|gr|ml)?\s+(.+)$/i,
+                    // Tablo formatı: "Elma Konsantresi | 1100"
+                    /^(.+?)\s*[|│:;\t]+\s*([\d]+[.,]?\d*)\s*(kg|lt|gr|ml)?\s*$/i,
+                ];
+                
+                let found = false;
+                for (const pat of patterns) {
+                    const m = line.match(pat);
+                    if (m) {
+                        let isim, miktar;
+                        
+                        if (pat === patterns[1]) {
+                            // Sayı önce patern
+                            miktar = parseFloat(m[1].replace(',', '.'));
+                            isim = m[3];
+                        } else {
+                            isim = m[1];
+                            miktar = parseFloat(m[2].replace(',', '.'));
+                        }
+                        
+                        // Temizle
+                        isim = isim.replace(/^\d+[\.\)\-]\s*/, '') // başındaki sıra no
+                            .replace(/[|│:;\t]+/g, ' ')
+                            .replace(/\s+/g, ' ')
+                            .trim();
+                        
+                        // Geçersiz isimleri filtrele
+                        if (isim.length < 2 || isim.length > 50) continue;
+                        if (/^\d+$/.test(isim)) continue; // sadece sayı
+                        if (/tarih|saat|sayfa|vardiya|brix|asitlik|ph|ntu/i.test(isim)) continue;
+                        
+                        if (!isNaN(miktar) && miktar > 0 && isim.length >= 2) {
+                            // Aynı isim zaten varsa ekleme
+                            if (!hammaddeler.find(h => h.isim.toLowerCase() === isim.toLowerCase())) {
+                                hammaddeler.push({ isim, miktar });
+                            }
+                            found = true;
+                            break;
                         }
                     }
                 }
             }
             
-            // Ürün ismi bulunamadıysa ilk satırı kullan
-            if (!urunIsmi && lines.length > 0) {
-                urunIsmi = lines[0].replace(/^\d+[\.\)]\s*/, '').substring(0, 40);
+            // Ürün ismi bulunamadıysa
+            if (!urunIsmi) {
+                // İlk anlamlı satırı kullan
+                for (const line of lines) {
+                    const clean = line.replace(/^\d+[\.\)\-]\s*/, '').trim();
+                    if (clean.length > 3 && clean.length < 50 && !/\d{4}/.test(clean)) {
+                        urunIsmi = clean;
+                        break;
+                    }
+                }
             }
             
-            return { urunIsmi, hammaddeler };
+            return { urunIsmi: urunIsmi || '', hammaddeler };
         }
         
         // ==================== TANK ONAY & KALİTE SİSTEMİ ====================

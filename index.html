@@ -148,6 +148,72 @@
             }
         }
         
+        /* ===== PC GENİŞ EKRAN ===== */
+        @media (min-width: 1024px) {
+            body {
+                padding: 30px 40px;
+            }
+            .container {
+                max-width: 960px;
+                padding: 0 20px;
+            }
+            .header {
+                border-radius: 28px;
+                padding: 28px 32px;
+                margin-bottom: 32px;
+            }
+            .header h1 {
+                font-size: 32px;
+            }
+            .pc-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+                align-items: start;
+            }
+            .pc-row > .card {
+                margin-bottom: 0;
+                overflow: hidden;
+                min-width: 0;
+            }
+            .card {
+                border-radius: 22px;
+                padding: 28px;
+            }
+            .tank-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .input-row {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 16px !important;
+            }
+            .result-item {
+                padding: 24px;
+            }
+            .result-value {
+                font-size: 28px;
+            }
+            .vardiya-btn {
+                padding: 18px 24px;
+                font-size: 15px;
+                border-radius: 16px;
+            }
+            .vardiya-banner {
+                padding: 16px 24px;
+                border-radius: 18px;
+            }
+        }
+        
+        /* 1440px+ ultra geniş ekran */
+        @media (min-width: 1440px) {
+            .container {
+                max-width: 1100px;
+            }
+            .tank-grid {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+        
         .header {
             display: grid;
             grid-template-columns: auto 1fr auto;
@@ -512,6 +578,7 @@
             margin-bottom: 20px;
             max-width: 100%;
             overflow: hidden;
+            min-width: 0;
         }
         
         .input-label {
@@ -532,9 +599,10 @@
             background: #f8fafc;
             border: 2px solid #e2e8f0;
             border-radius: 12px;
-            padding: 18px 20px; /* Daha büyük touch target */
+            padding: 18px 20px;
             transition: all 0.3s;
-            min-height: 56px; /* Minimum touch target */
+            min-height: 56px;
+            min-width: 0;
         }
         
         .input-wrapper:focus-within {
@@ -551,6 +619,8 @@
             flex: 1;
             outline: none;
             color: #000;
+            min-width: 0;
+            width: 100%;
         }
         
         .input-wrapper .unit {
@@ -570,6 +640,13 @@
             .input-row {
                 grid-template-columns: 1fr;
                 gap: 16px;
+            }
+        }
+        
+        @media (min-width: 1025px) {
+            .pc-row .input-row {
+                grid-template-columns: 1fr;
+                gap: 12px;
             }
         }
         
@@ -1792,6 +1869,79 @@
             color: white;
         }
 
+        /* ===== HEDEF ARAMA / RANGE ===== */
+        .range-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+            min-width: 0;
+        }
+        .range-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #a0aec0;
+            white-space: nowrap;
+        }
+        .range-input {
+            width: 60px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 6px 8px;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            outline: none;
+            font-family: inherit;
+            background: #f8fafc;
+            transition: border-color 0.2s;
+        }
+        .range-input:focus {
+            border-color: #000;
+            background: white;
+        }
+        .btn-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        .btn-row .btn {
+            margin-top: 0;
+        }
+        .btn-goalseek {
+            background: white;
+            color: #000;
+            border: 2px solid #000;
+        }
+        .btn-goalseek:hover {
+            background: #f8fafc;
+        }
+        
+        /* Hedef arama sonucu */
+        .goalseek-result {
+            margin: 16px 0;
+            padding: 16px 20px;
+            background: #f0fff4;
+            border: 2px solid #9ae6b4;
+            border-radius: 16px;
+            font-size: 13px;
+            color: #276749;
+            font-weight: 600;
+            line-height: 1.7;
+            display: none;
+        }
+        .goalseek-result.show {
+            display: block;
+        }
+        .goalseek-result .gs-title {
+            font-weight: 700;
+            margin-bottom: 6px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
         /* ===== BİLDİRİM BANNER ===== */
         .notif-banner {
             position: fixed;
@@ -2215,6 +2365,7 @@
             </div>
 
             <div id="calculationSection" class="hidden">
+                <div class="pc-row">
                 <div class="card">
                     <div class="section-title">
                         Mevcut Değerler
@@ -2267,6 +2418,11 @@
                                 <input type="number" id="targetBrix" placeholder="0" step="0.1">
                                 <span class="unit">°Bx</span>
                             </div>
+                            <div class="range-row">
+                                <span class="range-label">Tolerans ±</span>
+                                <input type="number" class="range-input" id="brixRange" value="" placeholder="0" step="0.1" min="0">
+                                <span class="range-label">°Bx</span>
+                            </div>
                         </div>
 
                         <div class="input-group">
@@ -2277,6 +2433,11 @@
                                 <input type="number" id="targetAcidity" placeholder="0" step="0.01">
                                 <span class="unit">%</span>
                             </div>
+                            <div class="range-row">
+                                <span class="range-label">Tolerans ±</span>
+                                <input type="number" class="range-input" id="acidityRange" value="" placeholder="0" step="0.01" min="0">
+                                <span class="range-label">%</span>
+                            </div>
                             <div class="checkbox-wrapper">
                                 <label class="checkbox-label">
                                     <input type="checkbox" id="malikAsit">
@@ -2286,10 +2447,18 @@
                         </div>
                     </div>
 
-                    <button class="btn btn-primary" onclick="calculate()">
-                        Hesapla
-                    </button>
+                    <div class="btn-row">
+                        <button class="btn btn-primary" onclick="calculate()" style="flex:2;">
+                            Hesapla
+                        </button>
+                        <button class="btn btn-goalseek" onclick="goalSeek()" style="flex:1;">
+                            Hedef Ara
+                        </button>
+                    </div>
                 </div>
+                </div><!-- /pc-row -->
+                
+                <div class="goalseek-result" id="goalseekResult"></div>
 
                 <div id="resultsSection" class="card hidden">
                     <div class="section-title">
@@ -4944,6 +5113,135 @@
                 newHeight: newHeight,
                 totalTonnage: totalTonnage
             });
+        }
+
+        // Hedef Arama (Goal Seek) - tolerans aralığında en uygun değerleri bul
+        function goalSeek() {
+            if (!selectedTank) { alert('Lütfen bir tank seçin!'); return; }
+            
+            const height = parseFloat(document.getElementById('currentHeight').value);
+            const brixM = parseFloat(document.getElementById('measuredBrix').value);
+            const acidityM = parseFloat(document.getElementById('measuredAcidity').value);
+            const brixT = parseFloat(document.getElementById('targetBrix').value);
+            const acidityT = parseFloat(document.getElementById('targetAcidity').value);
+            const brixR = parseFloat(document.getElementById('brixRange').value) || 0;
+            const acidityR = parseFloat(document.getElementById('acidityRange').value) || 0;
+            const malikAsit = document.getElementById('malikAsit').checked;
+            
+            if (isNaN(height) || isNaN(brixM) || isNaN(acidityM) || isNaN(brixT) || isNaN(acidityT)) {
+                alert('Lütfen tüm değerleri girin!');
+                return;
+            }
+            
+            if (brixR === 0 && acidityR === 0) {
+                alert('Lütfen en az bir tolerans değeri girin!\nÖrn: Brix ±0.5 veya Asitlik ±0.05');
+                return;
+            }
+            
+            const tankTonnage = calculateTonnage(selectedTank, height);
+            const dissolvedMatter = tankTonnage * (brixM / 100);
+            const existingAcid = tankTonnage * (acidityM / 100);
+            
+            function calc(bT, aT) {
+                const bRatio = bT / 100;
+                const aRatio = aT / 100;
+                if (aRatio === 0 || bRatio === 0) return null;
+                const ratio = bRatio / aRatio;
+                if (ratio === 1) return null;
+                let x = (dissolvedMatter - ratio * existingAcid) / (ratio - 1);
+                if (malikAsit) x = x * 1.047;
+                const y = (dissolvedMatter + x) / bRatio - tankTonnage - x;
+                return { x, y, brix: bT, acidity: aT };
+            }
+            
+            // Çok ince adımlarla tara
+            const bStep = 0.01;
+            const aStep = 0.001;
+            
+            // 3 farklı sonuç topla
+            let minAcid = null;    // Asit 0'a en yakın (pozitif taraftan)
+            let minWater = null;   // Su en az olan
+            let zeroAcid = null;   // Sadece su ekle, asit = 0 olan
+            
+            let minAcidVal = Infinity;
+            let minWaterVal = Infinity;
+            let minZeroAcidSu = Infinity;
+            
+            for (let b = brixT - brixR; b <= brixT + brixR + 0.0001; b += bStep) {
+                for (let a = acidityT - acidityR; a <= acidityT + acidityR + 0.0001; a += aStep) {
+                    if (b <= 0 || a <= 0) continue;
+                    const r = calc(b, a);
+                    if (!r) continue;
+                    
+                    if (r.x >= -0.01 && r.y >= 0) {
+                        // Asit 0'a en yakın (sadece su eklenir)
+                        const absAcid = Math.abs(r.x);
+                        if (absAcid < minAcidVal) {
+                            minAcidVal = absAcid;
+                            zeroAcid = { ...r, x: Math.max(0, r.x) };
+                        }
+                    }
+                    
+                    if (r.x >= 0 && r.y >= 0) {
+                        // En az asit
+                        if (r.x < minAcidVal * 1.5 && r.x < (minAcid ? minAcid.x : Infinity)) {
+                            minAcid = r;
+                        }
+                        // En az su
+                        if (r.y < minWaterVal) {
+                            minWaterVal = r.y;
+                            minWater = r;
+                        }
+                    }
+                }
+            }
+            
+            const gsDiv = document.getElementById('goalseekResult');
+            
+            // En iyi sonuç: asit 0'a en yakın olan
+            const best = zeroAcid || minAcid || minWater;
+            
+            if (best) {
+                const totalT = tankTonnage + best.x + best.y;
+                const newH = heightForTonnage(selectedTank, totalT);
+                
+                document.getElementById('targetBrix').value = best.brix.toFixed(2);
+                document.getElementById('targetAcidity').value = best.acidity.toFixed(3);
+                
+                let html = '<div class="gs-title">Uygun Değerler Bulundu</div>';
+                html += 'Brix: <strong>' + best.brix.toFixed(2) + '°Bx</strong> | ';
+                html += 'Asitlik: <strong>' + best.acidity.toFixed(3) + '%</strong><br>';
+                
+                if (best.x < 0.01) {
+                    html += 'Asit: <strong>0 kg (eklemeye gerek yok)</strong> | ';
+                } else {
+                    html += 'Asit: <strong>' + best.x.toFixed(2) + ' kg</strong> | ';
+                }
+                html += 'Su: <strong>' + best.y.toFixed(2) + ' kg</strong><br>';
+                html += 'Yükseklik: <strong>' + newH.toFixed(1) + ' cm</strong>';
+                
+                // Alternatifler varsa göster
+                if (minWater && minWater !== best && minWater.y < best.y * 0.8) {
+                    html += '<br><br><div class="gs-title" style="margin-top:4px;">Alternatif: En Az Su</div>';
+                    html += 'Brix: ' + minWater.brix.toFixed(2) + ' | Asitlik: ' + minWater.acidity.toFixed(3);
+                    html += '<br>Asit: ' + minWater.x.toFixed(2) + ' kg | Su: ' + minWater.y.toFixed(2) + ' kg';
+                }
+                
+                gsDiv.innerHTML = html;
+                gsDiv.classList.add('show');
+                gsDiv.style.background = '#f0fff4';
+                gsDiv.style.borderColor = '#9ae6b4';
+                gsDiv.style.color = '#276749';
+            } else {
+                gsDiv.innerHTML = 
+                    '<div class="gs-title">Uygun Değer Bulunamadı</div>' +
+                    'Bu tolerans aralığında uygulanabilir bir kombinasyon yok.<br>' +
+                    'Tolerans aralığını artırmayı deneyin.';
+                gsDiv.classList.add('show');
+                gsDiv.style.background = '#fff5f5';
+                gsDiv.style.borderColor = '#feb2b2';
+                gsDiv.style.color = '#c53030';
+            }
         }
 
         // Sonuçları göster

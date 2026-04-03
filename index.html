@@ -5018,16 +5018,21 @@
 
         // Hesabı sıfırla
         function resetCalculation() {
-            // Tüm input alanlarını temizle
             document.getElementById('currentHeight').value = '';
             document.getElementById('measuredBrix').value = '';
             document.getElementById('measuredAcidity').value = '';
             document.getElementById('targetBrix').value = '';
             document.getElementById('targetAcidity').value = '';
+            document.getElementById('brixRange').value = '';
+            document.getElementById('acidityRange').value = '';
             document.getElementById('malikAsit').checked = false;
             
-            // Sonuçları gizle
             document.getElementById('resultsSection').classList.add('hidden');
+            
+            // Hedef arama sonucunu da temizle
+            const gs = document.getElementById('goalseekResult');
+            gs.classList.remove('show');
+            gs.innerHTML = '';
         }
 
         // Tonaj hesaplama - YENİ FORMÜL
@@ -5173,8 +5178,12 @@
                     const r = calc(b, a);
                     if (!r) continue;
                     
+                    // Yükseklik kontrolü: yeni seviye mevcut seviyeden düşük olamaz
+                    const totalT = tankTonnage + Math.max(0, r.x) + r.y;
+                    const newH = heightForTonnage(selectedTank, totalT);
+                    if (newH < height) continue; // tanktan sıvı alamayız, atla
+                    
                     if (r.x >= -0.01 && r.y >= 0) {
-                        // Asit 0'a en yakın (sadece su eklenir)
                         const absAcid = Math.abs(r.x);
                         if (absAcid < minAcidVal) {
                             minAcidVal = absAcid;
@@ -5183,11 +5192,9 @@
                     }
                     
                     if (r.x >= 0 && r.y >= 0) {
-                        // En az asit
-                        if (r.x < minAcidVal * 1.5 && r.x < (minAcid ? minAcid.x : Infinity)) {
+                        if (r.x < (minAcid ? minAcid.x : Infinity)) {
                             minAcid = r;
                         }
-                        // En az su
                         if (r.y < minWaterVal) {
                             minWaterVal = r.y;
                             minWater = r;

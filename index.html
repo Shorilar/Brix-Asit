@@ -2665,7 +2665,10 @@
         <div class="sidebar-content" style="max-width:600px; margin:0 auto;">
             <!-- Kayıtlı Ürünlerden Seç -->
             <div style="background:white; border:2px solid #e2e8f0; border-radius:16px; padding:16px; margin-bottom:16px;">
-                <div style="font-size:11px; font-weight:700; color:#718096; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">Kayıtlı Ürünlerden Seç</div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <div style="font-size:11px; font-weight:700; color:#718096; text-transform:uppercase; letter-spacing:1px;">Kayıtlı Ürünlerden Seç</div>
+                    <button id="spEditToggle" onclick="toggleSavedProductEdit()" style="background:none; border:none; font-size:12px; font-weight:600; color:#3182ce; cursor:pointer; padding:4px 8px; display:none;">Düzenle</button>
+                </div>
                 <input type="text" id="savedProductSearch" placeholder="Ürün ara..." oninput="filterSavedProducts()" style="width:100%; border:2px solid #e2e8f0; border-radius:10px; padding:10px 14px; font-size:14px; font-family:inherit; outline:none; box-sizing:border-box; margin-bottom:8px;">
                 <div id="savedProductList" style="max-height:180px; overflow-y:auto;"></div>
             </div>
@@ -4101,6 +4104,9 @@
             
             // Kayıtlı ürünleri yükle
             document.getElementById('savedProductSearch').value = '';
+            spEditMode = false;
+            const etBtn = document.getElementById('spEditToggle');
+            if (etBtn) { etBtn.textContent = 'Düzenle'; etBtn.style.color = '#3182ce'; }
             filterSavedProducts();
         }
         
@@ -4186,7 +4192,7 @@
                 
                 // Yeni ürünse kaydetmek ister mi sor
                 const alreadySaved = savedProducts.find(p => p.isim.toLowerCase() === isim.toLowerCase());
-                if (!alreadySaved && hammaddeler.length > 0) {
+                if (!alreadySaved) {
                     if (confirm('"' + isim + '" ürününü kayıtlı ürünlere eklemek ister misiniz?\nBöylece sonraki vardiyalarda hızlıca seçebilirsiniz.')) {
                         saveProductToDatabase(urunData);
                     }
@@ -4215,6 +4221,7 @@
         // ==================== KAYITLI ÜRÜNLER SİSTEMİ ====================
         
         let savedProducts = []; // Firebase'den yüklenen kayıtlı ürünler
+        let spEditMode = false;
         
         // Kayıtlı ürünleri Firebase'den yükle
         function loadSavedProducts() {
@@ -4223,19 +4230,38 @@
                 savedProducts = [];
                 if (snap.exists()) {
                     const data = snap.val();
-                    if (Array.isArray(data)) {
-                        savedProducts = data;
-                    } else {
-                        Object.values(data).forEach(p => { if (p && p.isim) savedProducts.push(p); });
+                    if (data) {
+                        const items = Array.isArray(data) ? data : Object.values(data);
+                        items.forEach(function(p) {
+                            if (p && typeof p === 'object' && p.isim) {
+                                // hammaddeler de object olabilir (Firebase array→object dönüşümü)
+                                let hm = p.hammaddeler || [];
+                                if (hm && !Array.isArray(hm)) hm = Object.values(hm);
+                                savedProducts.push({ isim: p.isim, hammaddeler: hm.filter(function(h) { return h && h.isim; }) });
+                            }
+                        });
                     }
                 }
+                filterSavedProducts();
             });
+        }
+        
+        function toggleSavedProductEdit() {
+            spEditMode = !spEditMode;
+            const btn = document.getElementById('spEditToggle');
+            btn.textContent = spEditMode ? 'Bitti' : 'Düzenle';
+            btn.style.color = spEditMode ? '#e53e3e' : '#3182ce';
+            filterSavedProducts();
         }
         
         // Kayıtlı ürünleri filtrele ve listele
         function filterSavedProducts() {
             const query = (document.getElementById('savedProductSearch').value || '').toLowerCase().trim();
             const container = document.getElementById('savedProductList');
+            const toggleBtn = document.getElementById('spEditToggle');
+            
+            // Düzenle butonu sadece ürün varsa görünsün
+            if (toggleBtn) toggleBtn.style.display = savedProducts.length > 0 ? 'block' : 'none';
             
             const filtered = savedProducts.filter(p => 
                 p.isim && p.isim.toLowerCase().includes(query)
@@ -4248,14 +4274,27 @@
                 return;
             }
             
-            container.innerHTML = filtered.map((p, i) => {
+            container.innerHTML = filtered.map(function(p) {
                 const hmCount = (p.hammaddeler || []).length;
                 const idx = savedProducts.indexOf(p);
-                return '<div style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border:2px solid #e2e8f0; border-radius:10px; margin-bottom:6px; cursor:pointer; transition:all 0.2s;" onclick="selectSavedProduct(' + idx + ')" onmouseover="this.style.borderColor=\'#000\'" onmouseout="this.style.borderColor=\'#e2e8f0\'">' +
+                const deleteBtn = spEditMode 
+                    ? '<button onclick="event.stopPropagation(); deleteSavedProduct(' + idx + ')" style="background:#fee2e2; border:none; color:#e53e3e; font-size:11px; font-weight:700; padding:6px 10px; border-radius:8px; cursor:pointer;">Sil</button>'
+                    : '<div style="font-size:11px; color:#a0aec0;">&#10132;</div>';
+                return '<div style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border:2px solid ' + (spEditMode ? '#fed7d7' : '#e2e8f0') + '; border-radius:10px; margin-bottom:6px; cursor:pointer; transition:all 0.2s;" onclick="' + (spEditMode ? '' : 'selectSavedProduct(' + idx + ')') + '" onmouseover="this.style.borderColor=\'' + (spEditMode ? '#e53e3e' : '#000') + '\'" onmouseout="this.style.borderColor=\'' + (spEditMode ? '#fed7d7' : '#e2e8f0') + '\'">' +
                     '<div><div style="font-weight:700; font-size:13px; color:#000;">' + esc(p.isim) + '</div>' +
                     '<div style="font-size:11px; color:#a0aec0;">' + hmCount + ' hammadde</div></div>' +
-                    '<div style="font-size:11px; color:#a0aec0;">&#10132;</div></div>';
+                    deleteBtn + '</div>';
             }).join('');
+        }
+        
+        function deleteSavedProduct(idx) {
+            const p = savedProducts[idx];
+            if (!p) return;
+            if (!confirm('"' + p.isim + '" ürünü kayıtlılardan silinsin mi?')) return;
+            savedProducts.splice(idx, 1);
+            database.ref('users/' + currentUser.username + '/savedProducts').set(savedProducts.length > 0 ? savedProducts : null).catch(function(err) {
+                console.error('savedProducts silme hatası:', err);
+            });
         }
         
         // Kayıtlı ürünü seç ve formu doldur
@@ -4267,7 +4306,7 @@
             
             const hmData = (p.hammaddeler || []).map(h => ({
                 isim: h.isim || '',
-                miktar: h.miktar || '',
+                miktar: (h.miktar && h.miktar !== '-') ? h.miktar : '',
                 partiNo: '' // Parti no her seferinde yeniden girilecek
             }));
             
@@ -4280,24 +4319,28 @@
         function saveProductToDatabase(product) {
             if (!isFirebaseReady || !currentUser) return;
             
+            const cleanProduct = {
+                isim: product.isim || '-',
+                hammaddeler: (product.hammaddeler || []).filter(h => h.isim).map(h => ({ 
+                    isim: h.isim || '-', 
+                    miktar: (h.miktar !== undefined && h.miktar !== null && h.miktar !== '') ? String(h.miktar) : '-'
+                }))
+            };
+            
             // Aynı isimde ürün varsa güncelle
             const existingIdx = savedProducts.findIndex(p => 
-                p.isim.toLowerCase() === product.isim.toLowerCase()
+                p.isim.toLowerCase() === cleanProduct.isim.toLowerCase()
             );
             
             if (existingIdx >= 0) {
-                savedProducts[existingIdx] = {
-                    isim: product.isim,
-                    hammaddeler: (product.hammaddeler || []).map(h => ({ isim: h.isim, miktar: h.miktar }))
-                };
+                savedProducts[existingIdx] = cleanProduct;
             } else {
-                savedProducts.push({
-                    isim: product.isim,
-                    hammaddeler: (product.hammaddeler || []).map(h => ({ isim: h.isim, miktar: h.miktar }))
-                });
+                savedProducts.push(cleanProduct);
             }
             
-            database.ref('users/' + currentUser.username + '/savedProducts').set(savedProducts);
+            database.ref('users/' + currentUser.username + '/savedProducts').set(savedProducts).catch(function(err) {
+                console.error('savedProducts yazma hatası:', err);
+            });
         }
         
         // Sekme değiştir

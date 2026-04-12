@@ -2178,6 +2178,8 @@
             margin-bottom: 14px;
             overflow: hidden;
             transition: border-color 0.2s;
+            max-width: 100%;
+            box-sizing: border-box;
         }
         .hat-card.timer-active {
             border-color: #f59e0b;
@@ -2193,19 +2195,115 @@
         .hat-card-header {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 12px 14px 10px;
+            padding: 10px 12px;
             background: #fafafa;
             border-bottom: 1px solid #f0f0f0;
+            gap: 6px;
+            flex-wrap: wrap;
+            overflow: hidden;
+        }
+        .hat-card-name-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 0;
+            flex-shrink: 1;
         }
         .hat-card-name {
             font-size: 14px;
             font-weight: 700;
             color: #1a1a1a;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
+        .hat-ariza-btn {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 1.5px solid #e0e0e0;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            font-size: 14px;
+            transition: all 0.15s;
+            color: #999;
+            padding: 0;
+        }
+        .hat-ariza-btn:hover { border-color: #ef4444; color: #ef4444; }
+        .hat-ariza-btn.ariza-active {
+            background: #ef4444;
+            border-color: #ef4444;
+            color: #fff;
+            animation: arizaPulse 2s ease-in-out infinite;
+        }
+        @keyframes arizaPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+            50% { box-shadow: 0 0 0 6px rgba(239,68,68,0); }
+        }
+        .hat-ariza-banner {
+            background: #ef4444;
+            color: #fff;
+            text-align: center;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .hat-ariza-banner svg { flex-shrink: 0; }
+        .hat-ariza-remove-btn {
+            background: rgba(255,255,255,0.25);
+            border: none;
+            color: #fff;
+            border-radius: 5px;
+            padding: 2px 8px;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+        .hat-ariza-remove-btn:hover { background: rgba(255,255,255,0.4); }
+        .hat-ariza-menu {
+            position: fixed;
+            background: #fff;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            z-index: 9999;
+            min-width: 180px;
+            overflow: hidden;
+        }
+        .hat-ariza-menu-item {
+            display: block;
+            width: 100%;
+            padding: 10px 14px;
+            border: none;
+            background: none;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #1a1a1a;
+            font-family: inherit;
+        }
+        .hat-ariza-menu-item:hover { background: #fee2e2; color: #dc2626; }
+        .hat-ariza-menu-item + .hat-ariza-menu-item { border-top: 1px solid #f0f0f0; }
         .hat-card-actions {
             display: flex;
-            gap: 6px;
+            gap: 4px;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+            margin-left: auto;
         }
         .hat-icon-btn {
             background: none;
@@ -2221,7 +2319,9 @@
         .hat-icon-btn.danger:hover { border-color: #ef4444; color: #ef4444; }
 
         .hat-body {
-            padding: 12px 14px;
+            padding: 10px 12px;
+            overflow: hidden;
+            max-width: 100%;
         }
         .hat-tanks-label {
             font-size: 11px;
@@ -2284,20 +2384,25 @@
         .hat-akis-row {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 12px;
+            gap: 6px;
+            margin-bottom: 10px;
+            max-width: 100%;
+            overflow: hidden;
         }
         .hat-akis-label {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             color: #555;
             white-space: nowrap;
+            flex-shrink: 0;
         }
         .hat-akis-input {
             flex: 1;
+            min-width: 50px;
+            max-width: 120px;
             border: 1.5px solid #e0e0e0;
             border-radius: 8px;
-            padding: 7px 10px;
+            padding: 6px 8px;
             font-size: 13px;
             font-family: inherit;
             outline: none;
@@ -2305,9 +2410,10 @@
         }
         .hat-akis-input:focus { border-color: #1a1a1a; }
         .hat-akis-unit {
-            font-size: 12px;
+            font-size: 11px;
             color: #888;
             white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .hat-timer-section {
@@ -2333,12 +2439,14 @@
         .hat-dolum-btn.running:hover { background: #dc2626; }
 
         .hat-countdown {
-            margin-top: 10px;
+            margin-top: 8px;
             background: #1a1a1a;
             color: #fff;
             border-radius: 10px;
-            padding: 12px 14px;
+            padding: 10px 12px;
             display: none;
+            overflow: hidden;
+            word-break: break-word;
         }
         .hat-countdown.visible { display: block; }
         .hat-countdown.warning-state {
@@ -2346,23 +2454,26 @@
             animation: warningPulse 1.2s ease-in-out infinite;
         }
         .hat-countdown-label {
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 600;
             color: rgba(255,255,255,0.6);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
         .hat-countdown-time {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 800;
             letter-spacing: 1px;
             font-variant-numeric: tabular-nums;
         }
         .hat-countdown-sub {
-            font-size: 11px;
+            font-size: 10px;
             color: rgba(255,255,255,0.6);
-            margin-top: 3px;
+            margin-top: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         .hat-countdown-bar {
             margin-top: 10px;
@@ -2493,31 +2604,39 @@
         .hat-approved-header {
             display: flex;
             align-items: flex-start;
-            justify-content: space-between;
-            gap: 8px;
-            margin-bottom: 10px;
+            gap: 6px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            overflow: hidden;
+        }
+        .hat-approved-header > div:first-child {
+            min-width: 0;
+            flex-shrink: 1;
         }
         .hat-approved-title {
             font-size: 13px;
             font-weight: 800;
             color: #1a1a1a;
+            word-break: break-word;
         }
         .hat-approved-meta {
-            font-size: 11px;
+            font-size: 10px;
             color: #888;
             margin-top: 2px;
+            word-break: break-word;
         }
         .hat-approved-stats {
             display: flex;
-            gap: 5px;
+            gap: 4px;
+            flex-wrap: wrap;
             flex-shrink: 0;
         }
         .hat-stat-chip {
             background: #fff;
             border: 1.5px solid #e0e0e0;
             border-radius: 7px;
-            padding: 3px 8px;
-            font-size: 11px;
+            padding: 2px 6px;
+            font-size: 10px;
             color: #555;
             white-space: nowrap;
         }
@@ -2563,17 +2682,18 @@
         .cip-start-btn {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             background: #2563eb;
             color: #fff;
             border: none;
-            border-radius: 8px;
-            padding: 8px 14px;
-            font-size: 13px;
+            border-radius: 7px;
+            padding: 4px 8px;
+            font-size: 11px;
             font-weight: 600;
             cursor: pointer;
             font-family: inherit;
             transition: background 0.15s;
+            white-space: nowrap;
         }
         .cip-start-btn:hover { background: #1d4ed8; }
         .cip-box {
@@ -5902,10 +6022,75 @@
     var cipSessions = {};
     var cipIntervals = {};
 
+    function savePastTimers() {
+        var data = {};
+        for (var tid in pastTimers) {
+            var t = pastTimers[tid];
+            // Çalışıyorsa remainingMs'i endTime'dan güncelle
+            if (!t.paused && t.endTime) {
+                t.remainingMs = Math.max(0, t.endTime - Date.now());
+            }
+            data[tid] = {
+                lineId: t.lineId, historyId: t.historyId,
+                startTime: t.startTime, endTime: t.endTime,
+                durationMs: t.durationMs, remainingMs: t.remainingMs,
+                paused: t.paused, warningSent: t.warningSent, isWarning: t.isWarning,
+                tankAd: t.tankAd, urunAd: t.urunAd, tonaj: t.tonaj
+            };
+        }
+        try { localStorage.setItem('pastTimers', JSON.stringify(data)); } catch(e) {}
+    }
+
+    // Sayfa kapanırken timer durumunu kaydet
+    window.addEventListener('beforeunload', function() {
+        savePastTimers();
+    });
+
+    // Her 10 saniyede timer durumunu localStorage'a yaz (crash koruması)
+    setInterval(function() {
+        var hasTimers = false;
+        for (var k in pastTimers) { hasTimers = true; break; }
+        if (hasTimers) savePastTimers();
+    }, 10000);
+
+    function restorePastTimers() {
+        var raw = localStorage.getItem('pastTimers');
+        if (!raw || raw === '{}') return;
+        var data;
+        try { data = JSON.parse(raw); } catch(e) { return; }
+        var now = Date.now();
+        for (var tid in data) {
+            var t = data[tid];
+            if (!t || !t.lineId) continue;
+            if (t.paused) {
+                // Duraklatılmış — olduğu gibi geri yükle
+                t.intervalId = null;
+                pastTimers[tid] = t;
+            } else if (t.endTime && t.endTime <= now) {
+                // Zaten bitmiş — biten tanklara ekle
+                pastFinished.push({
+                    lineId: t.lineId, historyId: t.historyId,
+                    tankAd: t.tankAd, urunAd: t.urunAd, tonaj: t.tonaj,
+                    finishedAt: new Date(t.endTime).toISOString()
+                });
+                localStorage.setItem('pastFinished', JSON.stringify(pastFinished));
+            } else if (t.endTime && t.endTime > now) {
+                // Hâlâ çalışıyor — kaldığı yerden devam
+                t.remainingMs = t.endTime - now;
+                t.intervalId = setInterval((function(id) {
+                    return function() { tickTimer(id); };
+                })(tid), 1000);
+                pastTimers[tid] = t;
+            }
+        }
+        savePastTimers();
+    }
+
     function loadPastLines() {
         try { pastLines = JSON.parse(localStorage.getItem('pastLines') || '[]'); } catch(e) { pastLines = []; }
         try { pastFinished = JSON.parse(localStorage.getItem('pastFinished') || '[]'); } catch(e) { pastFinished = []; }
         try { var cs = JSON.parse(localStorage.getItem('cipSessions') || '{}'); cipSessions = cs; } catch(e) { cipSessions = {}; }
+        restorePastTimers();
         renderPastLines();
     }
 
@@ -5925,6 +6110,79 @@
                 renderPastLines();
             }
         });
+    }
+
+    // ==================== ARIZA SİSTEMİ ====================
+    var _arizaMenuOpen = null;
+
+    function toggleArizaMenu(event, lineId) {
+        event.stopPropagation();
+        // Zaten arıza varsa direkt kaldır
+        var line = null;
+        for (var i = 0; i < pastLines.length; i++) { if (pastLines[i].id === lineId) { line = pastLines[i]; break; } }
+        if (line && line.ariza) {
+            removeAriza(lineId);
+            return;
+        }
+        // Mevcut menü açıksa kapat
+        var existing = document.getElementById('arizaMenu_' + lineId);
+        if (existing) { existing.remove(); _arizaMenuOpen = null; return; }
+        // Diğer menüleri kapat
+        document.querySelectorAll('.hat-ariza-menu').forEach(function(m) { m.remove(); });
+
+        var btn = event.currentTarget;
+        var rect = btn.getBoundingClientRect();
+        var menu = document.createElement('div');
+        menu.className = 'hat-ariza-menu';
+        menu.id = 'arizaMenu_' + lineId;
+        menu.innerHTML = '<button class="hat-ariza-menu-item" onclick="setAriza(\'' + lineId + '\',\'dolum\')">Dolum Hatt\u0131 Ar\u0131za</button>' +
+                         '<button class="hat-ariza-menu-item" onclick="setAriza(\'' + lineId + '\',\'pastorize\')">Past\u00f6rize Ar\u0131za</button>';
+        menu.style.top = (rect.bottom + 4) + 'px';
+        menu.style.left = rect.left + 'px';
+        document.body.appendChild(menu);
+
+        // Ekran dışına taşarsa sola kaydır
+        var menuRect = menu.getBoundingClientRect();
+        if (menuRect.right > window.innerWidth - 8) {
+            menu.style.left = (window.innerWidth - menuRect.width - 8) + 'px';
+        }
+        _arizaMenuOpen = lineId;
+
+        // Dışarı tıklayınca kapat
+        setTimeout(function() {
+            document.addEventListener('click', function closeMenu() {
+                var m = document.getElementById('arizaMenu_' + lineId);
+                if (m) m.remove();
+                _arizaMenuOpen = null;
+                document.removeEventListener('click', closeMenu);
+            }, { once: true });
+        }, 10);
+    }
+
+    function setAriza(lineId, type) {
+        for (var i = 0; i < pastLines.length; i++) {
+            if (pastLines[i].id === lineId) {
+                pastLines[i].ariza = type;
+                break;
+            }
+        }
+        savePastLines();
+        renderPastLines();
+        // Menüyü kapat
+        var m = document.getElementById('arizaMenu_' + lineId);
+        if (m) m.remove();
+        _arizaMenuOpen = null;
+    }
+
+    function removeAriza(lineId) {
+        for (var i = 0; i < pastLines.length; i++) {
+            if (pastLines[i].id === lineId) {
+                delete pastLines[i].ariza;
+                break;
+            }
+        }
+        savePastLines();
+        renderPastLines();
     }
 
     function openHatModal(id) {
@@ -6026,6 +6284,7 @@
                 }
                 updateCountdownUI(tid);
             }
+            savePastTimers();
         }
 
         // Tahmini süreleri güncelle (debounced — buton tıklamasını yutmasın)
@@ -6129,9 +6388,28 @@
                 }
             }
 
+            var arizaType = line.ariza || '';
+            var arizaClass = arizaType ? ' ariza-active' : '';
+
             html += '<div class="' + cardClass + '" id="hatcard_' + line.id + '">';
+
+            // Arıza banner
+            if (arizaType) {
+                var arizaLabel = arizaType === 'dolum' ? 'Dolum Hatt\u0131 Ar\u0131za' : 'Past\u00f6rize Ar\u0131za';
+                html += '<div class="hat-ariza-banner">';
+                html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                html += '<span>' + arizaLabel + '</span>';
+                html += '<button class="hat-ariza-remove-btn" onclick="removeAriza(\'' + line.id + '\')">Kald\u0131r</button>';
+                html += '</div>';
+            }
+
             html += '<div class="hat-card-header">';
+            html += '<div class="hat-card-name-group">';
             html += '<div class="hat-card-name">' + (line.ad || '') + '</div>';
+            html += '<button class="hat-ariza-btn' + arizaClass + '" onclick="toggleArizaMenu(event,\'' + line.id + '\')" title="Ar\u0131za Bildir">';
+            html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+            html += '</button>';
+            html += '</div>';
             html += '<div class="hat-card-actions">';
             if (!cipSessions[line.id]) {
                 html += '<button class="cip-start-btn" onclick="startCip(\'' + line.id + '\')">CIP Ba\u015flat</button>';
@@ -6241,6 +6519,7 @@
             return function() { tickTimer(tid); };
         }(timerId), 1000);
 
+        savePastTimers();
         renderPastLines();
         updateCountdownUI(timerId);
     }
@@ -6252,6 +6531,7 @@
         timer.intervalId = null;
         timer.remainingMs = Math.max(0, timer.endTime - Date.now());
         timer.paused = true;
+        savePastTimers();
         renderPastLines();
         updateCountdownUI(timerId);
     }
@@ -6264,6 +6544,7 @@
         timer.intervalId = setInterval(function(tid) {
             return function() { tickTimer(tid); };
         }(timerId), 1000);
+        savePastTimers();
         renderPastLines();
         updateCountdownUI(timerId);
     }
@@ -6272,16 +6553,17 @@
         if (!pastTimers[timerId]) return;
         clearInterval(pastTimers[timerId].intervalId);
         delete pastTimers[timerId];
+        savePastTimers();
     }
 
     function tickTimer(timerId) {
         var timer = pastTimers[timerId];
         if (!timer || timer.paused) return;
         var remaining = timer.endTime - Date.now();
+        timer.remainingMs = Math.max(0, remaining);
         if (remaining <= 0) {
             clearInterval(timer.intervalId);
             sendPastNotification(timerId, 'bitti');
-            // Biten tanka kaydet
             pastFinished.push({
                 lineId: timer.lineId,
                 historyId: timer.historyId,
@@ -6292,6 +6574,7 @@
             });
             localStorage.setItem('pastFinished', JSON.stringify(pastFinished));
             delete pastTimers[timerId];
+            savePastTimers();
             renderPastLines();
             return;
         }
@@ -6603,7 +6886,6 @@
         if (allDone) {
             // Tüm aşamalar bitti
             html += '<button class="cip-btn-excel" onclick="generateCipExcel(\'' + lineId + '\')">Excel Raporu</button>';
-            html += '<button class="cip-btn-share" onclick="shareCipExcel(\'' + lineId + '\')">Payla\u015f</button>';
             html += '<button class="hat-remove-btn" onclick="cipEndSession(\'' + lineId + '\')" style="flex:1">Kald\u0131r</button>';
         } else if (curPhase) {
             if (curPhase.status === 'waiting' || curPhase.status === 'paused') {
@@ -6643,6 +6925,61 @@
         for (var i = 0; i < pastLines.length; i++) { if (pastLines[i].id === lineId) { line = pastLines[i]; break; } }
         var lineName = line ? line.ad : 'Hat';
         var cipDate = cip.startedAt ? new Date(cip.startedAt) : new Date();
+
+        var buf = await _buildCipExcelBuffer(lineId);
+        if (!buf) return;
+
+        var blob = new Blob([buf], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'CIP_' + lineName.replace(/\s+/g,'_') + '_' + cipDate.toISOString().slice(0,10) + '.xlsx';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    async function shareCipExcel(lineId) {
+        if (typeof ExcelJS === 'undefined') { alert('Excel k\u00fct\u00fcphanesi y\u00fcklenemedi.'); return; }
+        var cip = cipSessions[lineId];
+        if (!cip) return;
+
+        var line = null;
+        for (var i = 0; i < pastLines.length; i++) { if (pastLines[i].id === lineId) { line = pastLines[i]; break; } }
+        var lineName = line ? line.ad : 'Hat';
+        var cipDate = cip.startedAt ? new Date(cip.startedAt) : new Date();
+        var fileName = 'CIP_' + lineName.replace(/\s+/g,'_') + '_' + cipDate.toISOString().slice(0,10) + '.xlsx';
+
+        // Excel oluştur (generateCipExcel ile aynı mantık ama blob döndürür)
+        var buf = await _buildCipExcelBuffer(lineId);
+        if (!buf) return;
+
+        var blob = new Blob([buf], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+        var file = new File([blob], fileName, {type: blob.type});
+
+        if (navigator.canShare && navigator.canShare({files: [file]})) {
+            try {
+                await navigator.share({ files: [file], title: 'CIP Raporu \u2014 ' + lineName });
+                return;
+            } catch(e) {}
+        }
+
+        // Fallback: dosyayı indir
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    async function _buildCipExcelBuffer(lineId) {
+        var cip = cipSessions[lineId];
+        if (!cip) return null;
+
+        var line = null;
+        for (var i = 0; i < pastLines.length; i++) { if (pastLines[i].id === lineId) { line = pastLines[i]; break; } }
+        var lineName = line ? line.ad : 'Hat';
+        var cipDate = cip.startedAt ? new Date(cip.startedAt) : new Date();
         var tarihStr = cipDate.toLocaleDateString('tr-TR', {day:'2-digit',month:'long',year:'numeric'});
 
         var wb = new ExcelJS.Workbook();
@@ -6654,18 +6991,10 @@
         var allB={top:tB,bottom:tB,left:tB,right:tB};
 
         ws.columns = [
-            { width: 5 },   // A: No
-            { width: 20 },  // B: Aşama
-            { width: 12 },  // C: Başlangıç
-            { width: 12 },  // D: Bitiş
-            { width: 14 },  // E: Planlanan (dk)
-            { width: 14 },  // F: Gerçekleşen (dk)
-            { width: 14 },  // G: Durum
+            { width: 5 }, { width: 20 }, { width: 12 }, { width: 12 }, { width: 14 }, { width: 14 }, { width: 14 }
         ];
 
         var R = 1;
-
-        // BAŞLIK
         ws.mergeCells(R,1,R,7);
         var t1 = ws.getCell(R,1);
         t1.value = 'CIP YIKAMA RAPORU';
@@ -6675,7 +7004,6 @@
         ws.getRow(R).height = 36;
         R++;
 
-        // Hat + Tarih (tek satır)
         ws.mergeCells(R,1,R,7);
         ws.getCell(R,1).value = lineName + '  \u2014  ' + tarihStr;
         ws.getCell(R,1).font = {bold:true,size:11,color:{argb:wh}};
@@ -6684,11 +7012,9 @@
         ws.getRow(R).height = 26;
         R++;
 
-        // Boş satır
         ws.getRow(R).height = 6;
         R++;
 
-        // TABLO BAŞLIKLARI
         var hdrs = ['#', 'A\u015fama', 'Ba\u015flang\u0131\u00e7', 'Biti\u015f', 'Planlanan', 'Ger\u00e7ekle\u015fen', 'Durum'];
         for (var hi = 0; hi < hdrs.length; hi++) {
             var cell = ws.getCell(R, hi+1);
@@ -6701,43 +7027,31 @@
         ws.getRow(R).height = 26;
         R++;
 
-        // Toplam planlanan ve gerçekleşen
         var totalPlanned = 0, totalActual = 0;
 
-        // AŞAMA SATIRLARI
         for (var pi = 0; pi < cip.phases.length; pi++) {
             var phase = cip.phases[pi];
             var wasSkipped = (phase.status === 'done' && !phase.startedAt);
             var wasRun = (phase.status === 'done' && phase.startedAt && phase.endedAt);
             var actualMin = _cipActualMin(phase);
 
-            // No
             ws.getCell(R,1).value = pi + 1;
             ws.getCell(R,1).font = {bold:true, size:10, color:{argb:dk}};
             ws.getCell(R,1).alignment = {horizontal:'center', vertical:'middle'};
-
-            // Aşama adı
             ws.getCell(R,2).value = phase.name;
             ws.getCell(R,2).font = {bold:true, size:10, color:{argb:dk}};
             ws.getCell(R,2).alignment = {vertical:'middle'};
-
-            // Başlangıç saati
             ws.getCell(R,3).value = wasSkipped ? '-' : _cipTimeStr(phase.startedAt);
             ws.getCell(R,3).font = {size:10, color:{argb: wasSkipped ? mg : dk}};
             ws.getCell(R,3).alignment = {horizontal:'center', vertical:'middle'};
-
-            // Bitiş saati
             ws.getCell(R,4).value = wasSkipped ? '-' : _cipTimeStr(phase.endedAt);
             ws.getCell(R,4).font = {size:10, color:{argb: wasSkipped ? mg : dk}};
             ws.getCell(R,4).alignment = {horizontal:'center', vertical:'middle'};
-
-            // Planlanan süre
             ws.getCell(R,5).value = phase.durationMin + ' dk';
             ws.getCell(R,5).font = {size:10, color:{argb:mg}};
             ws.getCell(R,5).alignment = {horizontal:'center', vertical:'middle'};
             totalPlanned += phase.durationMin;
 
-            // Gerçekleşen süre
             if (wasSkipped) {
                 ws.getCell(R,6).value = '-';
                 ws.getCell(R,6).font = {size:10, color:{argb:mg}};
@@ -6751,41 +7065,23 @@
             }
             ws.getCell(R,6).alignment = {horizontal:'center', vertical:'middle'};
 
-            // Durum
             var durumText, durumColor, rowBg;
-            if (wasSkipped) {
-                durumText = 'Yap\u0131lmad\u0131';
-                durumColor = rd;
-                rowBg = rdBg;
-            } else if (wasRun && actualMin !== null && actualMin < phase.durationMin) {
-                durumText = 'Erken bitti';
-                durumColor = 'FFd97706';
-                rowBg = amBg;
-            } else if (wasRun) {
-                durumText = 'Tamamland\u0131';
-                durumColor = gn;
-                rowBg = gnBg;
-            } else {
-                durumText = 'Bekliyor';
-                durumColor = mg;
-                rowBg = wh;
-            }
+            if (wasSkipped) { durumText='Yap\u0131lmad\u0131'; durumColor=rd; rowBg=rdBg; }
+            else if (wasRun && actualMin !== null && actualMin < phase.durationMin) { durumText='Erken bitti'; durumColor='FFd97706'; rowBg=amBg; }
+            else if (wasRun) { durumText='Tamamland\u0131'; durumColor=gn; rowBg=gnBg; }
+            else { durumText='Bekliyor'; durumColor=mg; rowBg=wh; }
             ws.getCell(R,7).value = durumText;
             ws.getCell(R,7).font = {bold:true, size:9, color:{argb:durumColor}};
             ws.getCell(R,7).alignment = {horizontal:'center', vertical:'middle'};
 
-            // Satır arka plan ve border
             for (var ci = 1; ci <= 7; ci++) {
                 ws.getCell(R,ci).border = allB;
-                if (rowBg !== wh) {
-                    ws.getCell(R,ci).fill = {type:'pattern',pattern:'solid',fgColor:{argb:rowBg}};
-                }
+                if (rowBg !== wh) ws.getCell(R,ci).fill = {type:'pattern',pattern:'solid',fgColor:{argb:rowBg}};
             }
             ws.getRow(R).height = 24;
             R++;
         }
 
-        // TOPLAM SATIRI
         ws.mergeCells(R,1,R,4);
         ws.getCell(R,1).value = 'TOPLAM';
         ws.getCell(R,1).font = {bold:true, size:10, color:{argb:wh}};
@@ -6805,7 +7101,6 @@
         ws.getRow(R).height = 26;
         R++;
 
-        // Alt bilgi
         R++;
         ws.mergeCells(R,1,R,7);
         var userName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : '';
@@ -6813,54 +7108,7 @@
         ws.getCell(R,1).font = {size:9, color:{argb:mg}};
         ws.getCell(R,1).alignment = {horizontal:'center'};
 
-        var buf = await wb.xlsx.writeBuffer();
-        var blob = new Blob([buf], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = 'CIP_' + lineName.replace(/\s+/g,'_') + '_' + cipDate.toISOString().slice(0,10) + '.xlsx';
-        a.click();
-        URL.revokeObjectURL(url);
-    }
-
-    async function shareCipExcel(lineId) {
-        var cip = cipSessions[lineId];
-        if (!cip) return;
-
-        var line = null;
-        for (var i = 0; i < pastLines.length; i++) { if (pastLines[i].id === lineId) { line = pastLines[i]; break; } }
-        var lineName = line ? line.ad : 'Hat';
-        var cipDate = cip.startedAt ? new Date(cip.startedAt) : new Date();
-        var tarihStr = cipDate.toLocaleDateString('tr-TR', {day:'2-digit',month:'long',year:'numeric'});
-
-        var text = 'CIP YIKAMA RAPORU\n' + lineName + ' \u2014 ' + tarihStr + '\n';
-        text += '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n';
-        for (var pi = 0; pi < cip.phases.length; pi++) {
-            var phase = cip.phases[pi];
-            var wasSkipped = (phase.status === 'done' && !phase.startedAt);
-            var actualMin = _cipActualMin(phase);
-
-            if (wasSkipped) {
-                text += (pi+1) + '. ' + phase.name + ' \u2014 Yap\u0131lmad\u0131\n';
-            } else if (phase.startedAt && phase.endedAt) {
-                text += (pi+1) + '. ' + phase.name + '\n';
-                text += '   ' + _cipTimeStr(phase.startedAt) + ' \u2192 ' + _cipTimeStr(phase.endedAt);
-                text += ' (' + (actualMin !== null ? actualMin : '?') + '/' + phase.durationMin + ' dk)';
-                if (actualMin !== null && actualMin < phase.durationMin) text += ' \u26a0';
-                text += '\n';
-            } else {
-                text += (pi+1) + '. ' + phase.name + ' \u2014 Bekliyor\n';
-            }
-        }
-
-        if (navigator.share) {
-            try {
-                await navigator.share({ title: 'CIP Raporu \u2014 ' + lineName, text: text });
-            } catch(e) {}
-        } else {
-            var waUrl = 'https://wa.me/?text=' + encodeURIComponent(text);
-            window.open(waUrl, '_blank');
-        }
+        return await wb.xlsx.writeBuffer();
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -6871,6 +7119,41 @@
                 initPastFirebase();
             }
         }, 1000);
+    });
+
+    // Sekme/uygulama geri geldiğinde timer'ları endTime'a göre güncelle
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'visible') {
+            var now = Date.now();
+            var changed = false;
+            for (var tid in pastTimers) {
+                var t = pastTimers[tid];
+                if (t.paused) continue;
+                var rem = t.endTime - now;
+                if (rem <= 0) {
+                    // Uygulama kapalıyken bitmiş
+                    clearInterval(t.intervalId);
+                    pastFinished.push({
+                        lineId: t.lineId, historyId: t.historyId,
+                        tankAd: t.tankAd, urunAd: t.urunAd, tonaj: t.tonaj,
+                        finishedAt: new Date(t.endTime).toISOString()
+                    });
+                    delete pastTimers[tid];
+                    changed = true;
+                } else {
+                    t.remainingMs = rem;
+                    updateCountdownUI(tid);
+                }
+            }
+            if (changed) {
+                localStorage.setItem('pastFinished', JSON.stringify(pastFinished));
+                savePastTimers();
+                renderPastLines();
+            }
+        } else {
+            // Sekme arka plana giderken kaydet
+            savePastTimers();
+        }
     });
     </script>
 </body>

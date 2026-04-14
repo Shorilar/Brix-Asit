@@ -3248,30 +3248,55 @@
 
             <!-- Yönetim Paneli -->
             <div id="adminSection" class="hidden">
-                <!-- Kullanıcı Yönetimi -->
-                <div class="card">
-                    <div class="past-header">
-                        <div class="past-header-title">Kullanıcı Yönetimi</div>
+                <!-- Admin Giriş Ekranı (gate) -->
+                <div id="adminLoginGate" class="card" style="max-width:400px;margin:40px auto 0;">
+                    <div style="text-align:center;padding:20px 16px 4px;">
+                        <div style="width:54px;height:54px;background:linear-gradient(135deg,#495057,#212529);border-radius:14px;display:inline-flex;align-items:center;justify-content:center;font-size:24px;color:#fff;margin-bottom:12px;box-shadow:0 8px 20px rgba(0,0,0,0.15);">🛡️</div>
+                        <div style="font-size:16px;font-weight:700;color:#1a1a1a;">Yönetim Girişi</div>
+                        <div style="font-size:11px;color:#718096;margin-top:4px;">Bu alana erişmek için yönetici hesabıyla giriş yapın.</div>
                     </div>
-                    <div id="adminUsersContainer"></div>
+                    <div style="padding:16px;">
+                        <div style="margin-bottom:10px;">
+                            <label style="display:block;font-size:10px;font-weight:700;color:#718096;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Yönetici Kullanıcı Adı</label>
+                            <input type="text" id="adminLoginUser" placeholder="örn: admin" style="width:100%;border:1.5px solid #e0e0e0;border-radius:8px;padding:10px 12px;font-size:13px;font-family:inherit;outline:none;">
+                        </div>
+                        <div style="margin-bottom:12px;">
+                            <label style="display:block;font-size:10px;font-weight:700;color:#718096;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Yönetici Şifresi</label>
+                            <input type="password" id="adminLoginPass" placeholder="••••••••" style="width:100%;border:1.5px solid #e0e0e0;border-radius:8px;padding:10px 12px;font-size:13px;font-family:inherit;outline:none;" onkeydown="if(event.key==='Enter')adminDoLogin()">
+                        </div>
+                        <button onclick="adminDoLogin()" style="width:100%;background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">Giriş Yap</button>
+                        <div id="adminLoginMsg" style="font-size:11px;color:#ef4444;margin-top:8px;display:none;text-align:center;"></div>
+                    </div>
                 </div>
-                <!-- Rol Yönetimi -->
-                <div class="card" style="margin-top:12px;">
-                    <div class="past-header">
-                        <div class="past-header-title">Roller</div>
+
+                <!-- Admin İçerik (kilitli) -->
+                <div id="adminContent" style="display:none;">
+                    <!-- Kullanıcı Yönetimi -->
+                    <div class="card">
+                        <div class="past-header">
+                            <div class="past-header-title">Kullanıcı Yönetimi</div>
+                            <button onclick="adminLogout()" style="background:#f59e0b;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">🔒 Çıkış</button>
+                        </div>
+                        <div id="adminUsersContainer"></div>
                     </div>
-                    <div id="adminRolesContainer"></div>
-                </div>
-                <!-- Yeni Rol Oluştur -->
-                <div class="card" style="margin-top:12px;">
-                    <div class="past-header">
-                        <div class="past-header-title">Yeni Rol Oluştur</div>
+                    <!-- Rol Yönetimi -->
+                    <div class="card" style="margin-top:12px;">
+                        <div class="past-header">
+                            <div class="past-header-title">Roller</div>
+                        </div>
+                        <div id="adminRolesContainer"></div>
                     </div>
-                    <div style="padding:12px;">
-                        <input type="text" id="newRoleName" placeholder="Rol adı (ör: Kalite Sorumlusu)" style="width:100%;border:1.5px solid #e0e0e0;border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;outline:none;margin-bottom:10px;">
-                        <div id="newRolePermsGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:10px;"></div>
-                        <button onclick="createCustomRole()" style="width:100%;background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">Rol Oluştur</button>
-                        <div id="newRoleMsg" style="font-size:11px;color:#22c55e;margin-top:6px;display:none;"></div>
+                    <!-- Yeni Rol Oluştur -->
+                    <div class="card" style="margin-top:12px;">
+                        <div class="past-header">
+                            <div class="past-header-title">Yeni Rol Oluştur</div>
+                        </div>
+                        <div style="padding:12px;">
+                            <input type="text" id="newRoleName" placeholder="Rol adı (ör: Kalite Sorumlusu)" style="width:100%;border:1.5px solid #e0e0e0;border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;outline:none;margin-bottom:10px;">
+                            <div id="newRolePermsGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:10px;"></div>
+                            <button onclick="createCustomRole()" style="width:100%;background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">Rol Oluştur</button>
+                            <div id="newRoleMsg" style="font-size:11px;color:#22c55e;margin-top:6px;display:none;"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -3975,6 +4000,7 @@
             if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
                 if (_licenseCheckInterval) clearInterval(_licenseCheckInterval);
                 localStorage.removeItem('currentUser');
+                sessionStorage.removeItem('adminAuthed');
                 currentUser = null;
                 location.reload();
             }
@@ -5253,7 +5279,91 @@
                 if (tEl) tEl.classList.toggle('active', tab === tabs[ti]);
                 if (sEl) sEl.classList.toggle('hidden', tab !== tabs[ti]);
             }
-            if (tab === 'admin') renderAdminPanel();
+            if (tab === 'admin') _enterAdminTab();
+        }
+
+        // Yönetim sekmesine girişte: admin auth'u kontrol et, login ekranı veya panel göster
+        function _enterAdminTab() {
+            var gate = document.getElementById('adminLoginGate');
+            var content = document.getElementById('adminContent');
+            if (!gate || !content) return;
+
+            if (sessionStorage.getItem('adminAuthed') === '1') {
+                gate.style.display = 'none';
+                content.style.display = 'block';
+                renderAdminPanel();
+            } else {
+                gate.style.display = 'block';
+                content.style.display = 'none';
+                var msg = document.getElementById('adminLoginMsg');
+                if (msg) msg.style.display = 'none';
+                var userInput = document.getElementById('adminLoginUser');
+                if (userInput) setTimeout(function() { userInput.focus(); }, 50);
+            }
+        }
+
+        // Admin giriş doğrulaması — Firebase'den adminUser/adminPassHash çek, karşılaştır
+        async function adminDoLogin() {
+            var userInput = document.getElementById('adminLoginUser');
+            var passInput = document.getElementById('adminLoginPass');
+            var msg = document.getElementById('adminLoginMsg');
+            if (!userInput || !passInput || !msg) return;
+
+            var uVal = (userInput.value || '').trim().toLowerCase();
+            var pVal = (passInput.value || '').trim();
+
+            if (!uVal || !pVal) {
+                msg.textContent = 'Kullanıcı adı ve şifre gerekli.';
+                msg.style.display = 'block';
+                return;
+            }
+            if (!isFirebaseReady || !currentUser) {
+                msg.textContent = 'Firebase bağlantısı yok veya giriş yapılmamış.';
+                msg.style.display = 'block';
+                return;
+            }
+
+            msg.style.display = 'block';
+            msg.style.color = '#718096';
+            msg.textContent = 'Doğrulanıyor...';
+
+            try {
+                var snap = await database.ref('users/' + currentUser.username).once('value');
+                var data = snap.val() || {};
+                var storedUser = data.adminUser || '';
+                var storedHash = data.adminPassHash || '';
+
+                if (!storedUser || !storedHash) {
+                    msg.style.color = '#ef4444';
+                    msg.textContent = 'Bu lisans için yönetici hesabı tanımlanmamış. Lisans üreticinden atayın.';
+                    return;
+                }
+
+                var enteredHash = await _sha256hex(pVal);
+                if (uVal === storedUser && enteredHash === storedHash) {
+                    sessionStorage.setItem('adminAuthed', '1');
+                    passInput.value = '';
+                    msg.style.display = 'none';
+                    _enterAdminTab();
+                } else {
+                    msg.style.color = '#ef4444';
+                    msg.textContent = 'Kullanıcı adı veya şifre hatalı.';
+                }
+            } catch (e) {
+                msg.style.color = '#ef4444';
+                msg.textContent = 'Doğrulama hatası: ' + (e && e.message ? e.message : 'bilinmeyen');
+            }
+        }
+
+        function adminLogout() {
+            sessionStorage.removeItem('adminAuthed');
+            _enterAdminTab();
+        }
+
+        // SHA-256 hex (license-generator ile aynı)
+        async function _sha256hex(str) {
+            var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+            return Array.from(new Uint8Array(buf)).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
         }
 
         function openApprovedPage() {

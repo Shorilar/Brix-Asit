@@ -3857,15 +3857,38 @@
                 role: 'admin' // varsayılan
             };
 
-            // Firebase'den rolü çek
+            // Firebase'den rolü çek ve kullanıcı bilgilerini kaydet
             if (isFirebaseReady) {
-                database.ref('users/' + username + '/role').once('value').then(function(snap) {
-                    if (snap.exists()) {
-                        currentUser.role = snap.val();
-                    } else {
+                database.ref('users/' + username).once('value').then(function(snap) {
+                    var existing = snap.val() || {};
+                    var role = existing.role;
+                    if (!role) {
                         // İlk giriş yapan admin olsun
-                        database.ref('users/' + username + '/role').set('admin');
+                        role = 'admin';
                     }
+                    currentUser.role = role;
+
+                    // Her girişte kullanıcı bilgilerini güncelle (admin panelinde görünsün)
+                    database.ref('users/' + username).update({
+                        username: username,
+                        displayName: displayName,
+                        role: role,
+                        lastLogin: new Date().toISOString()
+                    }).catch(function(err) { console.error('Kullan\u0131c\u0131 bilgisi kaydedilemedi:', err); });
+
+                    // Online presence — bağlantı koptuğunda offline olarak işaretle
+                    try {
+                        var presenceRef = database.ref('users/' + username + '/online');
+                        var lastSeenRef = database.ref('users/' + username + '/lastSeen');
+                        database.ref('.info/connected').on('value', function(snap) {
+                            if (snap.val() === true) {
+                                presenceRef.onDisconnect().set(false);
+                                lastSeenRef.onDisconnect().set(new Date().toISOString());
+                                presenceRef.set(true);
+                            }
+                        });
+                    } catch(e) { console.error('Presence kurulamad\u0131:', e); }
+
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
                     applyRoleUI();
                 }).catch(function() { applyRoleUI(); });
@@ -5234,12 +5257,15 @@
         }
 
         function openApprovedPage() {
-            // Sidebar'ı kapat
+            // Tüm sidebar/overlay'leri kapat, ana ekran temizle
             var sidebar = document.querySelector('.sidebar');
             var overlay = document.querySelector('.overlay');
-            if (sidebar) sidebar.classList.remove('open');
+            var menuBtn = document.querySelector('.menu-btn');
+            var recipeSidebar = document.getElementById('recipeSidebar');
+            if (sidebar) sidebar.classList.remove('active');
             if (overlay) overlay.classList.remove('active');
-            document.body.style.overflow = '';
+            if (menuBtn) menuBtn.classList.remove('active');
+            if (recipeSidebar) recipeSidebar.classList.remove('active');
 
             var page = document.getElementById('approvedPage');
             if (page) { page.style.display = 'block'; document.body.style.overflow = 'hidden'; }
@@ -5249,6 +5275,15 @@
         function closeApprovedPage() {
             var page = document.getElementById('approvedPage');
             if (page) page.style.display = 'none';
+            // Tüm sidebar/overlay'leri kapat — ana ekrana dön
+            var sidebar = document.querySelector('.sidebar');
+            var overlay = document.querySelector('.overlay');
+            var menuBtn = document.querySelector('.menu-btn');
+            var recipeSidebar = document.getElementById('recipeSidebar');
+            if (sidebar) sidebar.classList.remove('active');
+            if (overlay) overlay.classList.remove('active');
+            if (menuBtn) menuBtn.classList.remove('active');
+            if (recipeSidebar) recipeSidebar.classList.remove('active');
             document.body.style.overflow = '';
         }
 
@@ -5464,7 +5499,16 @@
 
                 // Kullanıcı listesi
                 usersContainer.innerHTML = '<div style="padding:16px;text-align:center;color:#a0aec0;font-size:12px;">Y\u00fckleniyor...</div>';
+
+                // Timeout — 5 saniye içinde yanıt gelmezse fallback göster
+                var _adminTimeout = setTimeout(function() {
+                    if (usersContainer.innerHTML.indexOf('Y\u00fckleniyor') >= 0) {
+                        _showAdminFallback(usersContainer, 'Firebase yan\u0131t vermedi (zaman a\u015f\u0131m\u0131).');
+                    }
+                }, 5000);
+
                 database.ref('users').once('value').then(function(snapshot) {
+                    clearTimeout(_adminTimeout);
                     var users = snapshot.val() || {};
                     var allRoles = getAllRoles();
                     var userKeys = Object.keys(users);
@@ -5474,32 +5518,139 @@
                         return;
                     }
 
+                    // Online kullanıcılar en üstte görünsün
+                    userKeys.sort(function(a, b) {
+                        var aOn = users[a].online ? 1 : 0;
+                        var bOn = users[b].online ? 1 : 0;
+                        return bOn - aOn;
+                    });
+
                     var html = '<div style="padding:12px;">';
                     for (var ui = 0; ui < userKeys.length; ui++) {
                         var uname = userKeys[ui];
                         var u = users[uname];
                         var r = u.role || 'operator';
                         var rLabel = allRoles[r] ? allRoles[r].label : r;
-                        html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f0f0;">';
+                        var isOnline = !!u.online;
+                        var isSelf = currentUser && currentUser.username === uname;
+
+                        // Son görülme zamanı
+                        var lastSeenStr = '';
+                        if (!isOnline && u.lastSeen) {
+                            try {
+                                var ls = new Date(u.lastSeen);
+                                var diffMin = Math.floor((Date.now() - ls.getTime()) / 60000);
+                                if (diffMin < 1) lastSeenStr = 'az \u00f6nce';
+                                else if (diffMin < 60) lastSeenStr = diffMin + ' dk \u00f6nce';
+                                else if (diffMin < 1440) lastSeenStr = Math.floor(diffMin/60) + ' saat \u00f6nce';
+                                else lastSeenStr = Math.floor(diffMin/1440) + ' g\u00fcn \u00f6nce';
+                            } catch(e) {}
+                        }
+
+                        html += '<div style="padding:10px 0;border-bottom:1px solid #f0f0f0;">';
+                        html += '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">';
+                        html += '<div style="min-width:0;flex:1;display:flex;align-items:center;gap:8px;">';
+                        // Online/offline dot
+                        html += '<span style="width:10px;height:10px;border-radius:50%;background:' + (isOnline ? '#22c55e' : '#cbd5e0') + ';flex-shrink:0;' + (isOnline ? 'box-shadow:0 0 6px rgba(34,197,94,0.6);' : '') + '"></span>';
                         html += '<div style="min-width:0;flex:1;">';
-                        html += '<div style="font-size:13px;font-weight:700;">' + uname + '</div>';
-                        if (u.displayName && u.displayName !== uname) html += '<div style="font-size:10px;color:#a0aec0;">' + u.displayName + '</div>';
-                        html += '<div style="font-size:10px;color:#718096;font-weight:600;">' + rLabel + '</div>';
+                        html += '<div style="font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">';
+                        html += '<span>' + uname + '</span>';
+                        if (isSelf) html += '<span style="font-size:9px;color:#22c55e;font-weight:600;">(siz)</span>';
+                        html += '<span style="font-size:9px;color:' + (isOnline ? '#22c55e' : '#a0aec0') + ';font-weight:700;text-transform:uppercase;">' + (isOnline ? 'AKT\u0130F' : 'OFFLINE') + '</span>';
                         html += '</div>';
+                        if (u.displayName && u.displayName !== uname) html += '<div style="font-size:10px;color:#a0aec0;">' + u.displayName + '</div>';
+                        html += '<div style="font-size:10px;color:#718096;font-weight:600;">' + rLabel + (lastSeenStr ? ' \u00b7 ' + lastSeenStr : '') + '</div>';
+                        html += '</div></div>';
+                        html += '<div style="display:flex;gap:4px;align-items:center;">';
                         html += '<select onchange="changeUserRole(\'' + uname + '\',this.value)" style="border:1.5px solid #e0e0e0;border-radius:6px;padding:6px 8px;font-size:11px;min-width:120px;">';
                         for (var rk in allRoles) {
                             html += '<option value="' + rk + '"' + (r === rk ? ' selected' : '') + '>' + allRoles[rk].label + '</option>';
                         }
                         html += '</select>';
+                        if (!isSelf) {
+                            html += '<button onclick="revokeUserRole(\'' + uname + '\')" title="Rol\u00fc Geri Al" style="background:#f59e0b;color:#fff;border:none;border-radius:6px;padding:6px 8px;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap;">Rol Kald\u0131r</button>';
+                            html += '<button onclick="deleteUserFromPanel(\'' + uname + '\')" title="Kullan\u0131c\u0131y\u0131 Sil" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 8px;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap;">Sil</button>';
+                        }
                         html += '</div>';
+                        html += '</div></div>';
                     }
                     html += '</div>';
                     usersContainer.innerHTML = html;
                 }).catch(function(err) {
+                    clearTimeout(_adminTimeout);
                     console.error('Kullan\u0131c\u0131 listesi y\u00fcklenemedi:', err);
-                    usersContainer.innerHTML = '<div style="padding:16px;text-align:center;color:#ef4444;font-size:12px;">Kullan\u0131c\u0131 listesi y\u00fcklenemedi. Firebase ba\u011flant\u0131s\u0131n\u0131 kontrol edin.</div>';
+                    _showAdminFallback(usersContainer, 'Firebase\'den kullan\u0131c\u0131lar al\u0131namad\u0131: ' + (err && err.message ? err.message : 'yetki/ba\u011flant\u0131 hatas\u0131'));
                 });
             });
+        }
+
+        // Yönetim paneli için fallback — Firebase /users okunamadığında kullanılır
+        function _showAdminFallback(usersContainer, reason) {
+            if (!usersContainer) return;
+            var allRoles = getAllRoles();
+            var isPermissionError = (reason || '').toLowerCase().indexOf('permission') >= 0;
+            var html = '<div style="padding:12px;">';
+            html += '<div style="font-size:11px;color:#f59e0b;padding:8px;background:#fef3c7;border-radius:6px;margin-bottom:10px;">\u26a0\ufe0f ' + (reason || 'Firebase\'den t\u00fcm kullan\u0131c\u0131lar al\u0131namad\u0131.') + ' Sadece giri\u015f yapm\u0131\u015f mevcut kullan\u0131c\u0131 g\u00f6sterilebiliyor.</div>';
+
+            // Permission hatası ise Firebase kural rehberi göster
+            if (isPermissionError) {
+                html += '<details style="margin-bottom:10px;background:#eff6ff;border:1.5px solid #3b82f6;border-radius:6px;padding:8px;" open>';
+                html += '<summary style="cursor:pointer;font-size:12px;font-weight:700;color:#1e40af;">\u{1F527} \u00c7\u00f6z\u00fcm: Firebase g\u00fcvenlik kurallar\u0131n\u0131 g\u00fcncelleyin (sadece gereken yollar)</summary>';
+                html += '<div style="margin-top:8px;font-size:11px;color:#334155;line-height:1.6;">';
+                html += '<div style="font-weight:700;margin-bottom:4px;">1. Firebase konsoluna gidin:</div>';
+                html += '<a href="https://console.firebase.google.com/project/brix-asitlik/database/brix-asitlik-default-rtdb/rules" target="_blank" style="color:#1e40af;text-decoration:underline;word-break:break-all;">console.firebase.google.com/project/brix-asitlik/database/.../rules</a>';
+                html += '<div style="font-weight:700;margin-top:8px;margin-bottom:4px;">2. Kurallar sekmesine a\u015fa\u011f\u0131daki JSON\'u yap\u0131\u015ft\u0131r\u0131n (sadece /users ve /roles a\u00e7\u0131k, di\u011fer her \u015fey kapal\u0131):</div>';
+                html += '<pre id="fbRulesBlock" style="background:#0f172a;color:#e2e8f0;padding:8px;border-radius:4px;font-size:10px;overflow:auto;margin:0;white-space:pre;">{\n  "rules": {\n    "users": {\n      ".read": true,\n      "$username": {\n        ".read": true,\n        ".write": true\n      }\n    },\n    "roles": {\n      ".read": true,\n      "$roleKey": {\n        ".write": true\n      }\n    }\n  }\n}</pre>';
+                html += '<button onclick="(function(){var t=document.getElementById(\'fbRulesBlock\').innerText;if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){alert(\'Kurallar panoya kopyaland\u0131.\');});}else{alert(t);}})()" style="margin-top:6px;background:#1a1a1a;color:#fff;border:none;border-radius:4px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;">Kopyala</button>';
+                html += '<div style="font-weight:700;margin-top:8px;margin-bottom:4px;">3. "Yay\u0131nla" butonuna bas\u0131n, ard\u0131ndan bu paneli "Yenile" ile tekrar y\u00fckleyin.</div>';
+                html += '<div style="margin-top:6px;color:#64748b;font-size:10px;line-height:1.5;">\u{1F6E1}\uFE0F Bu kural sadece uygulaman\u0131n kulland\u0131\u011f\u0131 <b>/users</b> (kullan\u0131c\u0131lar, roller, ge\u00e7mi\u015f) ve <b>/roles</b> (\u00f6zel rol tan\u0131mlar\u0131) yollar\u0131n\u0131 a\u00e7ar. Di\u011fer her yol (\u00f6rn. /admin, /config, /secrets vb.) varsay\u0131lan olarak <b>kapal\u0131</b> kal\u0131r \u2014 yanl\u0131\u015fl\u0131kla farkl\u0131 bir yola veri kaz\u0131nsa bile d\u0131\u015far\u0131 s\u0131zmaz.</div>';
+                html += '</div></details>';
+            }
+
+            if (currentUser) {
+                var r = currentUser.role || 'admin';
+                var rLabel = allRoles[r] ? allRoles[r].label : r;
+                html += '<div style="padding:10px 0;border-bottom:1px solid #f0f0f0;">';
+                html += '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">';
+                html += '<div style="min-width:0;flex:1;display:flex;align-items:center;gap:8px;">';
+                // Online dot (current user is online since they're logged in)
+                html += '<span style="width:10px;height:10px;border-radius:50%;background:#22c55e;flex-shrink:0;box-shadow:0 0 6px rgba(34,197,94,0.6);"></span>';
+                html += '<div style="min-width:0;flex:1;">';
+                html += '<div style="font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">';
+                html += '<span>' + currentUser.username + '</span>';
+                html += '<span style="font-size:9px;color:#22c55e;font-weight:600;">(siz)</span>';
+                html += '<span style="font-size:9px;color:#22c55e;font-weight:700;text-transform:uppercase;">AKT\u0130F</span>';
+                html += '</div>';
+                if (currentUser.displayName && currentUser.displayName !== currentUser.username) html += '<div style="font-size:10px;color:#a0aec0;">' + currentUser.displayName + '</div>';
+                html += '<div style="font-size:10px;color:#718096;font-weight:600;">' + rLabel + '</div>';
+                html += '</div></div>';
+                html += '<div style="display:flex;gap:4px;align-items:center;">';
+                html += '<select onchange="changeUserRole(\'' + currentUser.username + '\',this.value)" style="border:1.5px solid #e0e0e0;border-radius:6px;padding:6px 8px;font-size:11px;min-width:120px;">';
+                for (var rk in allRoles) {
+                    html += '<option value="' + rk + '"' + (r === rk ? ' selected' : '') + '>' + allRoles[rk].label + '</option>';
+                }
+                html += '</select>';
+                html += '</div>';
+                html += '</div></div>';
+            }
+
+            // Manuel kullanıcı ekle / rol ata formu
+            html += '<div style="padding:10px;margin-top:10px;background:#f7fafc;border-radius:6px;font-size:11px;color:#555;">';
+            html += '<div style="font-weight:700;margin-bottom:6px;">Kullan\u0131c\u0131 Ekle / Rol Ata (el ile):</div>';
+            html += '<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center;">';
+            html += '<input type="text" id="manualUserInput" placeholder="kullan\u0131c\u0131 ad\u0131" style="flex:1;min-width:100px;border:1.5px solid #e0e0e0;border-radius:6px;padding:6px 8px;font-size:11px;">';
+            html += '<select id="manualRoleSelect" style="border:1.5px solid #e0e0e0;border-radius:6px;padding:6px;font-size:11px;">';
+            for (var mrk in allRoles) {
+                html += '<option value="' + mrk + '">' + allRoles[mrk].label + '</option>';
+            }
+            html += '</select>';
+            html += '<button onclick="manualAssignRole()" style="background:#1a1a1a;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;">Ata</button>';
+            html += '<button onclick="renderAdminPanel()" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;">Yenile</button>';
+            html += '</div>';
+            html += '<div style="font-size:10px;color:#a0aec0;margin-top:6px;">Bir kullan\u0131c\u0131 ad\u0131 yaz\u0131p rol verin; sonra "Yenile" ile listeyi tekrar \u00e7ekin.</div>';
+            html += '</div>';
+            html += '</div>';
+            usersContainer.innerHTML = html;
         }
 
         function changeUserRole(uname, role) {
@@ -5510,6 +5661,47 @@
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
                     applyRoleUI();
                 }
+            });
+        }
+
+        function revokeUserRole(uname) {
+            if (!confirm('"' + uname + '" kullan\u0131c\u0131s\u0131n\u0131n rol\u00fc kald\u0131r\u0131lacak (varsay\u0131lan Operat\u00f6r rol\u00fcne d\u00fc\u015fecek). Emin misiniz?')) return;
+            if (!isFirebaseReady) return;
+            database.ref('users/' + uname + '/role').set('operator').then(function() {
+                if (currentUser && currentUser.username === uname) {
+                    currentUser.role = 'operator';
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    applyRoleUI();
+                }
+                renderAdminPanel();
+            }).catch(function(err) { alert('Rol kald\u0131r\u0131lamad\u0131: ' + err.message); });
+        }
+
+        function deleteUserFromPanel(uname) {
+            if (!confirm('"' + uname + '" kullan\u0131c\u0131s\u0131 tamamen silinecek. Bu i\u015flem geri al\u0131namaz. Emin misiniz?')) return;
+            if (!isFirebaseReady) return;
+            database.ref('users/' + uname).remove().then(function() {
+                renderAdminPanel();
+            }).catch(function(err) { alert('Kullan\u0131c\u0131 silinemedi: ' + err.message); });
+        }
+
+        function manualAssignRole() {
+            var input = document.getElementById('manualUserInput');
+            var roleSelect = document.getElementById('manualRoleSelect');
+            if (!input || !roleSelect) return;
+            var uname = (input.value || '').trim().toLowerCase();
+            var role = roleSelect.value;
+            if (!uname) { alert('Kullan\u0131c\u0131 ad\u0131 girin.'); return; }
+            if (!isFirebaseReady) { alert('Firebase ba\u011flant\u0131s\u0131 yok.'); return; }
+            database.ref('users/' + uname).update({
+                username: uname,
+                role: role
+            }).then(function() {
+                input.value = '';
+                alert(uname + ' kullan\u0131c\u0131s\u0131na "' + role + '" rol\u00fc atand\u0131.');
+                renderAdminPanel();
+            }).catch(function(err) {
+                alert('Rol atanamad\u0131: ' + err.message);
             });
         }
 

@@ -1863,16 +1863,21 @@
         /* ===== SEKME BUTONLARI ===== */
         .tab-btn {
             flex: 1;
-            padding: 12px 16px;
+            padding: 10px 8px;
             border: 2px solid #e2e8f0;
             border-radius: 12px;
             background: white;
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 700;
             color: #718096;
             cursor: pointer;
             font-family: inherit;
             transition: all 0.2s;
+            min-width: 0;
+            white-space: nowrap;
+        }
+        @media (min-width: 500px) {
+            .tab-btn { font-size: 13px; padding: 12px 16px; }
         }
         .tab-btn.active {
             background: #000;
@@ -2298,6 +2303,9 @@
         }
         .hat-ariza-menu-item:hover { background: #fee2e2; color: #dc2626; }
         .hat-ariza-menu-item + .hat-ariza-menu-item { border-top: 1px solid #f0f0f0; }
+        .hat-ariza-menu-mola:hover { background: #fef3c7; color: #b45309; }
+        .hat-ariza-banner.mola-banner { background: #f59e0b; }
+        .hat-ariza-btn.mola-active { background: #f59e0b; border-color: #f59e0b; color: #fff; animation: arizaPulse 2s ease-in-out infinite; }
         .hat-card-actions {
             display: flex;
             gap: 4px;
@@ -2437,6 +2445,59 @@
             background: #ef4444;
         }
         .hat-dolum-btn.running:hover { background: #dc2626; }
+        .hat-dolum-btn.intake { background: #7c3aed; }
+        .hat-dolum-btn.intake:hover { background: #6d28d9; }
+
+        .hat-tonaj-bar-wrap {
+            margin-top: 6px;
+            margin-bottom: 6px;
+        }
+        .hat-tonaj-bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 3px;
+            color: #1a1a1a;
+        }
+        .hat-tonaj-bar-label span:last-child { color: #888; font-weight: 600; }
+        .hat-tonaj-bar {
+            height: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .hat-tonaj-bar-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 1s linear, background-color 1s linear;
+            min-width: 2px;
+        }
+        .hat-action-btns {
+            display: flex;
+            gap: 6px;
+            margin-top: 6px;
+        }
+        .hat-action-btns button {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .hat-pastorize-btn {
+            background: #7c3aed;
+            color: #fff;
+        }
+        .hat-pastorize-btn:hover { background: #6d28d9; }
+        .hat-bitir-btn {
+            background: #dc2626;
+            color: #fff;
+        }
+        .hat-bitir-btn:hover { background: #b91c1c; }
 
         .hat-countdown {
             margin-top: 8px;
@@ -3000,9 +3061,11 @@
         </div>
         
         <!-- Sekme Butonları -->
-        <div style="display:flex; gap:8px; margin-bottom:16px;">
+        <div style="display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap;" id="tabBar">
             <button class="tab-btn active" id="tabBrix" onclick="switchAppTab('brix')">Brix - Asitlik</button>
             <button class="tab-btn" id="tabPast" onclick="switchAppTab('past')">Pastörizasyon</button>
+            <button class="tab-btn" id="tabApproved" onclick="switchAppTab('approved')">Onaylanan Tanklar</button>
+            <button class="tab-btn" id="tabAdmin" onclick="switchAppTab('admin')" style="display:none;">Yönetim</button>
         </div>
 
         <!-- Ana Ekran -->
@@ -3178,6 +3241,53 @@
                             <br>Henüz hat eklenmedi.<br>
                             <span style="color:#c0c0c0;">Hat Ekle butonuna basarak başlayın.</span>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Onaylanan Tanklar Sekmesi -->
+            <div id="approvedSection" class="hidden">
+                <div class="card">
+                    <div class="past-header">
+                        <div class="past-header-title">Onaylanan Tanklar</div>
+                    </div>
+                    <div id="approvedTanksContainer">
+                        <div style="font-size:12px;color:#a0aec0;padding:16px;text-align:center;">Henüz onaylanmış tank yok.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Yönetim Paneli -->
+            <div id="adminSection" class="hidden">
+                <div class="card">
+                    <div class="past-header">
+                        <div class="past-header-title">Kullanıcı Yönetimi</div>
+                    </div>
+                    <div id="adminUsersContainer"></div>
+                    <div style="padding:12px;">
+                        <div style="font-size:12px;font-weight:700;color:#555;margin-bottom:8px;">Yeni Kullanıcı Rolü Ata</div>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                            <input type="text" id="adminRoleUser" placeholder="Kullanıcı adı" style="flex:1;min-width:100px;border:1.5px solid #e0e0e0;border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;outline:none;">
+                            <select id="adminRoleSelect" style="border:1.5px solid #e0e0e0;border-radius:8px;padding:8px;font-size:13px;font-family:inherit;">
+                                <option value="operator">Operatör</option>
+                                <option value="tank_operatoru">Tank Operatörü</option>
+                                <option value="pastorize_lideri">Pastörize Lideri</option>
+                                <option value="admin">Yönetici</option>
+                            </select>
+                            <button onclick="assignRole()" style="background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">Ata</button>
+                        </div>
+                        <div id="adminRoleMsg" style="font-size:11px;color:#22c55e;margin-top:6px;display:none;"></div>
+                    </div>
+                </div>
+                <div class="card" style="margin-top:12px;">
+                    <div class="past-header">
+                        <div class="past-header-title">Rol Yetkileri</div>
+                    </div>
+                    <div style="padding:12px;font-size:12px;color:#555;line-height:1.8;">
+                        <div><strong>Operatör:</strong> Sadece Brix-Asitlik sekmesi</div>
+                        <div><strong>Tank Operatörü:</strong> Brix-Asitlik + Onaylanan Tanklar</div>
+                        <div><strong>Pastörize Lideri:</strong> Pastörizasyon + Onaylanan Tanklar</div>
+                        <div><strong>Yönetici:</strong> Tüm sekmeler + Kullanıcı yönetimi</div>
                     </div>
                 </div>
             </div>
@@ -3740,20 +3850,36 @@
                 username: username,
                 password: password,
                 displayName: displayName,
-                loginTime: new Date().toISOString()
+                loginTime: new Date().toISOString(),
+                role: 'admin' // varsayılan
             };
-            
+
+            // Firebase'den rolü çek
+            if (isFirebaseReady) {
+                database.ref('users/' + username + '/role').once('value').then(function(snap) {
+                    if (snap.exists()) {
+                        currentUser.role = snap.val();
+                    } else {
+                        // İlk giriş yapan admin olsun
+                        database.ref('users/' + username + '/role').set('admin');
+                    }
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    applyRoleUI();
+                }).catch(function() { applyRoleUI(); });
+            }
+
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
             document.getElementById('loginScreen').style.display = 'none';
-            
+
             const userDisplay = document.getElementById('currentUserDisplay');
             if (userDisplay) userDisplay.textContent = displayName;
-            
+
             loadUserData();
             _startPeriodicLicenseCheck();
             requestNotificationPermission();
             startNotificationListener();
             loadSavedProducts();
+            applyRoleUI();
         }
         
         // ==================== PERİYODİK LİSANS KONTROLÜ ====================
@@ -3857,6 +3983,16 @@
                     requestNotificationPermission();
                     startNotificationListener();
                     loadSavedProducts();
+                    // Rolü Firebase'den güncelle
+                    if (isFirebaseReady) {
+                        database.ref('users/' + currentUser.username + '/role').once('value').then(function(snap) {
+                            if (snap.exists()) currentUser.role = snap.val();
+                            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                            applyRoleUI();
+                        }).catch(function() { applyRoleUI(); });
+                    } else {
+                        applyRoleUI();
+                    }
                 } else {
                     // Lisans yok veya şifre uyuşmuyor
                     document.getElementById('loginUsername').value = currentUser.username || '';
@@ -4195,6 +4331,56 @@
             if ('Notification' in window && Notification.permission === 'default') {
                 Notification.requestPermission();
             }
+            // Service Worker kaydet
+            registerServiceWorker();
+        }
+
+        var _swReady = null;
+        function registerServiceWorker() {
+            if (!('serviceWorker' in navigator)) return;
+            navigator.serviceWorker.register('sw.js').then(function(reg) {
+                _swReady = reg;
+                // Mevcut timer'ları SW'ye senkronize et
+                syncTimersToSW();
+            }).catch(function(e) {});
+        }
+
+        function getSWRegistration() {
+            return _swReady || (navigator.serviceWorker && navigator.serviceWorker.controller ? navigator.serviceWorker.ready : null);
+        }
+
+        function sendToSW(msg) {
+            if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage(msg);
+            } else if (_swReady && _swReady.active) {
+                _swReady.active.postMessage(msg);
+            }
+        }
+
+        function syncTimersToSW() {
+            if (typeof pastTimers === 'undefined') return;
+            var swTimers = {};
+            for (var tid in pastTimers) {
+                var t = pastTimers[tid];
+                if (t.paused) continue;
+                var line = null;
+                if (typeof pastLines !== 'undefined') {
+                    for (var i = 0; i < pastLines.length; i++) {
+                        if (pastLines[i].id === t.lineId) { line = pastLines[i]; break; }
+                    }
+                }
+                var lineName = line ? line.ad : 'Hat';
+                swTimers[tid] = {
+                    id: tid,
+                    endTime: t.endTime,
+                    title: lineName + ' \u2014 Tank Bitti!',
+                    body: (t.tankAd || '') + ' t\u00fckendi. Yeni tank haz\u0131rlay\u0131n.',
+                    warnTitle: lineName + ' \u2014 Tank Bitiyor!',
+                    warnBody: (t.tankAd || '') + ' yakla\u015f\u0131k 10-12 dakika i\u00e7inde bitecek.',
+                    warnBeforeMs: 720000
+                };
+            }
+            sendToSW({ action: 'syncTimers', timers: swTimers });
         }
         
         // Firebase'den bildirim dinle
@@ -5027,36 +5213,274 @@
         
         // Sekme değiştir
         function switchAppTab(tab) {
-            document.getElementById('tabBrix').classList.toggle('active', tab === 'brix');
-            document.getElementById('tabPast').classList.toggle('active', tab === 'past');
-            document.getElementById('brixSection').classList.toggle('hidden', tab !== 'brix');
-            document.getElementById('pastSection').classList.toggle('hidden', tab !== 'past');
+            // Rol kontrolü
+            var role = (currentUser && currentUser.role) ? currentUser.role : 'admin';
+            var allowed = getAllowedTabs(role);
+            if (allowed.indexOf(tab) < 0 && tab !== 'brix') { tab = allowed[0] || 'brix'; }
+
+            var tabs = ['brix', 'past', 'approved', 'admin'];
+            var sections = ['brixSection', 'pastSection', 'approvedSection', 'adminSection'];
+            var tabIds = ['tabBrix', 'tabPast', 'tabApproved', 'tabAdmin'];
+            for (var ti = 0; ti < tabs.length; ti++) {
+                var tEl = document.getElementById(tabIds[ti]);
+                var sEl = document.getElementById(sections[ti]);
+                if (tEl) tEl.classList.toggle('active', tab === tabs[ti]);
+                if (sEl) sEl.classList.toggle('hidden', tab !== tabs[ti]);
+            }
+            if (tab === 'approved') renderApprovedTanks();
+            if (tab === 'admin') renderAdminPanel();
+        }
+
+        // ==================== YETKİ SİSTEMİ ====================
+        // Tüm yetkiler
+        var ALL_PERMISSIONS = [
+            { key: 'brix_view', label: 'Brix-Asitlik Görüntüle', tab: 'brix' },
+            { key: 'brix_calculate', label: 'Hesaplama Yap', tab: 'brix' },
+            { key: 'tank_manage', label: 'Tank Ekle/Düzenle/Sil', tab: 'brix' },
+            { key: 'tank_approve', label: 'Tank Onayla', tab: 'brix' },
+            { key: 'vardiya_manage', label: 'Vardiya Yönetimi', tab: 'brix' },
+            { key: 'past_view', label: 'Pastörizasyon Görüntüle', tab: 'past' },
+            { key: 'past_hat_manage', label: 'Hat Ekle/Düzenle/Sil', tab: 'past' },
+            { key: 'past_timer', label: 'Dolum Başlat/Durdur', tab: 'past' },
+            { key: 'past_cip', label: 'CIP Yönetimi', tab: 'past' },
+            { key: 'past_ariza', label: 'Arıza/Mola Bildirimi', tab: 'past' },
+            { key: 'approved_view', label: 'Onaylanan Tanklar Görüntüle', tab: 'approved' },
+            { key: 'approved_manage', label: 'Onay Geri Al', tab: 'approved' },
+            { key: 'admin_view', label: 'Yönetim Paneli', tab: 'admin' },
+            { key: 'admin_roles', label: 'Rol Yönetimi', tab: 'admin' }
+        ];
+
+        // Varsayılan roller
+        var DEFAULT_ROLES = {
+            'admin': { label: 'Yönetici', perms: ALL_PERMISSIONS.map(function(p) { return p.key; }) },
+            'pastorize_lideri': { label: 'Pastörize Lideri', perms: ['past_view','past_hat_manage','past_timer','past_cip','past_ariza','approved_view','approved_manage'] },
+            'tank_operatoru': { label: 'Tank Operatörü', perms: ['brix_view','brix_calculate','tank_manage','tank_approve','vardiya_manage','approved_view'] },
+            'operator': { label: 'Operatör', perms: ['brix_view','brix_calculate'] }
+        };
+
+        var _customRoles = {}; // Firebase'den yüklenir
+
+        function loadRoles(cb) {
+            if (!isFirebaseReady || !currentUser) { if (cb) cb(); return; }
+            database.ref('roles').once('value').then(function(snap) {
+                _customRoles = snap.val() || {};
+                if (cb) cb();
+            }).catch(function() { if (cb) cb(); });
+        }
+
+        function getAllRoles() {
+            var merged = {};
+            for (var k in DEFAULT_ROLES) merged[k] = DEFAULT_ROLES[k];
+            for (var ck in _customRoles) merged[ck] = _customRoles[ck];
+            return merged;
+        }
+
+        function getUserPerms() {
+            var role = (currentUser && currentUser.role) ? currentUser.role : 'admin';
+            var roles = getAllRoles();
+            if (roles[role]) return roles[role].perms || [];
+            return DEFAULT_ROLES['admin'].perms; // bilinmeyen rol → tam yetki
+        }
+
+        function hasPermission(permKey) {
+            return getUserPerms().indexOf(permKey) >= 0;
+        }
+
+        function getAllowedTabs(role) {
+            var roles = getAllRoles();
+            var perms = (roles[role] && roles[role].perms) ? roles[role].perms : DEFAULT_ROLES['admin'].perms;
+            var tabs = [];
+            var tabMap = { brix: ['brix_view'], past: ['past_view'], approved: ['approved_view'], admin: ['admin_view'] };
+            for (var t in tabMap) {
+                for (var pi = 0; pi < tabMap[t].length; pi++) {
+                    if (perms.indexOf(tabMap[t][pi]) >= 0) { tabs.push(t); break; }
+                }
+            }
+            return tabs;
+        }
+
+        function applyRoleUI() {
+            var role = (currentUser && currentUser.role) ? currentUser.role : 'admin';
+            loadRoles(function() {
+                var allowed = getAllowedTabs(role);
+                var tabIds = ['tabBrix', 'tabPast', 'tabApproved', 'tabAdmin'];
+                var tabKeys = ['brix', 'past', 'approved', 'admin'];
+                for (var ri = 0; ri < tabIds.length; ri++) {
+                    var el = document.getElementById(tabIds[ri]);
+                    if (el) el.style.display = allowed.indexOf(tabKeys[ri]) >= 0 ? '' : 'none';
+                }
+                switchAppTab(allowed[0] || 'brix');
+            });
+        }
+
+        // Onaylanan Tanklar sekmesini render et
+        function renderApprovedTanks() {
+            var container = document.getElementById('approvedTanksContainer');
+            if (!container) return;
+            var history = [];
+            try { history = JSON.parse(localStorage.getItem('calculationHistory') || '[]'); } catch(e) {}
+            var approved = history.filter(function(h) { return h.approved; });
+
+            if (approved.length === 0) {
+                container.innerHTML = '<div style="font-size:12px;color:#a0aec0;padding:16px;text-align:center;">Hen\u00fcz onaylanm\u0131\u015f tank yok.</div>';
+                return;
+            }
+
+            var html = '';
+            for (var i = 0; i < approved.length; i++) {
+                var h = approved[i];
+                var hIdStr = String(h.id);
+                var dt = h.approvedAt ? new Date(h.approvedAt) : null;
+                var dtStr = dt ? (dt.getDate() + '.' + (dt.getMonth()+1) + '.' + dt.getFullYear() + ' ' + ('0'+dt.getHours()).slice(-2) + ':' + ('0'+dt.getMinutes()).slice(-2)) : '';
+                var tonKg = parseFloat(h.totalTonnage) || 0;
+
+                // Bu tank hangi hatta?
+                var hatName = '';
+                if (typeof pastLines !== 'undefined') {
+                    for (var pi = 0; pi < pastLines.length; pi++) {
+                        var pl = pastLines[pi];
+                        if (pl.tankIds) {
+                            for (var tki = 0; tki < pl.tankIds.length; tki++) {
+                                // tank name match
+                                if (typeof tanks !== 'undefined') {
+                                    for (var tti = 0; tti < tanks.length; tti++) {
+                                        if (tanks[tti].id === pl.tankIds[tki] && tanks[tti].name === h.tank) {
+                                            hatName = pl.ad; break;
+                                        }
+                                    }
+                                }
+                                if (hatName) break;
+                            }
+                        }
+                        if (hatName) break;
+                    }
+                }
+
+                // Timer aktif mi?
+                var timerStatus = '';
+                var timerStatusClass = '';
+                if (typeof pastTimers !== 'undefined') {
+                    for (var tid in pastTimers) {
+                        var pt = pastTimers[tid];
+                        if (String(pt.historyId) === hIdStr) {
+                            if (pt.mode === 'intake') { timerStatus = ' (Past\u00f6rizede)'; timerStatusClass = 'color:#7c3aed;'; }
+                            else if (pt.paused) { timerStatus = ' (Duraklat\u0131lm\u0131\u015f)'; timerStatusClass = 'color:#f59e0b;'; }
+                            else { timerStatus = ' (Dolumda)'; timerStatusClass = 'color:#22c55e;'; }
+                            break;
+                        }
+                    }
+                }
+
+                html += '<div class="hat-approved-box" style="margin:8px 12px;">';
+                html += '<div class="hat-approved-header">';
+                html += '<div><div class="hat-approved-title">' + (h.tank || '') + (timerStatus ? '<span style="font-size:10px;font-weight:600;' + timerStatusClass + '">' + timerStatus + '</span>' : '') + '</div>';
+                html += '<div class="hat-approved-meta">' + (h.approvedUrun || '') + (hatName ? ' \u00b7 Hat: ' + hatName : '') + (dtStr ? ' \u00b7 ' + dtStr : '') + '</div></div>';
+                html += '<div class="hat-approved-stats">';
+                if (h.targetBrix) html += '<div class="hat-stat-chip">Brix: <strong>' + h.targetBrix + '</strong></div>';
+                if (tonKg) html += '<div class="hat-stat-chip">Tonaj: <strong>' + (tonKg/1000).toFixed(2) + ' t</strong></div>';
+                html += '</div></div>';
+                html += '<button class="hat-remove-btn" onclick="undoTankOnayFromApproved(\'' + hIdStr + '\')">Onay\u0131 Geri Al</button>';
+                html += '</div>';
+            }
+            container.innerHTML = html;
         }
         
+        // ==================== YÖNETİM PANELİ ====================
+        function renderAdminPanel() {
+            var container = document.getElementById('adminUsersContainer');
+            if (!container || !isFirebaseReady || !currentUser) {
+                if (container) container.innerHTML = '<div style="padding:16px;text-align:center;color:#a0aec0;font-size:12px;">Firebase ba\u011flant\u0131s\u0131 gerekli.</div>';
+                return;
+            }
+            container.innerHTML = '<div style="padding:16px;text-align:center;color:#a0aec0;font-size:12px;">Y\u00fckleniyor...</div>';
+            database.ref('users').once('value').then(function(snapshot) {
+                var users = snapshot.val() || {};
+                var html = '<div style="padding:12px;">';
+                var roleNames = { admin: 'Y\u00f6netici', pastorize_lideri: 'Past\u00f6rize Lideri', tank_operatoru: 'Tank Operat\u00f6r\u00fc', operator: 'Operat\u00f6r' };
+                var roleColors = { admin: '#1a1a1a', pastorize_lideri: '#7c3aed', tank_operatoru: '#2563eb', operator: '#888' };
+                for (var uname in users) {
+                    var u = users[uname];
+                    var r = u.role || 'operator';
+                    html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0;">';
+                    html += '<div>';
+                    html += '<div style="font-size:13px;font-weight:700;">' + uname + '</div>';
+                    html += '<div style="font-size:10px;color:' + (roleColors[r] || '#888') + ';font-weight:600;">' + (roleNames[r] || r) + '</div>';
+                    html += '</div>';
+                    html += '<select onchange="changeUserRole(\'' + uname + '\',this.value)" style="border:1.5px solid #e0e0e0;border-radius:6px;padding:4px 8px;font-size:11px;">';
+                    var roles = ['operator', 'tank_operatoru', 'pastorize_lideri', 'admin'];
+                    for (var ri = 0; ri < roles.length; ri++) {
+                        html += '<option value="' + roles[ri] + '"' + (r === roles[ri] ? ' selected' : '') + '>' + (roleNames[roles[ri]] || roles[ri]) + '</option>';
+                    }
+                    html += '</select>';
+                    html += '</div>';
+                }
+                html += '</div>';
+                container.innerHTML = html;
+            });
+        }
+
+        function assignRole() {
+            var uname = document.getElementById('adminRoleUser').value.trim();
+            var role = document.getElementById('adminRoleSelect').value;
+            if (!uname) { alert('Kullan\u0131c\u0131 ad\u0131 girin'); return; }
+            if (!isFirebaseReady) return;
+            database.ref('users/' + uname + '/role').set(role).then(function() {
+                var msg = document.getElementById('adminRoleMsg');
+                if (msg) { msg.textContent = uname + ' kullan\u0131c\u0131s\u0131na ' + role + ' rol\u00fc atand\u0131.'; msg.style.display = 'block'; }
+                document.getElementById('adminRoleUser').value = '';
+                renderAdminPanel();
+            });
+        }
+
+        function changeUserRole(uname, role) {
+            if (!isFirebaseReady) return;
+            database.ref('users/' + uname + '/role').set(role).then(function() {
+                // Kendi rolümüz değiştiyse güncelle
+                if (currentUser && currentUser.username === uname) {
+                    currentUser.role = role;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    applyRoleUI();
+                }
+            });
+        }
+
         // Tank onayını geri al
         function undoTankOnay(historyItemId) {
             if (!confirm('Bu tank onayını geri almak istediğinize emin misiniz?')) return;
+            _doUndoTankOnay(historyItemId);
+        }
 
+        // Onaylanan Tanklar sekmesinden çağrılır (string ID)
+        function undoTankOnayFromApproved(historyItemIdStr) {
+            if (!confirm('Bu tank onayını geri almak istediğinize emin misiniz?')) return;
+            // String veya number olarak dene
+            var numId = Number(historyItemIdStr);
+            _doUndoTankOnay(isNaN(numId) ? historyItemIdStr : numId);
+        }
+
+        function _doUndoTankOnay(historyItemId) {
             let history = JSON.parse(localStorage.getItem('calculationHistory') || '[]');
-            const item = history.find(h => h.id === historyItemId);
+            const item = history.find(function(h) { return String(h.id) === String(historyItemId); });
             if (!item || !item.approved) return;
 
             // Pastörizasyondaki aktif timer varsa durdur
             for (var tid in pastTimers) {
-                if (pastTimers[tid].historyId === historyItemId) {
+                if (String(pastTimers[tid].historyId) === String(historyItemId)) {
                     clearInterval(pastTimers[tid].intervalId);
                     delete pastTimers[tid];
                 }
             }
 
             // Ürünün tankKayitlari'ndan kaldır (Excel rapor verisi)
-            const urunIdx = vardiyaUrunler.findIndex(u => u.isim === item.approvedUrun);
-            if (urunIdx >= 0) {
-                const tk = vardiyaUrunler[urunIdx].tankKayitlari || [];
-                const tkIdx = tk.findIndex(t => t.historyId === item.id);
-                if (tkIdx >= 0) tk.splice(tkIdx, 1);
-                saveUrunler();
-                renderUrunList();
+            if (typeof vardiyaUrunler !== 'undefined') {
+                const urunIdx = vardiyaUrunler.findIndex(u => u.isim === item.approvedUrun);
+                if (urunIdx >= 0) {
+                    const tk = vardiyaUrunler[urunIdx].tankKayitlari || [];
+                    const tkIdx = tk.findIndex(function(t) { return String(t.historyId) === String(item.id); });
+                    if (tkIdx >= 0) tk.splice(tkIdx, 1);
+                    saveUrunler();
+                    renderUrunList();
+                }
             }
 
             // History'den onay bilgisini kaldır
@@ -5070,8 +5494,9 @@
             }
 
             loadHistory();
-            // Pastörizasyon bölümünü de güncelle
             if (typeof renderPastLines === 'function') renderPastLines();
+            if (typeof renderApprovedTanks === 'function') renderApprovedTanks();
+            if (typeof savePastTimers === 'function') savePastTimers();
         }
 
         
@@ -6026,7 +6451,6 @@
         var data = {};
         for (var tid in pastTimers) {
             var t = pastTimers[tid];
-            // Çalışıyorsa remainingMs'i endTime'dan güncelle
             if (!t.paused && t.endTime) {
                 t.remainingMs = Math.max(0, t.endTime - Date.now());
             }
@@ -6035,10 +6459,36 @@
                 startTime: t.startTime, endTime: t.endTime,
                 durationMs: t.durationMs, remainingMs: t.remainingMs,
                 paused: t.paused, warningSent: t.warningSent, isWarning: t.isWarning,
-                tankAd: t.tankAd, urunAd: t.urunAd, tonaj: t.tonaj
+                tankAd: t.tankAd, urunAd: t.urunAd, tonaj: t.tonaj,
+                mode: t.mode || 'dolum', intakeStartTime: t.intakeStartTime || null,
+                processedTonaj: t.processedTonaj || 0
             };
         }
         try { localStorage.setItem('pastTimers', JSON.stringify(data)); } catch(e) {}
+        // Firebase'e senkronize et
+        if (typeof isFirebaseReady !== 'undefined' && isFirebaseReady && typeof currentUser !== 'undefined' && currentUser) {
+            _fbSyncLock = true;
+            try { database.ref('users/' + currentUser.username + '/pastTimers').set(data); } catch(e) {}
+            setTimeout(function() { _fbSyncLock = false; }, 1500);
+        }
+    }
+
+    function savePastFinished() {
+        localStorage.setItem('pastFinished', JSON.stringify(pastFinished));
+        if (typeof isFirebaseReady !== 'undefined' && isFirebaseReady && typeof currentUser !== 'undefined' && currentUser) {
+            _fbSyncLock = true;
+            try { database.ref('users/' + currentUser.username + '/pastFinished').set(pastFinished); } catch(e) {}
+            setTimeout(function() { _fbSyncLock = false; }, 1500);
+        }
+    }
+
+    function saveCipSessions() {
+        localStorage.setItem('cipSessions', JSON.stringify(cipSessions));
+        if (typeof isFirebaseReady !== 'undefined' && isFirebaseReady && typeof currentUser !== 'undefined' && currentUser) {
+            _fbSyncLock = true;
+            try { database.ref('users/' + currentUser.username + '/cipSessions').set(cipSessions); } catch(e) {}
+            setTimeout(function() { _fbSyncLock = false; }, 1500);
+        }
     }
 
     // Sayfa kapanırken timer durumunu kaydet
@@ -6073,7 +6523,7 @@
                     tankAd: t.tankAd, urunAd: t.urunAd, tonaj: t.tonaj,
                     finishedAt: new Date(t.endTime).toISOString()
                 });
-                localStorage.setItem('pastFinished', JSON.stringify(pastFinished));
+                savePastFinished();
             } else if (t.endTime && t.endTime > now) {
                 // Hâlâ çalışıyor — kaldığı yerden devam
                 t.remainingMs = t.endTime - now;
@@ -6092,23 +6542,77 @@
         try { var cs = JSON.parse(localStorage.getItem('cipSessions') || '{}'); cipSessions = cs; } catch(e) { cipSessions = {}; }
         restorePastTimers();
         renderPastLines();
+        // SW'ye timer'ları bildir
+        setTimeout(function() {
+            if (typeof syncTimersToSW === 'function') syncTimersToSW();
+        }, 2000);
     }
 
     function savePastLines() {
         localStorage.setItem('pastLines', JSON.stringify(pastLines));
         if (typeof isFirebaseReady !== 'undefined' && isFirebaseReady && typeof currentUser !== 'undefined' && currentUser) {
+            _fbSyncLock = true;
             try { database.ref('users/' + currentUser.username + '/pastLines').set(pastLines); } catch(e) {}
+            setTimeout(function() { _fbSyncLock = false; }, 1500);
         }
     }
 
+    var _fbSyncLock = false;
     function initPastFirebase() {
         if (typeof isFirebaseReady === 'undefined' || !isFirebaseReady || typeof currentUser === 'undefined' || !currentUser) return;
-        database.ref('users/' + currentUser.username + '/pastLines').on('value', function(snapshot) {
+        var uref = 'users/' + currentUser.username;
+
+        // pastLines senkronizasyonu
+        database.ref(uref + '/pastLines').on('value', function(snapshot) {
+            if (_fbSyncLock) return;
             if (snapshot.exists()) {
                 pastLines = snapshot.val() || [];
                 localStorage.setItem('pastLines', JSON.stringify(pastLines));
                 renderPastLines();
             }
+        });
+
+        // pastTimers senkronizasyonu
+        database.ref(uref + '/pastTimers').on('value', function(snapshot) {
+            if (_fbSyncLock) return;
+            var data = snapshot.val() || {};
+            var now = Date.now();
+            // Mevcut interval'ları temizle
+            for (var ot in pastTimers) {
+                if (pastTimers[ot].intervalId) clearInterval(pastTimers[ot].intervalId);
+            }
+            pastTimers = {};
+            for (var tid in data) {
+                var t = data[tid];
+                if (!t || !t.lineId) continue;
+                if (t.paused) {
+                    t.intervalId = null;
+                    pastTimers[tid] = t;
+                } else if (t.endTime && t.endTime > now) {
+                    t.remainingMs = t.endTime - now;
+                    t.intervalId = setInterval((function(id) { return function() { tickTimer(id); }; })(tid), 1000);
+                    pastTimers[tid] = t;
+                }
+                // Bitmiş timer'ları atla (diğer kullanıcı zaten finish'lemiştir)
+            }
+            try { localStorage.setItem('pastTimers', JSON.stringify(data)); } catch(e) {}
+            renderPastLines();
+        });
+
+        // pastFinished senkronizasyonu
+        database.ref(uref + '/pastFinished').on('value', function(snapshot) {
+            if (_fbSyncLock) return;
+            pastFinished = snapshot.val() || [];
+            localStorage.setItem('pastFinished', JSON.stringify(pastFinished));
+            renderPastLines();
+        });
+
+        // cipSessions senkronizasyonu
+        database.ref(uref + '/cipSessions').on('value', function(snapshot) {
+            if (_fbSyncLock) return;
+            cipSessions = snapshot.val() || {};
+            localStorage.setItem('cipSessions', JSON.stringify(cipSessions));
+            renderPastLines();
         });
     }
 
@@ -6136,7 +6640,8 @@
         menu.className = 'hat-ariza-menu';
         menu.id = 'arizaMenu_' + lineId;
         menu.innerHTML = '<button class="hat-ariza-menu-item" onclick="setAriza(\'' + lineId + '\',\'dolum\')">Dolum Hatt\u0131 Ar\u0131za</button>' +
-                         '<button class="hat-ariza-menu-item" onclick="setAriza(\'' + lineId + '\',\'pastorize\')">Past\u00f6rize Ar\u0131za</button>';
+                         '<button class="hat-ariza-menu-item" onclick="setAriza(\'' + lineId + '\',\'pastorize\')">Past\u00f6rize Ar\u0131za</button>' +
+                         '<button class="hat-ariza-menu-item hat-ariza-menu-mola" onclick="setAriza(\'' + lineId + '\',\'mola\')">Mola</button>';
         menu.style.top = (rect.bottom + 4) + 'px';
         menu.style.left = rect.left + 'px';
         document.body.appendChild(menu);
@@ -6287,9 +6792,29 @@
             savePastTimers();
         }
 
-        // Tahmini süreleri güncelle (debounced — buton tıklamasını yutmasın)
-        clearTimeout(_akisRenderTimeout);
-        _akisRenderTimeout = setTimeout(function() { renderPastLines(); }, 600);
+        // Stat chip'lerdeki süreleri yerinde güncelle (DOM rebuild yapmadan)
+        var allBoxes = document.querySelectorAll('#hatcard_' + lineId + ' .hat-stat-chip');
+        if (akisHizi && akisHizi > 0) {
+            allBoxes.forEach(function(chip) {
+                if (chip.textContent.indexOf('S\u00fcre') >= 0) {
+                    var tonChip = chip.parentElement ? chip.parentElement.querySelector('.hat-stat-chip:nth-child(2)') : null;
+                    // Tonajı chip'ten oku
+                    var tonText = '';
+                    chip.parentElement.querySelectorAll('.hat-stat-chip').forEach(function(c) {
+                        if (c.textContent.indexOf('Tonaj') >= 0) tonText = c.textContent;
+                    });
+                    var tonMatch = tonText.match(/([\d.]+)\s*t/);
+                    if (tonMatch) {
+                        var tonKg = parseFloat(tonMatch[1]) * 1000;
+                        var estMin = (tonKg / (akisHizi * 1000)) * 60;
+                        var eH = Math.floor(estMin / 60);
+                        var eM = Math.round(estMin % 60);
+                        var eStr = eH > 0 ? (eH + 's ' + eM + 'dk') : (eM + 'dk');
+                        chip.innerHTML = 'S\u00fcre: <strong>' + eStr + '</strong>';
+                    }
+                }
+            });
+        }
     }
 
     function getApprovedTanksForLine(line) {
@@ -6355,11 +6880,23 @@
                     }
                     var tonajKg = parseFloat(h.totalTonnage) || 0;
 
-                    var btnLabel = isPaused ? 'Devam Et' : (isRunning ? 'Durdur' : 'Tank Doluma Başlat');
-                    var btnClass = 'hat-dolum-btn' + (isPaused ? ' paused' : (isRunning ? ' running' : ''));
+                    var timerMode = timer ? (timer.mode || 'dolum') : 'dolum';
+                    var isIntake = timerMode === 'intake';
+                    var btnLabel = isPaused ? 'Devam Et' : (isRunning ? (isIntake ? 'Al\u0131mda...' : 'Durdur') : 'Tank Doluma Ba\u015flat');
+                    var btnClass = 'hat-dolum-btn' + (isPaused ? ' paused' : (isIntake ? ' intake' : (isRunning ? ' running' : '')));
                     var cdVisible = (isRunning || isPaused) ? ' visible' : '';
                     var cdWarn = isWarn ? ' warning-state' : '';
                     var boxWarn = isWarn ? ' warning-box' : '';
+
+                    // Tonaj hesaplama (gerçek zamanlı)
+                    var processedTonaj = 0;
+                    if (timer) {
+                        var elapsed = timer.paused ? (timer.durationMs - timer.remainingMs) : (Date.now() - timer.startTime);
+                        processedTonaj = timer.processedTonaj || (elapsed / timer.durationMs) * timer.tonaj;
+                        processedTonaj = Math.min(processedTonaj, tonajKg);
+                    }
+                    var remainTonaj = tonajKg - processedTonaj;
+                    var tonajPct = tonajKg > 0 ? (remainTonaj / tonajKg) : 1;
 
                     approvedBoxes += '<div class="hat-approved-box' + boxWarn + '">';
                     approvedBoxes += '<div class="hat-approved-header">';
@@ -6367,7 +6904,6 @@
                     approvedBoxes += '<div class="hat-approved-meta">' + (h.approvedUrun || '') + (approvedDate ? ' \u00b7 ' + approvedDate : '') + '</div></div>';
                     approvedBoxes += '<div class="hat-approved-stats">';
                     if (h.targetBrix) approvedBoxes += '<div class="hat-stat-chip">Brix: <strong>' + h.targetBrix + '</strong></div>';
-                    if (tonajKg) approvedBoxes += '<div class="hat-stat-chip">Tonaj: <strong>' + (tonajKg/1000).toFixed(2) + ' t</strong></div>';
                     // Tahmini süre göster
                     var akisVal = parseFloat(line.akisHizi);
                     if (akisVal > 0 && tonajKg > 0) {
@@ -6375,12 +6911,43 @@
                         var estH = Math.floor(estMinutes / 60);
                         var estM = Math.round(estMinutes % 60);
                         var estStr = estH > 0 ? (estH + 's ' + estM + 'dk') : (estM + 'dk');
-                        approvedBoxes += '<div class="hat-stat-chip">Süre: <strong>' + estStr + '</strong></div>';
+                        approvedBoxes += '<div class="hat-stat-chip">S\u00fcre: <strong>' + estStr + '</strong></div>';
                     }
                     approvedBoxes += '</div></div>';
-                    approvedBoxes += '<button class="' + btnClass + '" onclick="handleTimerBtn(\'' + line.id + '\',' + h.id + ')">' + btnLabel + '</button>';
+
+                    // Tonaj progress bar (aktif timer varsa)
+                    if (timer) {
+                        var barColor = tonajPct > 0.6 ? '#22c55e' : (tonajPct > 0.25 ? '#f59e0b' : '#ef4444');
+                        approvedBoxes += '<div class="hat-tonaj-bar-wrap" id="tb_' + timerId + '">';
+                        approvedBoxes += '<div class="hat-tonaj-bar-label"><span id="tbl_' + timerId + '">' + Math.round(remainTonaj) + ' / ' + Math.round(tonajKg) + ' kg</span><span>' + Math.round(tonajPct * 100) + '%</span></div>';
+                        approvedBoxes += '<div class="hat-tonaj-bar"><div class="hat-tonaj-bar-fill" id="tbf_' + timerId + '" style="width:' + (tonajPct * 100) + '%;background:' + barColor + '"></div></div>';
+                        approvedBoxes += '</div>';
+                    } else {
+                        approvedBoxes += '<div class="hat-stat-chip" style="margin-top:4px">Tonaj: <strong>' + (tonajKg/1000).toFixed(2) + ' t</strong></div>';
+                    }
+
+                    // Ana buton
+                    if (!isIntake) {
+                        approvedBoxes += '<button class="' + btnClass + '" onclick="handleTimerBtn(\'' + line.id + '\',' + h.id + ')">' + btnLabel + '</button>';
+                    }
+
+                    // Pastörizeye Al + Bitir butonları (aktif timer varsa)
+                    if (isRunning && !isIntake) {
+                        approvedBoxes += '<div class="hat-action-btns">';
+                        approvedBoxes += '<button class="hat-pastorize-btn" onclick="pastorizeAl(\'' + timerId + '\')">Past\u00f6rizeye Al</button>';
+                        approvedBoxes += '<button class="hat-bitir-btn" onclick="bitirTank(\'' + timerId + '\')">Bitir</button>';
+                        approvedBoxes += '</div>';
+                    }
+                    // Intake modunda
+                    if (isIntake) {
+                        approvedBoxes += '<button class="hat-dolum-btn intake" disabled>Past\u00f6rize Al\u0131m\u0131nda...</button>';
+                        approvedBoxes += '<div class="hat-action-btns">';
+                        approvedBoxes += '<button class="hat-bitir-btn" onclick="bitirTank(\'' + timerId + '\')" style="flex:1">Bitir</button>';
+                        approvedBoxes += '</div>';
+                    }
+
                     approvedBoxes += '<div class="hat-countdown' + cdVisible + cdWarn + '" id="cd_' + timerId + '">';
-                    approvedBoxes += '<div class="hat-countdown-label">Kalan Sure</div>';
+                    approvedBoxes += '<div class="hat-countdown-label">' + (isIntake ? 'Al\u0131m S\u00fcresi' : 'Kalan S\u00fcre') + '</div>';
                     approvedBoxes += '<div class="hat-countdown-time" id="ct_' + timerId + '">--:--</div>';
                     approvedBoxes += '<div class="hat-countdown-sub" id="cs_' + timerId + '"></div>';
                     approvedBoxes += '<div class="hat-countdown-bar"><div class="hat-countdown-bar-fill" id="cb_' + timerId + '" style="width:100%"></div></div>';
@@ -6389,15 +6956,19 @@
             }
 
             var arizaType = line.ariza || '';
-            var arizaClass = arizaType ? ' ariza-active' : '';
+            var arizaClass = arizaType ? (arizaType === 'mola' ? ' mola-active' : ' ariza-active') : '';
 
             html += '<div class="' + cardClass + '" id="hatcard_' + line.id + '">';
 
-            // Arıza banner
+            // Arıza / Mola banner
             if (arizaType) {
-                var arizaLabel = arizaType === 'dolum' ? 'Dolum Hatt\u0131 Ar\u0131za' : 'Past\u00f6rize Ar\u0131za';
-                html += '<div class="hat-ariza-banner">';
-                html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                var arizaLabel = arizaType === 'mola' ? 'Mola' : (arizaType === 'dolum' ? 'Dolum Hatt\u0131 Ar\u0131za' : 'Past\u00f6rize Ar\u0131za');
+                var bannerCls = arizaType === 'mola' ? 'hat-ariza-banner mola-banner' : 'hat-ariza-banner';
+                var bannerIcon = arizaType === 'mola'
+                    ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 8v4l3 3" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="10" stroke="#fff" stroke-width="2"/></svg>'
+                    : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                html += '<div class="' + bannerCls + '">';
+                html += bannerIcon;
                 html += '<span>' + arizaLabel + '</span>';
                 html += '<button class="hat-ariza-remove-btn" onclick="removeAriza(\'' + line.id + '\')">Kald\u0131r</button>';
                 html += '</div>';
@@ -6420,7 +6991,7 @@
             html += '<div class="hat-body">';
             html += '<div class="hat-akis-row">';
             html += '<div class="hat-akis-label">Ak\u0131\u015f H\u0131z\u0131</div>';
-            html += '<input class="hat-akis-input" type="number" min="0" step="0.1" placeholder="0.0" value="' + (line.akisHizi || '') + '" oninput="updateAkisHizi(\'' + line.id + '\',this.value)">';
+            html += '<input class="hat-akis-input" type="number" inputmode="decimal" min="0" step="0.1" placeholder="0.0" value="' + (line.akisHizi || '') + '" oninput="updateAkisHizi(\'' + line.id + '\',this.value)">';
             html += '<div class="hat-akis-unit">ton/saat</div>';
             html += '</div>';
             html += '<div class="hat-tanks-label">Onaylanan Tanklar</div>';
@@ -6483,6 +7054,86 @@
         else { pauseTimer(timerId); }
     }
 
+    // Pastörizeye Al — dolum durur, alım süresi başlar
+    function pastorizeAl(timerId) {
+        var timer = pastTimers[timerId];
+        if (!timer || timer.paused) return;
+        // Şimdiye kadar işlenen tonaj
+        var elapsed = Date.now() - timer.startTime;
+        timer.processedTonaj = (elapsed / timer.durationMs) * timer.tonaj;
+        timer.mode = 'intake';
+        timer.intakeStartTime = Date.now();
+        // Dolum timer'ını durdurmuyoruz, sayaç devam ediyor ama artık alım süresi gösteriyor
+        savePastTimers();
+        renderPastLines();
+    }
+
+    // Bitir — kalan tonajı hesapla, timer'ı sonlandır
+    function bitirTank(timerId) {
+        var timer = pastTimers[timerId];
+        if (!timer) return;
+
+        // İşlenen tonaj hesapla
+        var elapsed = timer.paused ? (timer.durationMs - timer.remainingMs) : (Date.now() - timer.startTime);
+        var processedTonaj = timer.processedTonaj || (elapsed / timer.durationMs) * timer.tonaj;
+        processedTonaj = Math.min(processedTonaj, timer.tonaj);
+        var kalanTonaj = Math.max(0, timer.tonaj - processedTonaj);
+
+        // Timer'ı durdur
+        clearInterval(timer.intervalId);
+        var lineId = timer.lineId;
+        var historyId = timer.historyId;
+
+        // Biten tanka kaydet
+        pastFinished.push({
+            lineId: timer.lineId, historyId: timer.historyId,
+            tankAd: timer.tankAd, urunAd: timer.urunAd,
+            tonaj: timer.tonaj, processedTonaj: Math.round(processedTonaj),
+            kalanTonaj: Math.round(kalanTonaj),
+            finishedAt: new Date().toISOString()
+        });
+        savePastFinished();
+        delete pastTimers[timerId];
+        savePastTimers();
+
+        // Kalan tonaj varsa kullanıcıya bildir
+        if (kalanTonaj > 10) {
+            alert('Biten: ' + Math.round(processedTonaj) + ' kg\nKalan: ' + Math.round(kalanTonaj) + ' kg\n\nKalan tonaj bir sonraki tanka otomatik eklenecek.');
+            // Aynı hattaki sıradaki onaylı tanka kalan tonajı aktar
+            var approvedList = [];
+            try {
+                var line = null;
+                for (var i = 0; i < pastLines.length; i++) { if (pastLines[i].id === lineId) { line = pastLines[i]; break; } }
+                if (line) approvedList = getApprovedTanksForLine(line);
+            } catch(e) {}
+
+            // Bir sonraki tankı bul (timer'ı henüz başlamamış)
+            for (var ni = 0; ni < approvedList.length; ni++) {
+                var nh = approvedList[ni];
+                var ntid = lineId + '_' + nh.id;
+                if (!pastTimers[ntid] && nh.id !== historyId) {
+                    // Bu tanka kalan tonajı ekle
+                    try {
+                        var hist = JSON.parse(localStorage.getItem('calculationHistory') || '[]');
+                        for (var hi = 0; hi < hist.length; hi++) {
+                            if (hist[hi].id === nh.id) {
+                                hist[hi].totalTonnage = (parseFloat(hist[hi].totalTonnage) || 0) + kalanTonaj;
+                                break;
+                            }
+                        }
+                        localStorage.setItem('calculationHistory', JSON.stringify(hist));
+                        if (typeof isFirebaseReady !== 'undefined' && isFirebaseReady && typeof currentUser !== 'undefined' && currentUser) {
+                            database.ref('users/' + currentUser.username + '/history').set(hist);
+                        }
+                    } catch(e) {}
+                    break;
+                }
+            }
+        }
+
+        renderPastLines();
+    }
+
     function startTimer(lineId, historyId) {
         var line = null;
         for (var i = 0; i < pastLines.length; i++) { if (pastLines[i].id === lineId) { line = pastLines[i]; break; } }
@@ -6513,6 +7164,7 @@
             paused: false, pausedAt: null,
             warningSent: false, isWarning: false,
             tankAd: h.tank || '', urunAd: h.approvedUrun || '', tonaj: tonaj,
+            mode: 'dolum', processedTonaj: 0, intakeStartTime: null,
             intervalId: null
         };
         pastTimers[timerId].intervalId = setInterval(function(tid) {
@@ -6520,6 +7172,7 @@
         }(timerId), 1000);
 
         savePastTimers();
+        if (typeof syncTimersToSW === 'function') syncTimersToSW();
         renderPastLines();
         updateCountdownUI(timerId);
     }
@@ -6532,6 +7185,7 @@
         timer.remainingMs = Math.max(0, timer.endTime - Date.now());
         timer.paused = true;
         savePastTimers();
+        if (typeof sendToSW === 'function') sendToSW({ action: 'clearTimer', id: timerId });
         renderPastLines();
         updateCountdownUI(timerId);
     }
@@ -6545,6 +7199,7 @@
             return function() { tickTimer(tid); };
         }(timerId), 1000);
         savePastTimers();
+        if (typeof syncTimersToSW === 'function') syncTimersToSW();
         renderPastLines();
         updateCountdownUI(timerId);
     }
@@ -6554,6 +7209,7 @@
         clearInterval(pastTimers[timerId].intervalId);
         delete pastTimers[timerId];
         savePastTimers();
+        if (typeof sendToSW === 'function') sendToSW({ action: 'clearTimer', id: timerId });
     }
 
     function tickTimer(timerId) {
@@ -6572,7 +7228,7 @@
                 tonaj: timer.tonaj,
                 finishedAt: new Date().toISOString()
             });
-            localStorage.setItem('pastFinished', JSON.stringify(pastFinished));
+            savePastFinished();
             delete pastTimers[timerId];
             savePastTimers();
             renderPastLines();
@@ -6593,12 +7249,26 @@
     function updateCountdownUI(timerId) {
         var timer = pastTimers[timerId];
         if (!timer) return;
-        var remaining = timer.paused ? timer.remainingMs : Math.max(0, timer.endTime - Date.now());
+        var isIntake = (timer.mode === 'intake');
+        var remaining, timeStr;
+
+        if (isIntake) {
+            // Alım modunda — alım süresi göster (sayıyor yukarı)
+            var intakeElapsed = Date.now() - (timer.intakeStartTime || Date.now());
+            var hhi = Math.floor(intakeElapsed / 3600000);
+            var mmi = Math.floor((intakeElapsed % 3600000) / 60000);
+            var ssi = Math.floor((intakeElapsed % 60000) / 1000);
+            timeStr = hhi > 0 ? (hhi + ':' + p2(mmi) + ':' + p2(ssi)) : (p2(mmi) + ':' + p2(ssi));
+            remaining = timer.remainingMs; // freeze
+        } else {
+            remaining = timer.paused ? timer.remainingMs : Math.max(0, timer.endTime - Date.now());
+            var hh = Math.floor(remaining / 3600000);
+            var mm = Math.floor((remaining % 3600000) / 60000);
+            var ss = Math.floor((remaining % 60000) / 1000);
+            timeStr = hh > 0 ? (hh + ':' + p2(mm) + ':' + p2(ss)) : (p2(mm) + ':' + p2(ss));
+        }
+
         var progress = Math.min(1, Math.max(0, remaining / timer.durationMs));
-        var hh = Math.floor(remaining / 3600000);
-        var mm = Math.floor((remaining % 3600000) / 60000);
-        var ss = Math.floor((remaining % 60000) / 1000);
-        var timeStr = hh > 0 ? (hh + ':' + p2(mm) + ':' + p2(ss)) : (p2(mm) + ':' + p2(ss));
 
         var ct = document.getElementById('ct_' + timerId);
         var cs = document.getElementById('cs_' + timerId);
@@ -6609,10 +7279,27 @@
         if (cb) cb.style.width = (progress * 100) + '%';
         if (cd) cd.classList.add('visible');
         if (cs) {
-            var endDate = new Date(timer.endTime);
-            var endStr = ('0'+endDate.getHours()).slice(-2) + ':' + ('0'+endDate.getMinutes()).slice(-2);
-            cs.textContent = (timer.tonaj / 1000).toFixed(1) + ' t \u00b7 ' + (timer.paused ? 'Duraklatildi' : (endStr + ' sona erer'));
+            if (isIntake) {
+                cs.textContent = 'Past\u00f6rize al\u0131m\u0131 devam ediyor';
+            } else {
+                var endDate = new Date(timer.endTime);
+                var endStr = ('0'+endDate.getHours()).slice(-2) + ':' + ('0'+endDate.getMinutes()).slice(-2);
+                cs.textContent = (timer.tonaj / 1000).toFixed(1) + ' t \u00b7 ' + (timer.paused ? 'Duraklatildi' : (endStr + ' sona erer'));
+            }
         }
+
+        // Tonaj progress bar güncelle
+        var elapsed = timer.paused ? (timer.durationMs - timer.remainingMs) : (Date.now() - timer.startTime);
+        var processedT = timer.processedTonaj || (elapsed / timer.durationMs) * timer.tonaj;
+        processedT = Math.min(processedT, timer.tonaj);
+        var remainT = timer.tonaj - processedT;
+        var tonPct = timer.tonaj > 0 ? (remainT / timer.tonaj) : 1;
+        var barColor = tonPct > 0.6 ? '#22c55e' : (tonPct > 0.25 ? '#f59e0b' : '#ef4444');
+
+        var tbl = document.getElementById('tbl_' + timerId);
+        var tbf = document.getElementById('tbf_' + timerId);
+        if (tbl) tbl.textContent = Math.round(remainT) + ' / ' + Math.round(timer.tonaj) + ' kg';
+        if (tbf) { tbf.style.width = (tonPct * 100) + '%'; tbf.style.background = barColor; }
     }
 
     function p2(n) { return n < 10 ? '0' + n : String(n); }
@@ -6635,9 +7322,10 @@
             banner.classList.add('show');
             setTimeout(function() { banner.classList.remove('show'); }, 8000);
         }
-        if ('Notification' in window) {
+        // Sadece uygulama arka plandayken bildirim gönder
+        if ('Notification' in window && document.hidden) {
             if (Notification.permission === 'granted') {
-                try { var n = new Notification(title, {body:body}); setTimeout(function(){n.close();},10000); } catch(e){}
+                try { var n = new Notification(title, {body:body, requireInteraction:true}); setTimeout(function(){n.close();},15000); } catch(e){}
             } else if (Notification.permission !== 'denied') {
                 Notification.requestPermission().then(function(p){ if(p==='granted') try{new Notification(title,{body:body});}catch(e){} });
             }
@@ -6679,19 +7367,12 @@
             } catch(e) {}
         }
         pastFinished.splice(index, 1);
-        localStorage.setItem('pastFinished', JSON.stringify(pastFinished));
+        savePastFinished();
         if (typeof loadHistory === 'function') loadHistory();
         renderPastLines();
     }
 
     // ==================== CIP SİSTEMİ ====================
-
-    function saveCipSessions() {
-        localStorage.setItem('cipSessions', JSON.stringify(cipSessions));
-        if (typeof isFirebaseReady !== 'undefined' && isFirebaseReady && typeof currentUser !== 'undefined' && currentUser) {
-            try { database.ref('users/' + currentUser.username + '/cipSessions').set(cipSessions); } catch(e) {}
-        }
-    }
 
     function startCip(lineId) {
         cipSessions[lineId] = {
@@ -7146,13 +7827,14 @@
                 }
             }
             if (changed) {
-                localStorage.setItem('pastFinished', JSON.stringify(pastFinished));
+                savePastFinished();
                 savePastTimers();
                 renderPastLines();
             }
         } else {
-            // Sekme arka plana giderken kaydet
+            // Sekme arka plana giderken kaydet ve SW'ye bildir
             savePastTimers();
+            if (typeof syncTimersToSW === 'function') syncTimersToSW();
         }
     });
     </script>

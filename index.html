@@ -3064,7 +3064,6 @@
         <div style="display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap;" id="tabBar">
             <button class="tab-btn active" id="tabBrix" onclick="switchAppTab('brix')">Brix - Asitlik</button>
             <button class="tab-btn" id="tabPast" onclick="switchAppTab('past')">Pastörizasyon</button>
-            <button class="tab-btn" id="tabApproved" onclick="switchAppTab('approved')">Onaylanan Tanklar</button>
             <button class="tab-btn" id="tabAdmin" onclick="switchAppTab('admin')" style="display:none;">Yönetim</button>
         </div>
 
@@ -3245,49 +3244,34 @@
                 </div>
             </div>
 
-            <!-- Onaylanan Tanklar Sekmesi -->
-            <div id="approvedSection" class="hidden">
-                <div class="card">
-                    <div class="past-header">
-                        <div class="past-header-title">Onaylanan Tanklar</div>
-                    </div>
-                    <div id="approvedTanksContainer">
-                        <div style="font-size:12px;color:#a0aec0;padding:16px;text-align:center;">Henüz onaylanmış tank yok.</div>
-                    </div>
-                </div>
-            </div>
+            <!-- Onaylanan Tanklar Sekmesi (kaldırıldı - geçmiş sidebar'da) -->
 
             <!-- Yönetim Paneli -->
             <div id="adminSection" class="hidden">
+                <!-- Kullanıcı Yönetimi -->
                 <div class="card">
                     <div class="past-header">
                         <div class="past-header-title">Kullanıcı Yönetimi</div>
                     </div>
                     <div id="adminUsersContainer"></div>
-                    <div style="padding:12px;">
-                        <div style="font-size:12px;font-weight:700;color:#555;margin-bottom:8px;">Yeni Kullanıcı Rolü Ata</div>
-                        <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                            <input type="text" id="adminRoleUser" placeholder="Kullanıcı adı" style="flex:1;min-width:100px;border:1.5px solid #e0e0e0;border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;outline:none;">
-                            <select id="adminRoleSelect" style="border:1.5px solid #e0e0e0;border-radius:8px;padding:8px;font-size:13px;font-family:inherit;">
-                                <option value="operator">Operatör</option>
-                                <option value="tank_operatoru">Tank Operatörü</option>
-                                <option value="pastorize_lideri">Pastörize Lideri</option>
-                                <option value="admin">Yönetici</option>
-                            </select>
-                            <button onclick="assignRole()" style="background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">Ata</button>
-                        </div>
-                        <div id="adminRoleMsg" style="font-size:11px;color:#22c55e;margin-top:6px;display:none;"></div>
-                    </div>
                 </div>
+                <!-- Rol Yönetimi -->
                 <div class="card" style="margin-top:12px;">
                     <div class="past-header">
-                        <div class="past-header-title">Rol Yetkileri</div>
+                        <div class="past-header-title">Roller</div>
                     </div>
-                    <div style="padding:12px;font-size:12px;color:#555;line-height:1.8;">
-                        <div><strong>Operatör:</strong> Sadece Brix-Asitlik sekmesi</div>
-                        <div><strong>Tank Operatörü:</strong> Brix-Asitlik + Onaylanan Tanklar</div>
-                        <div><strong>Pastörize Lideri:</strong> Pastörizasyon + Onaylanan Tanklar</div>
-                        <div><strong>Yönetici:</strong> Tüm sekmeler + Kullanıcı yönetimi</div>
+                    <div id="adminRolesContainer"></div>
+                </div>
+                <!-- Yeni Rol Oluştur -->
+                <div class="card" style="margin-top:12px;">
+                    <div class="past-header">
+                        <div class="past-header-title">Yeni Rol Oluştur</div>
+                    </div>
+                    <div style="padding:12px;">
+                        <input type="text" id="newRoleName" placeholder="Rol adı (ör: Kalite Sorumlusu)" style="width:100%;border:1.5px solid #e0e0e0;border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;outline:none;margin-bottom:10px;">
+                        <div id="newRolePermsGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:10px;"></div>
+                        <button onclick="createCustomRole()" style="width:100%;background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">Rol Oluştur</button>
+                        <div id="newRoleMsg" style="font-size:11px;color:#22c55e;margin-top:6px;display:none;"></div>
                     </div>
                 </div>
             </div>
@@ -3355,10 +3339,29 @@
                 Temizle
             </button>
         </div>
+        <div style="padding:0 12px;">
+            <button onclick="openApprovedPage()" style="width:100%;padding:10px 14px;margin:8px 0;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="10" stroke="#fff" stroke-width="2"/></svg>
+                <span>Onaylanan Tanklar</span>
+            </button>
+        </div>
         <div class="sidebar-content" id="historyContent">
             <div class="empty-state">
                 <div class="icon">📋</div>
                 <p>Henüz hesaplama yapılmadı</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Onaylanan Tanklar Tam Sayfa -->
+    <div id="approvedPage" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:linear-gradient(135deg,#f5f7fa 0%,#c3cfe2 100%);overflow-y:auto;-webkit-overflow-scrolling:touch;">
+        <div style="max-width:600px;margin:0 auto;padding:12px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                <div style="font-size:18px;font-weight:800;color:#1a1a1a;">Onaylanan Tanklar</div>
+                <button onclick="closeApprovedPage()" style="background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">Kapat</button>
+            </div>
+            <div id="approvedTanksContainer">
+                <div style="font-size:12px;color:#a0aec0;padding:16px;text-align:center;">Henüz onaylanmış tank yok.</div>
             </div>
         </div>
     </div>
@@ -4280,7 +4283,7 @@
                             </div>
                             ${activeVardiya ? (
                                 item.approved
-                                ? '<button class="tank-onay-btn approved" onclick="undoTankOnay(' + item.id + ')">Geri Al</button>'
+                                ? '<div style="display:flex;gap:6px;margin-top:8px;"><button class="tank-onay-btn approved" onclick="undoTankOnay(' + item.id + ')" style="flex:1">Geri Al</button><button class="tank-onay-btn" onclick="removeFromReport(' + item.id + ')" style="flex:1;background:#ef4444;color:#fff;border-color:#ef4444;">Rapordan Sil</button></div>'
                                 : '<button class="tank-onay-btn" onclick="openKaliteModal(' + index + ')">Tank Onayla</button>'
                             ) : ''}
                         </div>
@@ -5218,17 +5221,35 @@
             var allowed = getAllowedTabs(role);
             if (allowed.indexOf(tab) < 0 && tab !== 'brix') { tab = allowed[0] || 'brix'; }
 
-            var tabs = ['brix', 'past', 'approved', 'admin'];
-            var sections = ['brixSection', 'pastSection', 'approvedSection', 'adminSection'];
-            var tabIds = ['tabBrix', 'tabPast', 'tabApproved', 'tabAdmin'];
+            var tabs = ['brix', 'past', 'admin'];
+            var sections = ['brixSection', 'pastSection', 'adminSection'];
+            var tabIds = ['tabBrix', 'tabPast', 'tabAdmin'];
             for (var ti = 0; ti < tabs.length; ti++) {
                 var tEl = document.getElementById(tabIds[ti]);
                 var sEl = document.getElementById(sections[ti]);
                 if (tEl) tEl.classList.toggle('active', tab === tabs[ti]);
                 if (sEl) sEl.classList.toggle('hidden', tab !== tabs[ti]);
             }
-            if (tab === 'approved') renderApprovedTanks();
             if (tab === 'admin') renderAdminPanel();
+        }
+
+        function openApprovedPage() {
+            // Sidebar'ı kapat
+            var sidebar = document.querySelector('.sidebar');
+            var overlay = document.querySelector('.overlay');
+            if (sidebar) sidebar.classList.remove('open');
+            if (overlay) overlay.classList.remove('active');
+            document.body.style.overflow = '';
+
+            var page = document.getElementById('approvedPage');
+            if (page) { page.style.display = 'block'; document.body.style.overflow = 'hidden'; }
+            renderApprovedTanks();
+        }
+
+        function closeApprovedPage() {
+            var page = document.getElementById('approvedPage');
+            if (page) page.style.display = 'none';
+            document.body.style.overflow = '';
         }
 
         // ==================== YETKİ SİSTEMİ ====================
@@ -5290,7 +5311,7 @@
             var roles = getAllRoles();
             var perms = (roles[role] && roles[role].perms) ? roles[role].perms : DEFAULT_ROLES['admin'].perms;
             var tabs = [];
-            var tabMap = { brix: ['brix_view'], past: ['past_view'], approved: ['approved_view'], admin: ['admin_view'] };
+            var tabMap = { brix: ['brix_view'], past: ['past_view'], admin: ['admin_view'] };
             for (var t in tabMap) {
                 for (var pi = 0; pi < tabMap[t].length; pi++) {
                     if (perms.indexOf(tabMap[t][pi]) >= 0) { tabs.push(t); break; }
@@ -5303,8 +5324,8 @@
             var role = (currentUser && currentUser.role) ? currentUser.role : 'admin';
             loadRoles(function() {
                 var allowed = getAllowedTabs(role);
-                var tabIds = ['tabBrix', 'tabPast', 'tabApproved', 'tabAdmin'];
-                var tabKeys = ['brix', 'past', 'approved', 'admin'];
+                var tabIds = ['tabBrix', 'tabPast', 'tabAdmin'];
+                var tabKeys = ['brix', 'past', 'admin'];
                 for (var ri = 0; ri < tabIds.length; ri++) {
                     var el = document.getElementById(tabIds[ri]);
                     if (el) el.style.display = allowed.indexOf(tabKeys[ri]) >= 0 ? '' : 'none';
@@ -5379,7 +5400,10 @@
                 if (h.targetBrix) html += '<div class="hat-stat-chip">Brix: <strong>' + h.targetBrix + '</strong></div>';
                 if (tonKg) html += '<div class="hat-stat-chip">Tonaj: <strong>' + (tonKg/1000).toFixed(2) + ' t</strong></div>';
                 html += '</div></div>';
-                html += '<button class="hat-remove-btn" onclick="undoTankOnayFromApproved(\'' + hIdStr + '\')">Onay\u0131 Geri Al</button>';
+                html += '<div style="display:flex;gap:6px;margin-top:6px;">';
+                html += '<button class="hat-remove-btn" onclick="undoTankOnayFromApproved(\'' + hIdStr + '\')" style="flex:1">Onay\u0131 Geri Al</button>';
+                html += '<button class="hat-remove-btn" onclick="removeFromReport(' + h.id + ')" style="flex:1;background:#ef4444;color:#fff;border-color:#ef4444;">Rapordan Sil</button>';
+                html += '</div>';
                 html += '</div>';
             }
             container.innerHTML = html;
@@ -5387,60 +5411,155 @@
         
         // ==================== YÖNETİM PANELİ ====================
         function renderAdminPanel() {
-            var container = document.getElementById('adminUsersContainer');
-            if (!container || !isFirebaseReady || !currentUser) {
-                if (container) container.innerHTML = '<div style="padding:16px;text-align:center;color:#a0aec0;font-size:12px;">Firebase ba\u011flant\u0131s\u0131 gerekli.</div>';
+            var usersContainer = document.getElementById('adminUsersContainer');
+            var rolesContainer = document.getElementById('adminRolesContainer');
+            var permsGrid = document.getElementById('newRolePermsGrid');
+
+            if (!usersContainer || !isFirebaseReady || !currentUser) {
+                if (usersContainer) usersContainer.innerHTML = '<div style="padding:16px;text-align:center;color:#a0aec0;font-size:12px;">Firebase ba\u011flant\u0131s\u0131 gerekli.</div>';
                 return;
             }
-            container.innerHTML = '<div style="padding:16px;text-align:center;color:#a0aec0;font-size:12px;">Y\u00fckleniyor...</div>';
-            database.ref('users').once('value').then(function(snapshot) {
-                var users = snapshot.val() || {};
-                var html = '<div style="padding:12px;">';
-                var roleNames = { admin: 'Y\u00f6netici', pastorize_lideri: 'Past\u00f6rize Lideri', tank_operatoru: 'Tank Operat\u00f6r\u00fc', operator: 'Operat\u00f6r' };
-                var roleColors = { admin: '#1a1a1a', pastorize_lideri: '#7c3aed', tank_operatoru: '#2563eb', operator: '#888' };
-                for (var uname in users) {
-                    var u = users[uname];
-                    var r = u.role || 'operator';
-                    html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0;">';
-                    html += '<div>';
-                    html += '<div style="font-size:13px;font-weight:700;">' + uname + '</div>';
-                    html += '<div style="font-size:10px;color:' + (roleColors[r] || '#888') + ';font-weight:600;">' + (roleNames[r] || r) + '</div>';
-                    html += '</div>';
-                    html += '<select onchange="changeUserRole(\'' + uname + '\',this.value)" style="border:1.5px solid #e0e0e0;border-radius:6px;padding:4px 8px;font-size:11px;">';
-                    var roles = ['operator', 'tank_operatoru', 'pastorize_lideri', 'admin'];
-                    for (var ri = 0; ri < roles.length; ri++) {
-                        html += '<option value="' + roles[ri] + '"' + (r === roles[ri] ? ' selected' : '') + '>' + (roleNames[roles[ri]] || roles[ri]) + '</option>';
-                    }
-                    html += '</select>';
-                    html += '</div>';
-                }
-                html += '</div>';
-                container.innerHTML = html;
-            });
-        }
 
-        function assignRole() {
-            var uname = document.getElementById('adminRoleUser').value.trim();
-            var role = document.getElementById('adminRoleSelect').value;
-            if (!uname) { alert('Kullan\u0131c\u0131 ad\u0131 girin'); return; }
-            if (!isFirebaseReady) return;
-            database.ref('users/' + uname + '/role').set(role).then(function() {
-                var msg = document.getElementById('adminRoleMsg');
-                if (msg) { msg.textContent = uname + ' kullan\u0131c\u0131s\u0131na ' + role + ' rol\u00fc atand\u0131.'; msg.style.display = 'block'; }
-                document.getElementById('adminRoleUser').value = '';
-                renderAdminPanel();
+            // Yetki checkbox grid'ini doldur
+            if (permsGrid && !permsGrid.hasChildNodes()) {
+                var pgHtml = '';
+                for (var pi = 0; pi < ALL_PERMISSIONS.length; pi++) {
+                    var p = ALL_PERMISSIONS[pi];
+                    pgHtml += '<label style="display:flex;align-items:center;gap:4px;font-size:11px;padding:4px;cursor:pointer;">';
+                    pgHtml += '<input type="checkbox" value="' + p.key + '" style="accent-color:#1a1a1a;">';
+                    pgHtml += '<span>' + p.label + '</span></label>';
+                }
+                permsGrid.innerHTML = pgHtml;
+            }
+
+            // Roller listesi
+            loadRoles(function() {
+                if (rolesContainer) {
+                    var allRoles = getAllRoles();
+                    var rHtml = '<div style="padding:12px;">';
+                    for (var rk in allRoles) {
+                        var role = allRoles[rk];
+                        var isDefault = !!DEFAULT_ROLES[rk];
+                        var permLabels = [];
+                        for (var pli = 0; pli < (role.perms || []).length; pli++) {
+                            for (var ali = 0; ali < ALL_PERMISSIONS.length; ali++) {
+                                if (ALL_PERMISSIONS[ali].key === role.perms[pli]) { permLabels.push(ALL_PERMISSIONS[ali].label); break; }
+                            }
+                        }
+                        rHtml += '<div style="padding:8px 0;border-bottom:1px solid #f0f0f0;">';
+                        rHtml += '<div style="display:flex;align-items:center;justify-content:space-between;">';
+                        rHtml += '<div style="font-size:13px;font-weight:700;">' + (role.label || rk) + '<span style="font-size:9px;color:#a0aec0;margin-left:4px;">(' + rk + ')</span></div>';
+                        if (!isDefault) {
+                            rHtml += '<button onclick="deleteCustomRole(\'' + rk + '\')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;">Sil</button>';
+                        } else {
+                            rHtml += '<span style="font-size:9px;color:#a0aec0;font-weight:600;">Varsay\u0131lan</span>';
+                        }
+                        rHtml += '</div>';
+                        rHtml += '<div style="font-size:10px;color:#718096;margin-top:4px;line-height:1.6;">' + permLabels.join(', ') + '</div>';
+                        rHtml += '</div>';
+                    }
+                    rHtml += '</div>';
+                    rolesContainer.innerHTML = rHtml;
+                }
+
+                // Kullanıcı listesi
+                usersContainer.innerHTML = '<div style="padding:16px;text-align:center;color:#a0aec0;font-size:12px;">Y\u00fckleniyor...</div>';
+                database.ref('users').once('value').then(function(snapshot) {
+                    var users = snapshot.val() || {};
+                    var allRoles = getAllRoles();
+                    var userKeys = Object.keys(users);
+
+                    if (userKeys.length === 0) {
+                        usersContainer.innerHTML = '<div style="padding:16px;text-align:center;color:#a0aec0;font-size:12px;">Kay\u0131tl\u0131 kullan\u0131c\u0131 bulunamad\u0131.</div>';
+                        return;
+                    }
+
+                    var html = '<div style="padding:12px;">';
+                    for (var ui = 0; ui < userKeys.length; ui++) {
+                        var uname = userKeys[ui];
+                        var u = users[uname];
+                        var r = u.role || 'operator';
+                        var rLabel = allRoles[r] ? allRoles[r].label : r;
+                        html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f0f0;">';
+                        html += '<div style="min-width:0;flex:1;">';
+                        html += '<div style="font-size:13px;font-weight:700;">' + uname + '</div>';
+                        if (u.displayName && u.displayName !== uname) html += '<div style="font-size:10px;color:#a0aec0;">' + u.displayName + '</div>';
+                        html += '<div style="font-size:10px;color:#718096;font-weight:600;">' + rLabel + '</div>';
+                        html += '</div>';
+                        html += '<select onchange="changeUserRole(\'' + uname + '\',this.value)" style="border:1.5px solid #e0e0e0;border-radius:6px;padding:6px 8px;font-size:11px;min-width:120px;">';
+                        for (var rk in allRoles) {
+                            html += '<option value="' + rk + '"' + (r === rk ? ' selected' : '') + '>' + allRoles[rk].label + '</option>';
+                        }
+                        html += '</select>';
+                        html += '</div>';
+                    }
+                    html += '</div>';
+                    usersContainer.innerHTML = html;
+                }).catch(function(err) {
+                    console.error('Kullan\u0131c\u0131 listesi y\u00fcklenemedi:', err);
+                    usersContainer.innerHTML = '<div style="padding:16px;text-align:center;color:#ef4444;font-size:12px;">Kullan\u0131c\u0131 listesi y\u00fcklenemedi. Firebase ba\u011flant\u0131s\u0131n\u0131 kontrol edin.</div>';
+                });
             });
         }
 
         function changeUserRole(uname, role) {
             if (!isFirebaseReady) return;
             database.ref('users/' + uname + '/role').set(role).then(function() {
-                // Kendi rolümüz değiştiyse güncelle
                 if (currentUser && currentUser.username === uname) {
                     currentUser.role = role;
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
                     applyRoleUI();
                 }
+            });
+        }
+
+        function createCustomRole() {
+            var nameInput = document.getElementById('newRoleName');
+            var roleName = (nameInput.value || '').trim();
+            if (!roleName) { alert('Rol ad\u0131 girin.'); return; }
+
+            // Key oluştur (Türkçe karakterleri dönüştür)
+            var roleKey = roleName.toLowerCase()
+                .replace(/\u00fc/g,'u').replace(/\u00f6/g,'o').replace(/\u0131/g,'i')
+                .replace(/\u015f/g,'s').replace(/\u00e7/g,'c').replace(/\u011f/g,'g')
+                .replace(/\u00dc/g,'u').replace(/\u00d6/g,'o').replace(/\u0130/g,'i')
+                .replace(/\u015e/g,'s').replace(/\u00c7/g,'c').replace(/\u011e/g,'g')
+                .replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+
+            if (DEFAULT_ROLES[roleKey]) { alert('Bu isim varsay\u0131lan bir rolle \u00e7ak\u0131\u015f\u0131yor.'); return; }
+
+            // Seçili yetkileri topla
+            var permsGrid = document.getElementById('newRolePermsGrid');
+            var selectedPerms = [];
+            if (permsGrid) {
+                var checkboxes = permsGrid.querySelectorAll('input[type=checkbox]:checked');
+                checkboxes.forEach(function(cb) { selectedPerms.push(cb.value); });
+            }
+            if (selectedPerms.length === 0) { alert('En az bir yetki se\u00e7in.'); return; }
+
+            if (!isFirebaseReady) return;
+
+            var roleData = { label: roleName, perms: selectedPerms };
+            database.ref('roles/' + roleKey).set(roleData).then(function() {
+                _customRoles[roleKey] = roleData;
+                nameInput.value = '';
+                // Checkbox'ları temizle
+                if (permsGrid) {
+                    permsGrid.querySelectorAll('input[type=checkbox]').forEach(function(cb) { cb.checked = false; });
+                }
+                var msg = document.getElementById('newRoleMsg');
+                if (msg) { msg.textContent = '"' + roleName + '" rol\u00fc olu\u015fturuldu.'; msg.style.display = 'block'; setTimeout(function() { msg.style.display = 'none'; }, 3000); }
+                renderAdminPanel();
+            });
+        }
+
+        function deleteCustomRole(roleKey) {
+            if (DEFAULT_ROLES[roleKey]) { alert('Varsay\u0131lan roller silinemez.'); return; }
+            if (!confirm('"' + roleKey + '" rol\u00fcn\u00fc silmek istedi\u011finize emin misiniz?')) return;
+            if (!isFirebaseReady) return;
+            database.ref('roles/' + roleKey).remove().then(function() {
+                delete _customRoles[roleKey];
+                renderAdminPanel();
             });
         }
 
@@ -6768,24 +6887,36 @@
         }
         savePastLines();
 
-        // Aktif timer'ları yeni akış hızına göre yeniden hesapla
+        // Aktif timer'ları yeni akış hızına göre yeniden hesapla (harcanmış tonaj üzerinden)
         var akisHizi = parseFloat(val);
         if (akisHizi && akisHizi > 0) {
             for (var tid in pastTimers) {
                 var timer = pastTimers[tid];
                 if (timer.lineId !== lineId) continue;
 
-                var newDurationMs = (timer.tonaj / (akisHizi * 1000)) * 3600000;
+                // Harcanmış tonajı hesapla (eski hıza göre)
                 var elapsed = timer.paused
                     ? (timer.durationMs - timer.remainingMs)
                     : (Date.now() - timer.startTime);
-                var newRemaining = Math.max(0, newDurationMs - elapsed);
+                var base = timer.processedTonajBase || 0;
+                var phaseTotal = timer.tonaj - base;
+                var processedTonaj = base + (timer.durationMs > 0 ? (elapsed / timer.durationMs) * phaseTotal : 0);
+                processedTonaj = Math.min(processedTonaj, timer.tonaj);
 
-                timer.durationMs = newDurationMs;
-                timer.remainingMs = newRemaining;
+                // Kalan tonajı yeni hıza göre hesapla
+                var remainingTonaj = Math.max(0, timer.tonaj - processedTonaj);
+                var newRemainingMs = (remainingTonaj / (akisHizi * 1000)) * 3600000;
 
-                if (!timer.paused) {
-                    timer.endTime = Date.now() + newRemaining;
+                // Timer'ı güncelle — processedTonajBase'i kilitle
+                timer.processedTonajBase = processedTonaj;
+                timer.durationMs = newRemainingMs;
+                timer.remainingMs = newRemainingMs;
+
+                if (timer.paused) {
+                    // Paused: sadece süreleri güncelle
+                } else {
+                    timer.startTime = Date.now();
+                    timer.endTime = Date.now() + newRemainingMs;
                 }
                 updateCountdownUI(tid);
             }
@@ -6812,6 +6943,69 @@
                         var eStr = eH > 0 ? (eH + 's ' + eM + 'dk') : (eM + 'dk');
                         chip.innerHTML = 'S\u00fcre: <strong>' + eStr + '</strong>';
                     }
+                }
+            });
+        }
+    }
+
+    // Manuel tonaj değiştirme
+    function updateTankTonaj(historyId, newVal, lineId) {
+        var newTonaj = parseFloat(newVal);
+        if (!newTonaj || newTonaj <= 0) return;
+
+        // History'de güncelle
+        try {
+            var history = JSON.parse(localStorage.getItem('calculationHistory') || '[]');
+            for (var i = 0; i < history.length; i++) {
+                if (history[i].id === historyId) {
+                    history[i].totalTonnage = newTonaj;
+                    break;
+                }
+            }
+            localStorage.setItem('calculationHistory', JSON.stringify(history));
+            if (typeof isFirebaseReady !== 'undefined' && isFirebaseReady && typeof currentUser !== 'undefined' && currentUser) {
+                database.ref('users/' + currentUser.username + '/history').set(history);
+            }
+        } catch(e) {}
+
+        // Aktif timer varsa tonajı güncelle ve süreyi yeniden hesapla
+        var timerId = lineId + '_' + historyId;
+        var timer = pastTimers[timerId];
+        if (timer) {
+            var elapsed = timer.paused ? (timer.durationMs - timer.remainingMs) : (Date.now() - timer.startTime);
+            var base = timer.processedTonajBase || 0;
+            var phaseTotal = timer.tonaj - base;
+            var processedTonaj = base + (timer.durationMs > 0 ? (elapsed / timer.durationMs) * phaseTotal : 0);
+            processedTonaj = Math.min(processedTonaj, timer.tonaj);
+
+            timer.tonaj = newTonaj;
+            var remainingTonaj = Math.max(0, newTonaj - processedTonaj);
+
+            // Akış hızını bul
+            var akisHizi = 0;
+            for (var j = 0; j < pastLines.length; j++) {
+                if (pastLines[j].id === lineId) { akisHizi = parseFloat(pastLines[j].akisHizi) || 0; break; }
+            }
+            if (akisHizi > 0) {
+                var newRemainingMs = (remainingTonaj / (akisHizi * 1000)) * 3600000;
+                timer.processedTonajBase = processedTonaj;
+                timer.durationMs = newRemainingMs;
+                timer.remainingMs = newRemainingMs;
+                if (!timer.paused) {
+                    timer.startTime = Date.now();
+                    timer.endTime = Date.now() + newRemainingMs;
+                }
+            }
+            savePastTimers();
+            updateCountdownUI(timerId);
+        }
+
+        // Stat chip güncelle (DOM rebuild yapmadan)
+        var card = document.getElementById('hatcard_' + lineId);
+        if (card) {
+            card.querySelectorAll('.hat-stat-chip').forEach(function(chip) {
+                if (chip.textContent.indexOf('Tonaj') >= 0) {
+                    chip.innerHTML = 'Tonaj: <strong>' + (newTonaj/1000).toFixed(2) + ' t</strong>';
                 }
             });
         }
@@ -6888,11 +7082,14 @@
                     var cdWarn = isWarn ? ' warning-state' : '';
                     var boxWarn = isWarn ? ' warning-box' : '';
 
-                    // Tonaj hesaplama (gerçek zamanlı)
+                    // Tonaj hesaplama (gerçek zamanlı, processedTonajBase destekli)
                     var processedTonaj = 0;
                     if (timer) {
                         var elapsed = timer.paused ? (timer.durationMs - timer.remainingMs) : (Date.now() - timer.startTime);
-                        processedTonaj = timer.processedTonaj || (elapsed / timer.durationMs) * timer.tonaj;
+                        var base = timer.processedTonajBase || 0;
+                        var phaseTotal = timer.tonaj - base;
+                        processedTonaj = base + (timer.durationMs > 0 ? (elapsed / timer.durationMs) * phaseTotal : 0);
+                        if (timer.processedTonaj) processedTonaj = Math.max(processedTonaj, timer.processedTonaj);
                         processedTonaj = Math.min(processedTonaj, tonajKg);
                     }
                     var remainTonaj = tonajKg - processedTonaj;
@@ -6915,6 +7112,13 @@
                     }
                     approvedBoxes += '</div></div>';
 
+                    // Manuel tonaj düzenleme
+                    approvedBoxes += '<div style="display:flex;align-items:center;gap:6px;margin:4px 0;padding:0 2px;">';
+                    approvedBoxes += '<span style="font-size:10px;color:#718096;font-weight:600;white-space:nowrap;">Tonaj:</span>';
+                    approvedBoxes += '<input type="number" inputmode="decimal" step="1" min="0" value="' + Math.round(tonajKg) + '" style="flex:1;max-width:90px;border:1.5px solid #e2e8f0;border-radius:6px;padding:4px 6px;font-size:11px;font-weight:700;font-family:inherit;outline:none;text-align:center;" onchange="updateTankTonaj(' + h.id + ',this.value,\'' + line.id + '\')">';
+                    approvedBoxes += '<span style="font-size:10px;color:#a0aec0;">kg</span>';
+                    approvedBoxes += '</div>';
+
                     // Tonaj progress bar (aktif timer varsa)
                     if (timer) {
                         var barColor = tonajPct > 0.6 ? '#22c55e' : (tonajPct > 0.25 ? '#f59e0b' : '#ef4444');
@@ -6922,8 +7126,6 @@
                         approvedBoxes += '<div class="hat-tonaj-bar-label"><span id="tbl_' + timerId + '">' + Math.round(remainTonaj) + ' / ' + Math.round(tonajKg) + ' kg</span><span>' + Math.round(tonajPct * 100) + '%</span></div>';
                         approvedBoxes += '<div class="hat-tonaj-bar"><div class="hat-tonaj-bar-fill" id="tbf_' + timerId + '" style="width:' + (tonajPct * 100) + '%;background:' + barColor + '"></div></div>';
                         approvedBoxes += '</div>';
-                    } else {
-                        approvedBoxes += '<div class="hat-stat-chip" style="margin-top:4px">Tonaj: <strong>' + (tonajKg/1000).toFixed(2) + ' t</strong></div>';
                     }
 
                     // Ana buton
@@ -7058,9 +7260,11 @@
     function pastorizeAl(timerId) {
         var timer = pastTimers[timerId];
         if (!timer || timer.paused) return;
-        // Şimdiye kadar işlenen tonaj
+        // Şimdiye kadar işlenen tonaj (processedTonajBase destekli)
         var elapsed = Date.now() - timer.startTime;
-        timer.processedTonaj = (elapsed / timer.durationMs) * timer.tonaj;
+        var pBase = timer.processedTonajBase || 0;
+        var pPhase = timer.tonaj - pBase;
+        timer.processedTonaj = pBase + (timer.durationMs > 0 ? (elapsed / timer.durationMs) * pPhase : 0);
         timer.mode = 'intake';
         timer.intakeStartTime = Date.now();
         // Dolum timer'ını durdurmuyoruz, sayaç devam ediyor ama artık alım süresi gösteriyor
@@ -7073,9 +7277,12 @@
         var timer = pastTimers[timerId];
         if (!timer) return;
 
-        // İşlenen tonaj hesapla
+        // İşlenen tonaj hesapla (processedTonajBase destekli)
         var elapsed = timer.paused ? (timer.durationMs - timer.remainingMs) : (Date.now() - timer.startTime);
-        var processedTonaj = timer.processedTonaj || (elapsed / timer.durationMs) * timer.tonaj;
+        var bBase = timer.processedTonajBase || 0;
+        var bPhase = timer.tonaj - bBase;
+        var processedTonaj = bBase + (timer.durationMs > 0 ? (elapsed / timer.durationMs) * bPhase : 0);
+        if (timer.processedTonaj) processedTonaj = Math.max(processedTonaj, timer.processedTonaj);
         processedTonaj = Math.min(processedTonaj, timer.tonaj);
         var kalanTonaj = Math.max(0, timer.tonaj - processedTonaj);
 
@@ -7288,9 +7495,12 @@
             }
         }
 
-        // Tonaj progress bar güncelle
+        // Tonaj progress bar güncelle (processedTonajBase destekli)
         var elapsed = timer.paused ? (timer.durationMs - timer.remainingMs) : (Date.now() - timer.startTime);
-        var processedT = timer.processedTonaj || (elapsed / timer.durationMs) * timer.tonaj;
+        var tBase = timer.processedTonajBase || 0;
+        var tPhase = timer.tonaj - tBase;
+        var processedT = tBase + (timer.durationMs > 0 ? (elapsed / timer.durationMs) * tPhase : 0);
+        if (timer.processedTonaj) processedT = Math.max(processedT, timer.processedTonaj);
         processedT = Math.min(processedT, timer.tonaj);
         var remainT = timer.tonaj - processedT;
         var tonPct = timer.tonaj > 0 ? (remainT / timer.tonaj) : 1;
@@ -7335,41 +7545,45 @@
     // ==================== BİTEN TANK YÖNETİMİ ====================
 
     function removeFinishedTank(index) {
-        var ft = pastFinished[index];
-        if (ft) {
-            // History'deki onay bilgisini de kaldır (tekrar görünmesin)
-            try {
-                var history = JSON.parse(localStorage.getItem('calculationHistory') || '[]');
-                var item = null;
-                for (var i = 0; i < history.length; i++) {
-                    if (history[i].id === ft.historyId) { item = history[i]; break; }
-                }
-                if (item) {
-                    // Ürünün tankKayitlari'ndan da kaldır (Excel rapor verisi)
-                    if (typeof vardiyaUrunler !== 'undefined' && item.approvedUrun) {
-                        var urunIdx = vardiyaUrunler.findIndex(function(u) { return u.isim === item.approvedUrun; });
-                        if (urunIdx >= 0) {
-                            var tk = vardiyaUrunler[urunIdx].tankKayitlari || [];
-                            var tkIdx = tk.findIndex(function(t) { return t.historyId === item.id; });
-                            if (tkIdx >= 0) tk.splice(tkIdx, 1);
-                            if (typeof saveUrunler === 'function') saveUrunler();
-                            if (typeof renderUrunList === 'function') renderUrunList();
-                        }
-                    }
-                    delete item.approved;
-                    delete item.approvedUrun;
-                    delete item.approvedAt;
-                    localStorage.setItem('calculationHistory', JSON.stringify(history));
-                    if (typeof isFirebaseReady !== 'undefined' && isFirebaseReady && typeof currentUser !== 'undefined' && currentUser) {
-                        database.ref('users/' + currentUser.username + '/history').set(history);
-                    }
-                }
-            } catch(e) {}
-        }
+        // Sadece pastörizasyon UI'dan kaldır — Excel raporunda kalır
         pastFinished.splice(index, 1);
         savePastFinished();
-        if (typeof loadHistory === 'function') loadHistory();
         renderPastLines();
+    }
+
+    // Rapordan Sil — tankKayitlari'ndan kaldırır (Excel raporundan çıkar)
+    function removeFromReport(historyItemId) {
+        if (!confirm('Bu tank Excel raporundan silinecek. Emin misiniz?')) return;
+        try {
+            var history = JSON.parse(localStorage.getItem('calculationHistory') || '[]');
+            var item = null;
+            for (var i = 0; i < history.length; i++) {
+                if (history[i].id === historyItemId) { item = history[i]; break; }
+            }
+            if (item && item.approvedUrun) {
+                if (typeof vardiyaUrunler !== 'undefined') {
+                    var urunIdx = vardiyaUrunler.findIndex(function(u) { return u.isim === item.approvedUrun; });
+                    if (urunIdx >= 0) {
+                        var tk = vardiyaUrunler[urunIdx].tankKayitlari || [];
+                        var tkIdx = tk.findIndex(function(t) { return t.historyId === item.id; });
+                        if (tkIdx >= 0) tk.splice(tkIdx, 1);
+                        if (typeof saveUrunler === 'function') saveUrunler();
+                        if (typeof renderUrunList === 'function') renderUrunList();
+                    }
+                }
+                // History'den onay bilgisini kaldır
+                delete item.approved;
+                delete item.approvedUrun;
+                delete item.approvedAt;
+                localStorage.setItem('calculationHistory', JSON.stringify(history));
+                if (typeof isFirebaseReady !== 'undefined' && isFirebaseReady && typeof currentUser !== 'undefined' && currentUser) {
+                    database.ref('users/' + currentUser.username + '/history').set(history);
+                }
+            }
+        } catch(e) {}
+        if (typeof loadHistory === 'function') loadHistory();
+        if (typeof renderPastLines === 'function') renderPastLines();
+        if (typeof renderApprovedTanks === 'function') renderApprovedTanks();
     }
 
     // ==================== CIP SİSTEMİ ====================

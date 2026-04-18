@@ -2529,13 +2529,16 @@
             font-variant-numeric: tabular-nums;
         }
         .hat-countdown-sub {
-            font-size: 10px;
-            color: rgba(255,255,255,0.6);
-            margin-top: 2px;
+            font-size: 11px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.85);
+            margin-top: 4px;
+            letter-spacing: 0.3px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
+        .hat-countdown-sub:empty { display: none; }
         .hat-countdown-bar {
             margin-top: 10px;
             background: rgba(255,255,255,0.15);
@@ -2657,10 +2660,41 @@
             border-radius: 12px;
             padding: 12px;
             margin-bottom: 10px;
+            position: relative;
         }
         .hat-approved-box.warning-box {
             background: #fff5f5;
             border-color: #fca5a5;
+        }
+        /* Onaylı tank kaldırma (X) butonu — yuvarlak saydam */
+        .hat-approved-remove {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.08);
+            border: none;
+            color: #475569;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 0;
+            z-index: 2;
+            transition: background 0.15s, color 0.15s, transform 0.1s;
+        }
+        .hat-approved-remove:hover {
+            background: rgba(239,68,68,0.85);
+            color: #fff;
+            transform: scale(1.08);
+        }
+        .hat-approved-remove:active {
+            transform: scale(0.95);
         }
         .hat-approved-header {
             display: flex;
@@ -2669,6 +2703,7 @@
             margin-bottom: 8px;
             flex-wrap: wrap;
             overflow: hidden;
+            padding-right: 26px;
         }
         .hat-approved-header > div:first-child {
             min-width: 0;
@@ -2878,19 +2913,20 @@
             </div>
             
             <div style="margin-bottom: 16px;">
-                <label style="display: block; font-size: 12px; font-weight: 600; color: #495057; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Hesap Adı</label>
-                <input type="text" id="loginUsername" placeholder="Örn: fabrika" style="width: 100%; padding: 12px 14px; border: 2px solid #dee2e6; border-radius: 12px; font-size: 15px; outline: none; transition: all 0.2s; background: #f8f9fa; color: #212529; box-sizing: border-box;" onfocus="this.style.borderColor='#495057'; this.style.background='white'" onblur="this.style.borderColor='#dee2e6'; this.style.background='#f8f9fa'">
+                <label style="display: block; font-size: 12px; font-weight: 600; color: #495057; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Ana Hesap Adı</label>
+                <input type="text" id="loginUsername" placeholder="Örn: fabrika" oninput="_updateLoginKeyPreview()" style="width: 100%; padding: 12px 14px; border: 2px solid #dee2e6; border-radius: 12px; font-size: 15px; outline: none; transition: all 0.2s; background: #f8f9fa; color: #212529; box-sizing: border-box;" onfocus="this.style.borderColor='#495057'; this.style.background='white'" onblur="this.style.borderColor='#dee2e6'; this.style.background='#f8f9fa'">
+                <div id="loginKeyPreview" style="display:none; margin-top:6px; padding:6px 10px; background:#eef5ff; border-left:3px solid #3b82f6; border-radius:6px; font-size:11px; color:#1e40af; font-family:monospace;">Bağlanacak hesap: <b id="loginKeyPreviewVal"></b></div>
             </div>
-            
+
             <div style="margin-bottom: 16px;">
-                <label style="display: block; font-size: 12px; font-weight: 600; color: #495057; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Şifre</label>
+                <label style="display: block; font-size: 12px; font-weight: 600; color: #495057; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Ana Hesap Şifresi</label>
                 <input type="password" id="loginPassword" placeholder="Şifreniz" style="width: 100%; padding: 12px 14px; border: 2px solid #dee2e6; border-radius: 12px; font-size: 15px; outline: none; transition: all 0.2s; background: #f8f9fa; color: #212529; box-sizing: border-box;" onfocus="this.style.borderColor='#495057'; this.style.background='white'" onblur="this.style.borderColor='#dee2e6'; this.style.background='#f8f9fa'">
             </div>
             
             <div style="margin-bottom: 20px;">
-                <label style="display: block; font-size: 12px; font-weight: 600; color: #495057; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Oturumda Kullanılacak İsim</label>
+                <label style="display: block; font-size: 12px; font-weight: 600; color: #495057; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Kullanıcı Adı</label>
                 <input type="text" id="loginDisplayName" placeholder="Örn: Yusuf" style="width: 100%; padding: 12px 14px; border: 2px solid #dee2e6; border-radius: 12px; font-size: 15px; outline: none; transition: all 0.2s; background: #f8f9fa; color: #212529; box-sizing: border-box;" onfocus="this.style.borderColor='#495057'; this.style.background='white'" onblur="this.style.borderColor='#dee2e6'; this.style.background='#f8f9fa'">
-                <p style="font-size: 11px; color: #868e96; margin-top: 5px; line-height: 1.4;">Bu isim hesaplama geçmişinde tank isimlerinin yanında görünecektir</p>
+                <p style="font-size: 11px; color: #868e96; margin-top: 5px; line-height: 1.4;">Bu isim Yönetim panelinde görünür; yönetici size rol atayana kadar "Deneme Sürümü" rolünde giriş yaparsınız. Tank isimlerinin yanında da yazar.</p>
             </div>
             
             <button onclick="handleLogin()" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #495057 0%, #212529 100%); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-family: inherit;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,0.25)'" onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'">
@@ -2903,9 +2939,10 @@
             <div style="margin-top: 16px; padding: 14px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #495057;">
                 <div style="font-size: 12px; color: #495057; line-height: 1.6;">
                     <strong style="display: block; margin-bottom: 8px; color: #212529;">💡 Önemli Bilgiler:</strong>
-                    <span style="display: block; margin-bottom: 6px;">• Aynı hesap adı ve şifreyi kullanan tüm cihazlar <strong>otomatik senkronize</strong> olur</span>
-                    <span style="display: block; margin-bottom: 6px;">• İlk girişte <strong>lisans anahtarı</strong> gerekir, sonraki girişlerde sorulmaz</span>
-                    <span style="display: block;">• Oturumda kullanılacak isim <strong>kişiselleştirme</strong> içindir</span>
+                    <span style="display: block; margin-bottom: 6px;">• <strong>Ana Hesap Adı</strong> ve <strong>Şifre</strong> şirketinize ait ortak bilgilerdir (lisans)</span>
+                    <span style="display: block; margin-bottom: 6px;">• <strong>Kullanıcı Adı</strong> kişisel adınızdır; ilk girişte otomatik kaydedilir, Yönetici sizi panelden görür</span>
+                    <span style="display: block; margin-bottom: 6px;">• Yeni kullanıcılar varsayılan olarak <strong>Deneme Sürümü</strong> rolünde girer — yönetici rol atayana kadar</span>
+                    <span style="display: block;">• İlk girişte <strong>lisans anahtarı</strong> gerekir, sonraki girişlerde sorulmaz</span>
                 </div>
             </div>
             
@@ -3060,11 +3097,18 @@
             </button>
         </div>
         
+        <!-- Bağlı Hesap Banner'ı — hangi Firebase node'una bağlandığımızı her cihazda net göster -->
+        <div id="connectedAccountBanner" style="display:none; margin:0 0 10px 0; padding:8px 12px; background:#eff6ff; border-left:4px solid #3b82f6; border-radius:8px; font-size:12px; color:#1e3a8a;">
+            <span style="opacity:0.7;">🔗 Bağlı Hesap:</span>
+            <b id="connectedAccountBannerVal" style="font-family:monospace;"></b>
+            <span id="connectedAccountBannerRole" style="margin-left:6px; font-size:10px; padding:2px 6px; background:#dbeafe; border-radius:4px;"></span>
+        </div>
+
         <!-- Sekme Butonları -->
         <div style="display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap;" id="tabBar">
             <button class="tab-btn active" id="tabBrix" onclick="switchAppTab('brix')">Brix - Asitlik</button>
             <button class="tab-btn" id="tabPast" onclick="switchAppTab('past')">Pastörizasyon</button>
-            <button class="tab-btn" id="tabAdmin" onclick="switchAppTab('admin')" style="display:none;">Yönetim</button>
+            <button class="tab-btn" id="tabAdmin" onclick="switchAppTab('admin')">Yönetim</button>
         </div>
 
         <!-- Ana Ekran -->
@@ -3229,7 +3273,7 @@
                 <div class="card">
                     <div class="past-header">
                         <div class="past-header-title">Pastörizasyon Hatları</div>
-                        <button class="past-add-btn" onclick="openHatModal()">
+                        <button class="past-add-btn" id="hatAddBtn" onclick="openHatModal()" data-perm="past_hat_manage">
                             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
                             Hat Ekle
                         </button>
@@ -3260,10 +3304,14 @@
                             <label style="display:block;font-size:10px;font-weight:700;color:#718096;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Yönetici Kullanıcı Adı</label>
                             <input type="text" id="adminLoginUser" placeholder="örn: admin" style="width:100%;border:1.5px solid #e0e0e0;border-radius:8px;padding:10px 12px;font-size:13px;font-family:inherit;outline:none;">
                         </div>
-                        <div style="margin-bottom:12px;">
+                        <div style="margin-bottom:10px;">
                             <label style="display:block;font-size:10px;font-weight:700;color:#718096;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Yönetici Şifresi</label>
                             <input type="password" id="adminLoginPass" placeholder="••••••••" style="width:100%;border:1.5px solid #e0e0e0;border-radius:8px;padding:10px 12px;font-size:13px;font-family:inherit;outline:none;" onkeydown="if(event.key==='Enter')adminDoLogin()">
                         </div>
+                        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#495057;cursor:pointer;margin-bottom:12px;user-select:none;">
+                            <input type="checkbox" id="adminLoginRemember" style="width:16px;height:16px;cursor:pointer;accent-color:#1a1a1a;">
+                            <span>Beni hatırla (cihazdan çıkana kadar açık kal)</span>
+                        </label>
                         <button onclick="adminDoLogin()" style="width:100%;background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">Giriş Yap</button>
                         <div id="adminLoginMsg" style="font-size:11px;color:#ef4444;margin-top:8px;display:none;text-align:center;"></div>
                     </div>
@@ -3293,7 +3341,8 @@
                         </div>
                         <div style="padding:12px;">
                             <input type="text" id="newRoleName" placeholder="Rol adı (ör: Kalite Sorumlusu)" style="width:100%;border:1.5px solid #e0e0e0;border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;outline:none;margin-bottom:10px;">
-                            <div id="newRolePermsGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:10px;"></div>
+                            <div style="font-size:11px;color:#64748b;margin-bottom:6px;line-height:1.5;">💡 Her yetki ne işe yarıyor görebilmek için kutucukların yanındaki açıklamalara bakın. Birden fazla yetki seçebilirsiniz.</div>
+                            <div id="newRolePermsGrid" style="display:grid;grid-template-columns:1fr;gap:2px;margin-bottom:10px;max-height:320px;overflow-y:auto;padding:4px;border:1px solid #e2e8f0;border-radius:8px;background:#fafafa;"></div>
                             <button onclick="createCustomRole()" style="width:100%;background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">Rol Oluştur</button>
                             <div id="newRoleMsg" style="font-size:11px;color:#22c55e;margin-top:6px;display:none;"></div>
                         </div>
@@ -3337,7 +3386,7 @@
                     </div>
                 </div>
 
-                <button class="btn btn-primary" id="addTankButton" onclick="addTank()">
+                <button class="btn btn-primary" id="addTankButton" onclick="addTank()" data-perm="tank_manage">
                     Tank Ekle
                 </button>
                 
@@ -3468,7 +3517,7 @@
             </div>
             
             <!-- Başlat Butonu -->
-            <button class="btn btn-primary" id="vardiyaStartBtn" onclick="startVardiya()" style="margin-top: 8px;">
+            <button class="btn btn-primary" id="vardiyaStartBtn" onclick="startVardiya()" data-perm="vardiya_manage" style="margin-top: 8px;">
                 ✅ Vardiyayı Başlat
             </button>
         </div>
@@ -3655,7 +3704,28 @@
             const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
             return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
         }
-        
+
+        // Kullanıcı adı normalizasyonu — BÜYÜK/KÜÇÜK HARFE DOKUNMAZ.
+        // Sadece teknik tutarlılık için: Unicode birleşik form (NFKC), boşluk sadeleştirme,
+        // ve Firebase key'inde yasak olan karakterleri (. # $ / [ ] ) alt çizgiye çevirme.
+        // Yani "Göknur" ve "göknur" FARKLI hesaplar olarak kalır; lisans hangi yazımla verildiyse o geçerlidir.
+        function _normUserKey(s) {
+            if (s === null || s === undefined) return '';
+            var t = String(s);
+            try { t = t.normalize('NFKC'); } catch(e) { /* eski tarayıcı */ }
+            t = t.trim();
+            t = t.replace(/[\s\u00A0\u2000-\u200B\u202F\u205F\u3000]+/g, ' ');
+            t = t.replace(/[.#$/\[\]]/g, '_');
+            return t;
+        }
+
+        // Eski .toLowerCase() ile üretilen key'i de hesaplar (geri uyumluluk için fallback arama).
+        // Yeni sistemde case korunur ama eski kayıtlar lowercase olduğu için hâlâ bulunabilsin diye tutuluyor.
+        function _legacyUserKey(s) {
+            if (s === null || s === undefined) return '';
+            return String(s).trim().toLowerCase();
+        }
+
         async function _hmacSign(data, secret) {
             const enc = new TextEncoder();
             const key = await crypto.subtle.importKey('raw', enc.encode(secret),
@@ -3687,8 +3757,14 @@
                 
                 const data = JSON.parse(dataStr);
                 
-                // Kullanıcı adı kontrolü
-                if (data.u !== username.toLowerCase()) throw new Error('Bu lisans "' + data.u + '" hesabına ait, "' + username + '" için kullanılamaz');
+                // Kullanıcı adı kontrolü — BÜYÜK/KÜÇÜK harfe duyarlı birebir karşılaştırma.
+                // Lisans hangi yazımla üretildiyse girişte de aynen yazılmalı.
+                // Eski (lowercase) lisanslarla geri uyumluluk için legacy key de kabul edilir.
+                var _uNorm = _normUserKey(username);
+                var _uLeg  = _legacyUserKey(username);
+                if (data.u !== _uNorm && data.u !== _uLeg) {
+                    throw new Error('Bu lisans "' + data.u + '" hesabına ait, "' + username + '" için kullanılamaz (büyük/küçük harfe dikkat edin)');
+                }
                 
                 // Şifre hash kontrolü
                 const passHash = (await _sha256hex(password)).substring(0,16);
@@ -3706,88 +3782,133 @@
         function _licenseExistsForUser(username) {
             try {
                 const stored = JSON.parse(localStorage.getItem('brix_validated_licenses') || '{}');
-                return stored[username.toLowerCase()] ? true : false;
+                return (stored[_normUserKey(username)] || stored[_legacyUserKey(username)]) ? true : false;
             } catch { return false; }
         }
-        
+
         async function _isStoredPasswordCorrect(username, password) {
             try {
                 const passHash = (await _sha256hex(password)).substring(0, 16);
-                
-                // Önce localStorage'dan bak (hızlı)
-                const stored = JSON.parse(localStorage.getItem('brix_validated_licenses') || '{}');
-                const entry = stored[username.toLowerCase()];
-                if (entry && entry.ph === passHash) return true;
-                
-                // localStorage'da yoksa Firebase'den kontrol et
+                const uNorm = _normUserKey(username);
+                const uLeg  = _legacyUserKey(username);
+
+                // FIREBASE AUTHORITATIVE: Eğer Firebase bağlıysa, gerçek kaynak orası.
+                // Lisans generator'da "Sil" dediğinizde /users/{user}/licenseValidated tamamen kaldırılır.
+                // Başka cihazdaki cache yüzünden silinmiş hesabın girişe izin vermesini engellemek için
+                // Firebase'i önce sorguluyoruz. Yok ise local cache de temizlenir ve false dönülür.
                 if (isFirebaseReady) {
-                    return new Promise((resolve) => {
-                        database.ref('users/' + username.toLowerCase() + '/licenseValidated').once('value', (snap) => {
-                            if (snap.exists()) {
-                                const fbData = snap.val();
-                                if (fbData.ph === passHash) {
-                                    // Firebase'de var, localStorage'a da kaydet (cache)
-                                    const s = JSON.parse(localStorage.getItem('brix_validated_licenses') || '{}');
-                                    s[username.toLowerCase()] = fbData;
-                                    localStorage.setItem('brix_validated_licenses', JSON.stringify(s));
-                                    resolve(true);
-                                } else {
-                                    resolve(false);
+                    const tryKey = function(k) {
+                        return new Promise(function(resolve) {
+                            database.ref('users/' + k + '/licenseValidated').once('value', function(snap) {
+                                if (snap.exists()) {
+                                    const fbData = snap.val();
+                                    if (fbData && fbData.ph === passHash) {
+                                        // FB'de doğru — local cache'i tazele
+                                        try {
+                                            const s = JSON.parse(localStorage.getItem('brix_validated_licenses') || '{}');
+                                            s[uNorm] = fbData;
+                                            localStorage.setItem('brix_validated_licenses', JSON.stringify(s));
+                                        } catch(e) {}
+                                        resolve({ found: true, match: true });
+                                        return;
+                                    }
+                                    // FB'de var ama hash uyuşmuyor — yanlış şifre
+                                    resolve({ found: true, match: false });
+                                    return;
                                 }
-                            } else {
-                                resolve(false);
-                            }
-                        }, () => resolve(false));
-                    });
+                                // FB'de hiç yok
+                                resolve({ found: false, match: false });
+                            }, function() { resolve({ found: null, match: false }); });
+                        });
+                    };
+                    let r = await tryKey(uNorm);
+                    if (r.found) {
+                        if (r.match) return true;
+                        return false; // FB'de var ama şifre yanlış
+                    }
+                    // uNorm'da yoksa legacy key'i dene
+                    if (uNorm !== uLeg) {
+                        r = await tryKey(uLeg);
+                        if (r.found) {
+                            if (r.match) return true;
+                            return false;
+                        }
+                    }
+                    // Firebase erişilebilir olmasına rağmen hiçbir key'de kayıt yok →
+                    // lisans silinmiş. Local cache'i temizle ki "yeniden lisans iste" akışı tetiklensin.
+                    if (r.found === false) {
+                        try {
+                            const s = JSON.parse(localStorage.getItem('brix_validated_licenses') || '{}');
+                            let changed = false;
+                            if (s[uNorm] !== undefined) { delete s[uNorm]; changed = true; }
+                            if (s[uLeg]  !== undefined) { delete s[uLeg];  changed = true; }
+                            if (changed) localStorage.setItem('brix_validated_licenses', JSON.stringify(s));
+                        } catch(e) {}
+                        return false;
+                    }
+                    // FB erişilemedi (r.found === null) → offline fallback: local cache'e düş
                 }
-                
+
+                // Offline fallback: localStorage'dan bak — her iki key'i de dene
+                const stored = JSON.parse(localStorage.getItem('brix_validated_licenses') || '{}');
+                const entry = stored[uNorm] || stored[uLeg];
+                if (entry && entry.ph === passHash) return true;
+
                 return false;
             } catch { return false; }
         }
-        
-        // Firebase'den iptal kontrolü
+
+        // Firebase'den iptal kontrolü — her iki key varyantı da revoked ise revoked döner
         function _checkFirebaseLicenseStatus(username) {
-            return new Promise((resolve) => {
+            return new Promise(function(resolve) {
                 if (!isFirebaseReady) { resolve('active'); return; }
-                const ref = database.ref('users/' + username.toLowerCase() + '/licenseRevoked');
-                ref.once('value', (snap) => {
-                    if (snap.exists() && snap.val() === true) {
-                        resolve('revoked');
-                    } else {
-                        resolve('active');
-                    }
-                }, () => {
-                    resolve('active');
+                var keys = [_normUserKey(username)];
+                var leg = _legacyUserKey(username);
+                if (leg !== keys[0]) keys.push(leg);
+                var remaining = keys.length;
+                var revoked = false;
+                keys.forEach(function(k) {
+                    database.ref('users/' + k + '/licenseRevoked').once('value', function(snap) {
+                        if (snap.exists() && snap.val() === true) revoked = true;
+                        if (--remaining === 0) resolve(revoked ? 'revoked' : 'active');
+                    }, function() {
+                        if (--remaining === 0) resolve(revoked ? 'revoked' : 'active');
+                    });
                 });
             });
         }
-        
+
         // Lisans iptal — hem local hem Firebase
         function _clearLocalLicense(username) {
             try {
                 const stored = JSON.parse(localStorage.getItem('brix_validated_licenses') || '{}');
-                delete stored[username.toLowerCase()];
+                delete stored[_normUserKey(username)];
+                delete stored[_legacyUserKey(username)];
                 localStorage.setItem('brix_validated_licenses', JSON.stringify(stored));
             } catch {}
             if (isFirebaseReady) {
-                database.ref('users/' + username.toLowerCase() + '/licenseValidated').set(null);
+                database.ref('users/' + _normUserKey(username) + '/licenseValidated').set(null);
+                if (_legacyUserKey(username) !== _normUserKey(username)) {
+                    database.ref('users/' + _legacyUserKey(username) + '/licenseValidated').set(null);
+                }
             }
         }
-        
+
         // Lisans kaydet — hem local hem Firebase (tüm cihazlar görsün)
         async function _storeLicense(username, password, licenseKey) {
             try {
                 const passHash = (await _sha256hex(password)).substring(0, 16);
                 const data = { ph: passHash, validatedAt: new Date().toISOString() };
-                
+                const uNorm = _normUserKey(username);
+
                 // localStorage
                 const stored = JSON.parse(localStorage.getItem('brix_validated_licenses') || '{}');
-                stored[username.toLowerCase()] = data;
+                stored[uNorm] = data;
                 localStorage.setItem('brix_validated_licenses', JSON.stringify(stored));
-                
+
                 // Firebase (diğer cihazlar da görsün)
                 if (isFirebaseReady) {
-                    database.ref('users/' + username.toLowerCase() + '/licenseValidated').set(data);
+                    database.ref('users/' + uNorm + '/licenseValidated').set(data);
                 }
             } catch {}
         }
@@ -3860,7 +3981,7 @@
                 
                 // Firebase'de iptal bayrağını kaldır
                 if (isFirebaseReady) {
-                    database.ref('users/' + username.toLowerCase() + '/licenseRevoked').set(false);
+                    database.ref('users/' + _normUserKey(username) + '/licenseRevoked').set(false);
                 }
                 
                 _hideLoginError();
@@ -3872,50 +3993,117 @@
             }
         }
         
+        // Ba\u011fl\u0131 hesap banner'\u0131n\u0131 g\u00fcncelle (normalize edilmi\u015f Firebase key'ini g\u00f6ster)
+        function _updateConnectedAccountBanner() {
+            try {
+                var b = document.getElementById('connectedAccountBanner');
+                var v = document.getElementById('connectedAccountBannerVal');
+                var r = document.getElementById('connectedAccountBannerRole');
+                if (!b || !v || !currentUser) { if (b) b.style.display='none'; return; }
+                var owner = currentUser.isSubUser && currentUser.parentAccount
+                    ? _normUserKey(currentUser.parentAccount)
+                    : _normUserKey(currentUser.username);
+                var me = _normUserKey(currentUser.username);
+                v.textContent = owner + (currentUser.isSubUser ? '  /  ' + me : '');
+                if (r) {
+                    var role = _migrateRole(currentUser.role || 'deneme');
+                    var allRoles = (typeof getAllRoles === 'function') ? getAllRoles() : null;
+                    var label = (allRoles && allRoles[role] && allRoles[role].label) ? allRoles[role].label : role;
+                    r.textContent = label;
+                }
+                b.style.display = 'block';
+            } catch(e) {}
+        }
+
+        // Online presence kurulumu — aynı kullanıcı için birden fazla kez çağrılabilir (idempotent)
+        var _presenceInitKey = null;
+        function _setupUserPresence() {
+            try {
+                if (!isFirebaseReady || !currentUser) return;
+                var unameLower = _normUserKey(currentUser.username);
+                var userDataRef;
+                if (currentUser.isSubUser && currentUser.parentAccount) {
+                    userDataRef = database.ref('users/' + _normUserKey(currentUser.parentAccount) + '/subUsers/' + unameLower);
+                } else {
+                    userDataRef = database.ref('users/' + unameLower);
+                }
+                // Aynı kullanıcı için presence zaten kuruluysa tekrar kurma
+                var newKey = (currentUser.isSubUser ? (currentUser.parentAccount + '/' + unameLower) : unameLower);
+                if (_presenceInitKey === newKey) return;
+                _presenceInitKey = newKey;
+
+                var presenceRef = userDataRef.child('online');
+                var lastSeenRef = userDataRef.child('lastSeen');
+                database.ref('.info/connected').on('value', function(snap) {
+                    if (snap.val() === true) {
+                        presenceRef.onDisconnect().set(false);
+                        lastSeenRef.onDisconnect().set(new Date().toISOString());
+                        presenceRef.set(true);
+                        lastSeenRef.set(new Date().toISOString());
+                    }
+                });
+            } catch(e) { console.error('Presence kurulamadı:', e); }
+        }
+
         // Giriş işlemini tamamla (lisans doğrulandıktan sonra)
-        function _completeLogin(username, password, displayName) {
+        // options: { isSubUser, parentAccount, role }
+        function _completeLogin(username, password, displayName, options) {
+            options = options || {};
+            var isSubUser = !!options.isSubUser;
+            var subParent = options.parentAccount || null;
+            var subRole = options.role || null;
+
             currentUser = {
                 username: username,
                 password: password,
                 displayName: displayName,
                 loginTime: new Date().toISOString(),
-                role: 'admin' // varsayılan
+                role: _migrateRole(subRole || 'deneme'),
+                isSubUser: isSubUser,
+                parentAccount: subParent
             };
 
             // Firebase'den rolü çek ve kullanıcı bilgilerini kaydet
             if (isFirebaseReady) {
-                database.ref('users/' + username).once('value').then(function(snap) {
+                var unameLower = _normUserKey(username);
+                // Sub-user için veri yolu: users/{parent}/subUsers/{username}
+                // Ana hesap için: users/{username}
+                var userDataRef;
+                if (isSubUser && subParent) {
+                    userDataRef = database.ref('users/' + _normUserKey(subParent) + '/subUsers/' + unameLower);
+                } else {
+                    userDataRef = database.ref('users/' + unameLower);
+                }
+
+                userDataRef.once('value').then(function(snap) {
                     var existing = snap.val() || {};
-                    var role = existing.role;
-                    if (!role) {
-                        // İlk giriş yapan admin olsun
-                        role = 'admin';
-                    }
+                    // Rol: Firebase'deki değer varsa onu kullan, yoksa 'deneme' olarak başla
+                    var role = existing.role || subRole || 'deneme';
+                    role = _migrateRole(role);
                     currentUser.role = role;
+                    if (existing.parentAccount) {
+                        currentUser.parentAccount = existing.parentAccount;
+                        currentUser.isSubUser = true;
+                    }
 
                     // Her girişte kullanıcı bilgilerini güncelle (admin panelinde görünsün)
-                    database.ref('users/' + username).update({
-                        username: username,
+                    var updateObj = {
                         displayName: displayName,
                         role: role,
                         lastLogin: new Date().toISOString()
-                    }).catch(function(err) { console.error('Kullan\u0131c\u0131 bilgisi kaydedilemedi:', err); });
+                    };
+                    // Sub-user için username alanı ekleme (ana path'de zaten key olarak var)
+                    if (!isSubUser) {
+                        updateObj.username = unameLower;
+                    }
+                    userDataRef.update(updateObj).catch(function(err) { console.error('Kullanıcı bilgisi kaydedilemedi:', err); });
 
                     // Online presence — bağlantı koptuğunda offline olarak işaretle
-                    try {
-                        var presenceRef = database.ref('users/' + username + '/online');
-                        var lastSeenRef = database.ref('users/' + username + '/lastSeen');
-                        database.ref('.info/connected').on('value', function(snap) {
-                            if (snap.val() === true) {
-                                presenceRef.onDisconnect().set(false);
-                                lastSeenRef.onDisconnect().set(new Date().toISOString());
-                                presenceRef.set(true);
-                            }
-                        });
-                    } catch(e) { console.error('Presence kurulamad\u0131:', e); }
+                    _setupUserPresence();
 
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
                     applyRoleUI();
+                    _updateConnectedAccountBanner();
                 }).catch(function() { applyRoleUI(); });
             }
 
@@ -3926,13 +4114,19 @@
             if (userDisplay) userDisplay.textContent = displayName;
 
             loadUserData();
-            _startPeriodicLicenseCheck();
+            // Sub-user'lar için lisans kontrolünü atla (ana hesap zaten kontrol edildi)
+            if (!isSubUser) {
+                _startPeriodicLicenseCheck();
+            }
             requestNotificationPermission();
             startNotificationListener();
             loadSavedProducts();
             applyRoleUI();
+            _updateConnectedAccountBanner();
+            _setupUserPresence();
+            if (typeof initPastFirebase === 'function') initPastFirebase();
         }
-        
+
         // ==================== PERİYODİK LİSANS KONTROLÜ ====================
         
         let _licenseCheckInterval = null;
@@ -3961,19 +4155,124 @@
         }
         
         // ==================== KULLANICI GİRİŞİ ====================
-        
+
+        // Giriş formunda "Ana Hesap Adı" yazıldıkça bağlanılacak Firebase key'ini önizle.
+        // Böylece kullanıcı, telefon/PC'de farklı Unicode üretse bile aynı hedef node'a gittiğini görür.
+        function _updateLoginKeyPreview() {
+            try {
+                var inp = document.getElementById('loginUsername');
+                var box = document.getElementById('loginKeyPreview');
+                var val = document.getElementById('loginKeyPreviewVal');
+                if (!inp || !box || !val) return;
+                var raw = inp.value || '';
+                if (!raw.trim()) { box.style.display = 'none'; return; }
+                val.textContent = _normUserKey(raw);
+                box.style.display = 'block';
+            } catch(e) {}
+        }
+
         // Login işle
         async function handleLogin() {
             const username = document.getElementById('loginUsername').value.trim();
             const password = document.getElementById('loginPassword').value;
             const displayName = document.getElementById('loginDisplayName').value.trim();
             _hideLoginError();
-            
+
             if (!username || !password || !displayName) {
                 _showLoginError('Lütfen tüm alanları doldurun!');
                 return;
             }
-            
+
+            // Sub-user kontrolü — yeni yapı (userIndex) + eski yapı (flat users/) geri uyumlu
+            // Hem Türkçe-duyarlı normalize key (uNorm) hem de eski toLowerCase key (uLeg) denenir.
+            if (isFirebaseReady) {
+                try {
+                    const uNorm = _normUserKey(username);
+                    const uLeg  = _legacyUserKey(username);
+                    const candidates = uNorm === uLeg ? [uNorm] : [uNorm, uLeg];
+                    let parentKey = null;
+                    let subData = null;
+                    let foundKey = null;
+
+                    // 1) Yeni yapı: userIndex'ten parent'ı bul (her iki key varyantını dene)
+                    //    "__MAIN__" değeri ana hesap işaretidir — bu key'in kendisi ana hesap,
+                    //    parent pointer değil. Sub-user akışını atlayıp normal ana-hesap akışına düşsün.
+                    for (const cand of candidates) {
+                        const indexSnap = await database.ref('userIndex/' + cand).once('value');
+                        const parentFromIndex = indexSnap.val();
+                        if (parentFromIndex && parentFromIndex !== '__MAIN__') {
+                            const subSnap = await database.ref('users/' + parentFromIndex + '/subUsers/' + cand).once('value');
+                            const d = subSnap.val() || {};
+                            if (d.passwordHash) { parentKey = parentFromIndex; subData = d; foundKey = cand; break; }
+                        }
+                    }
+
+                    // 2) Eski yapı geri uyumlu: users/{username} içinde parentAccount + passwordHash varsa
+                    if (!subData) {
+                        for (const cand of candidates) {
+                            const oldSnap = await database.ref('users/' + cand).once('value');
+                            const oldData = oldSnap.val() || {};
+                            if (oldData.parentAccount && oldData.passwordHash) {
+                                parentKey = _normUserKey(oldData.parentAccount);
+                                subData = oldData;
+                                foundKey = cand;
+                                // Otomatik migrasyon: yeni yapıya taşı (normalize edilmiş key ile)
+                                try {
+                                    await database.ref('users/' + parentKey + '/subUsers/' + uNorm).update({
+                                        displayName: oldData.displayName || uNorm,
+                                        role: oldData.role || 'deneme',
+                                        passwordHash: oldData.passwordHash,
+                                        migratedAt: new Date().toISOString()
+                                    });
+                                    await database.ref('userIndex/' + uNorm).set(parentKey);
+                                } catch(me) { console.warn('Migrasyon başarısız:', me); }
+                                break;
+                            }
+                        }
+                    }
+
+                    // Sub-user bulundu ama passwordHash yoksa / eşleşmiyorsa, ana hesap şifresiyle de dene
+                    // (ana hesap şifresi değiştirilmişse sub-user'ın kaydını da otomatik taze tut)
+                    if (parentKey && subData) {
+                        const enteredHash = await _sha256hex(password);
+                        let matched = !!(subData.passwordHash && enteredHash === subData.passwordHash);
+
+                        if (!matched) {
+                            // Fallback: ana hesabın doğrulanmış lisans şifresi ile karşılaştır —
+                            // eşleşirse bu sub-user ana şifreyi kullanıyor demektir, izin verelim ve hash'ini tazeleyelim.
+                            try {
+                                const parentLV = await database.ref('users/' + parentKey + '/licenseValidated').once('value');
+                                const lv = parentLV.val();
+                                if (lv && lv.ph && (await _sha256hex(password)).substring(0, 16) === lv.ph) {
+                                    matched = true;
+                                    // Sub-user'a passwordHash yaz — bir daha fallback gerekmesin
+                                    try {
+                                        await database.ref('users/' + parentKey + '/subUsers/' + foundKey + '/passwordHash').set(enteredHash);
+                                    } catch(e) {}
+                                }
+                            } catch(e) { /* sessiz */ }
+                        }
+
+                        if (!matched) {
+                            _showLoginError('Şifre yanlış.');
+                            return;
+                        }
+                        const parentStatus = await _checkFirebaseLicenseStatus(parentKey);
+                        if (parentStatus === 'revoked') {
+                            _showLoginError('Ana hesabın lisansı iptal edilmiş. Yöneticinize başvurun.');
+                            return;
+                        }
+                        hideLicenseSection();
+                        _completeLogin(username, password, subData.displayName || username, {
+                            isSubUser: true,
+                            parentAccount: parentKey,
+                            role: _migrateRole(subData.role || 'deneme')
+                        });
+                        return;
+                    }
+                } catch(e) { /* sub-user kontrolü başarısız oldu, normal akışa devam */ }
+            }
+
             // Lisans kontrolü (localStorage + Firebase — cihazdan bağımsız)
             if (await _isStoredPasswordCorrect(username, password)) {
                 // Lisans + şifre doğru, iptal kontrolü
@@ -3984,6 +4283,58 @@
                     return;
                 }
                 hideLicenseSection();
+
+                // Otomatik Kullanıcı Adı kaydı (displayName) — eğer displayName ana hesap adıyla aynı değilse
+                // displayName'i ana hesaba bağlı bir alt-kullanıcı olarak Firebase'e yaz.
+                // Böylece Yönetim panelinde otomatik görünür ve yönetici rol atayabilir.
+                // NOT: Her ana hesabın kendi alt-kullanıcı namespace'i var (users/{main}/subUsers/).
+                // Aynı alt-kullanıcı adı farklı ana hesaplarda serbestçe kullanılabilir.
+                const mainKey = _normUserKey(username);
+                const displayKey = _normUserKey(displayName);
+                if (isFirebaseReady && displayKey && displayKey !== mainKey) {
+                    try {
+                        // Yeni sub-user kayıt (sadece bu ana hesabın altında kontrol et)
+                        const subSnap = await database.ref('users/' + mainKey + '/subUsers/' + displayKey).once('value');
+                        const subData = subSnap.val();
+                        // Ana hesap şifresini sub-user'a miras bırak — böylece kullanıcı bir sonraki sefer
+                        // kendi adıyla (displayKey) + aynı şifreyle tek başına girebilir, lisans sorulmaz.
+                        const inheritedHash = await _sha256hex(password);
+                        if (!subData) {
+                            // İlk defa — yeni alt-kullanıcı olarak kaydet, varsayılan "Deneme Sürümü" rolü
+                            await database.ref('users/' + mainKey + '/subUsers/' + displayKey).set({
+                                displayName: displayName,
+                                role: 'deneme',
+                                autoRegistered: true,
+                                passwordHash: inheritedHash,
+                                createdAt: new Date().toISOString()
+                            });
+                            // userIndex shortcut'ı SADECE boşsa yaz — başka ana hesabın kaydını üzerine yazma.
+                            // Böylece aynı sub-user adı birden fazla ana hesapta yaşayabilir; ilk kaydolan shortcut'ı alır.
+                            try {
+                                const idxSnap = await database.ref('userIndex/' + displayKey).once('value');
+                                if (!idxSnap.exists()) {
+                                    await database.ref('userIndex/' + displayKey).set(mainKey);
+                                }
+                            } catch(e) { /* userIndex yazılamazsa sorun değil; explicit flow çalışır */ }
+                        } else if (!subData.passwordHash) {
+                            // Mevcut ama eski kayıt — passwordHash eksikse şimdi ekle (geri uyumluluk)
+                            await database.ref('users/' + mainKey + '/subUsers/' + displayKey + '/passwordHash').set(inheritedHash);
+                        }
+                        // Bu displayName artık bir sub-user — sub-user akışında giriş yap
+                        const refreshed = (await database.ref('users/' + mainKey + '/subUsers/' + displayKey).once('value')).val() || {};
+                        _completeLogin(displayKey, password, displayName, {
+                            isSubUser: true,
+                            parentAccount: mainKey,
+                            role: _migrateRole(refreshed.role || 'deneme')
+                        });
+                        return;
+                    } catch(e) {
+                        console.error('Otomatik kullanıcı kaydı başarısız:', e);
+                        // Hata olursa ana hesap olarak devam et
+                    }
+                }
+
+                // displayName == ana hesap (kendisi) → direkt ana hesap (Yönetici) olarak giriş
                 _completeLogin(username, password, displayName);
             } else if (_licenseExistsForUser(username)) {
                 // localStorage'da lisans var ama şifre yanlış
@@ -4001,6 +4352,10 @@
                 if (_licenseCheckInterval) clearInterval(_licenseCheckInterval);
                 localStorage.removeItem('currentUser');
                 sessionStorage.removeItem('adminAuthed');
+                sessionStorage.removeItem('adminAuthedAs');
+                localStorage.removeItem('adminAuthedRemember');
+                localStorage.removeItem('adminAuthedRememberFor');
+                localStorage.removeItem('adminAuthedAs');
                 currentUser = null;
                 location.reload();
             }
@@ -4011,8 +4366,55 @@
             const savedUser = localStorage.getItem('currentUser');
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
-                
-                // Lisans kontrolü (localStorage + Firebase — cihazdan bağımsız)
+
+                // Sub-user akışı — ana hesabın lisans durumunu kontrol et, şifre hash ile doğrula
+                if (currentUser.isSubUser && currentUser.parentAccount) {
+                    if (isFirebaseReady) {
+                        try {
+                            var parentStatus = await _checkFirebaseLicenseStatus(currentUser.parentAccount);
+                            if (parentStatus === 'revoked') {
+                                localStorage.removeItem('currentUser');
+                                currentUser = null;
+                                return;
+                            }
+                            // Sub-user hesabını hâlâ Firebase'de var mı ve silinmemiş mi diye bak
+                            var parentLow = _normUserKey(currentUser.parentAccount);
+                            var userLow = _normUserKey(currentUser.username);
+                            // Yeni yol: users/{parent}/subUsers/{user}
+                            var subSnap = await database.ref('users/' + parentLow + '/subUsers/' + userLow).once('value');
+                            var subData = subSnap.val();
+                            // Geri uyumlu: eski düz yol users/{user}
+                            if (!subData) {
+                                var oldSnap = await database.ref('users/' + userLow).once('value');
+                                var oldData = oldSnap.val() || {};
+                                if (oldData.parentAccount) { subData = oldData; }
+                            }
+                            if (!subData) {
+                                // Sub-user hesabı silinmiş
+                                localStorage.removeItem('currentUser');
+                                currentUser = null;
+                                return;
+                            }
+                            // Rolü güncelle (yönetici değiştirmiş olabilir)
+                            currentUser.role = _migrateRole(subData.role || currentUser.role || 'deneme');
+                            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                        } catch(e) { /* sessiz geç */ }
+                    }
+                    document.getElementById('loginScreen').style.display = 'none';
+                    const udSub = document.getElementById('currentUserDisplay');
+                    if (udSub) udSub.textContent = currentUser.displayName || currentUser.username;
+                    loadUserData();
+                    requestNotificationPermission();
+                    startNotificationListener();
+                    loadSavedProducts();
+                    applyRoleUI();
+                    _updateConnectedAccountBanner();
+                    _setupUserPresence();
+                    if (typeof initPastFirebase === 'function') initPastFirebase();
+                    return;
+                }
+
+                // Normal (ana) hesap lisans kontrolü
                 if (await _isStoredPasswordCorrect(currentUser.username, currentUser.password)) {
                     // Firebase'den iptal kontrolü
                     const fbStatus = await _checkFirebaseLicenseStatus(currentUser.username);
@@ -4037,14 +4439,19 @@
                     loadSavedProducts();
                     // Rolü Firebase'den güncelle
                     if (isFirebaseReady) {
-                        database.ref('users/' + currentUser.username + '/role').once('value').then(function(snap) {
-                            if (snap.exists()) currentUser.role = snap.val();
+                        database.ref('users/' + _normUserKey(currentUser.username) + '/role').once('value').then(function(snap) {
+                            if (snap.exists()) currentUser.role = _migrateRole(snap.val());
+                            else if (!currentUser.role) currentUser.role = 'deneme';
                             localStorage.setItem('currentUser', JSON.stringify(currentUser));
                             applyRoleUI();
-                        }).catch(function() { applyRoleUI(); });
+                            _updateConnectedAccountBanner();
+                        }).catch(function() { applyRoleUI(); _updateConnectedAccountBanner(); });
                     } else {
                         applyRoleUI();
+                        _updateConnectedAccountBanner();
                     }
+                    _setupUserPresence();
+                    if (typeof initPastFirebase === 'function') initPastFirebase();
                 } else {
                     // Lisans yok veya şifre uyuşmuyor
                     document.getElementById('loginUsername').value = currentUser.username || '';
@@ -4056,43 +4463,76 @@
         }
         
         // Kullanıcı verilerini yükle
+        var _userDataListenersKey = null;
         function loadUserData() {
             if (isFirebaseReady && currentUser) {
-                // Firebase'den verileri çek
-                const userRef = database.ref(`users/${currentUser.username}`);
-                
-                // Tankları dinle
-                userRef.child('tanks').on('value', (snapshot) => {
-                    if (snapshot.exists()) {
-                        tanks = snapshot.val() || [];
-                        // localStorage'a da kaydet (offline için)
-                        localStorage.setItem('tanks', JSON.stringify(tanks));
-                        renderTanks();
-                    } else {
-                        // İlk kez giriş yapıyorsa örnek tankları yükle
-                        loadTanks();
-                    }
-                });
-                
-                // Geçmişi dinle
-                userRef.child('history').on('value', (snapshot) => {
-                    // Her durumda güncelleme yap (boş array veya null olabilir)
-                    const history = snapshot.val() || [];
-                    // localStorage'a kaydet
-                    localStorage.setItem('calculationHistory', JSON.stringify(history));
-                    // Render et
-                    loadHistory();
-                });
+                // Sub-user ise ana hesabın verilerini yükle
+                var dataOwner = (currentUser.isSubUser && currentUser.parentAccount)
+                    ? _normUserKey(currentUser.parentAccount)
+                    : _normUserKey(currentUser.username);
+                // Diğer modüllerin de aynı path'i kullanabilmesi için global olarak kaydet
+                window._dataOwnerKey = dataOwner;
+
+                // Önceki sahibin listener'ları varsa kapat (duplicate'i önle)
+                if (_userDataListenersKey && _userDataListenersKey !== dataOwner) {
+                    try {
+                        var prevRef = database.ref('users/' + _userDataListenersKey);
+                        prevRef.child('tanks').off();
+                        prevRef.child('history').off();
+                    } catch(e) {}
+                }
+
+                if (_userDataListenersKey !== dataOwner) {
+                    _userDataListenersKey = dataOwner;
+                    const userRef = database.ref('users/' + dataOwner);
+
+                    // Tankları dinle
+                    userRef.child('tanks').on('value', (snapshot) => {
+                        if (snapshot.exists()) {
+                            tanks = snapshot.val() || [];
+                            localStorage.setItem('tanks', JSON.stringify(tanks));
+                            renderTanks();
+                        } else {
+                            tanks = [];
+                            localStorage.setItem('tanks', '[]');
+                            renderTanks();
+                        }
+                    });
+
+                    // Geçmişi dinle
+                    userRef.child('history').on('value', (snapshot) => {
+                        const history = snapshot.val() || [];
+                        localStorage.setItem('calculationHistory', JSON.stringify(history));
+                        loadHistory();
+                        // Onay / hiddenFromLine değişiklikleri hat kartını ve onaylı tanklar sekmesini etkiler
+                        if (typeof renderPastLines === 'function') renderPastLines();
+                        if (typeof renderApprovedTanks === 'function') renderApprovedTanks();
+                    });
+                }
+
+                // Rolleri yükle
+                if (typeof loadRoles === 'function') loadRoles();
+                // Pastörizasyon listener'larını başlat
+                if (typeof initPastFirebase === 'function') initPastFirebase();
             } else {
+                window._dataOwnerKey = null;
                 // Firebase yoksa localStorage'dan yükle
                 loadTanks();
                 loadHistory();
             }
-            
+
             // Vardiya verilerini yükle
             loadPersonelData();
             loadActiveVardiya();
             loadUrunler();
+        }
+
+        // Veri sahibinin anahtarını döndür (sub-user ise parent, değilse kendisi)
+        function _getDataOwner() {
+            if (window._dataOwnerKey) return window._dataOwnerKey;
+            if (!currentUser) return null;
+            if (currentUser.isSubUser && currentUser.parentAccount) return _normUserKey(currentUser.parentAccount);
+            return _normUserKey(currentUser.username);
         }
         
         // ==================== GLOBAL DEĞİŞKENLER ====================
@@ -4230,10 +4670,10 @@
                 localStorage.setItem('calculationHistory', JSON.stringify(history));
                 
                 if (isFirebaseReady && currentUser) {
-                    database.ref(`users/${currentUser.username}/history`).set(history);
+                    database.ref(`users/${_getDataOwner()}/history`).set(history);
                     
                     // Bildirim gönder (diğer cihazlara)
-                    database.ref(`users/${currentUser.username}/lastCalc`).set({
+                    database.ref(`users/${_getDataOwner()}/lastCalc`).set({
                         id: historyItem.id,
                         tank: historyItem.tank,
                         user: historyItem.user,
@@ -4332,12 +4772,27 @@
                             </div>
                             ${activeVardiya ? (
                                 item.approved
-                                ? '<div style="display:flex;gap:6px;margin-top:8px;"><button class="tank-onay-btn approved" onclick="undoTankOnay(' + item.id + ')" style="flex:1">Geri Al</button><button class="tank-onay-btn" onclick="removeFromReport(' + item.id + ')" style="flex:1;background:#ef4444;color:#fff;border-color:#ef4444;">Rapordan Sil</button></div>'
-                                : '<button class="tank-onay-btn" onclick="openKaliteModal(' + index + ')">Tank Onayla</button>'
+                                ? '<div style="display:flex;gap:6px;margin-top:8px;"><span class="tank-onay-btn approved" style="flex:1;pointer-events:none;opacity:0.85;text-align:center;">\u2713 Onayland\u0131 \u2014 y\u00f6netim i\u015flemleri \'Onaylanan Tanklar\' sekmesinde</span></div>'
+                                : '<button class="tank-onay-btn" data-perm="tank_approve" onclick="openKaliteModal(' + index + ')">Tank Onayla</button>'
                             ) : ''}
                         </div>
                     `;
                 }).join('');
+
+                // Yetki tabanlı görünürlüğü yeniden uygula
+                try {
+                    var _histEl = document.getElementById('historyContent');
+                    if (_histEl && typeof getUserPerms === 'function') {
+                        var _perms = getUserPerms();
+                        var _els = _histEl.querySelectorAll('[data-perm]');
+                        for (var _ei = 0; _ei < _els.length; _ei++) {
+                            var _p = _els[_ei].getAttribute('data-perm');
+                            var _needArr = _p.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+                            var _ok = _needArr.every(function(n){ return _perms.indexOf(n) >= 0; });
+                            if (!_ok) _els[_ei].style.display = 'none';
+                        }
+                    }
+                } catch(e) {}
             } catch (error) {
                 const historyContent = document.getElementById('historyContent');
                 if (historyContent) {
@@ -4359,7 +4814,7 @@
                 
                 // Firebase'den de sil (senkronizasyon için)
                 if (isFirebaseReady && currentUser) {
-                    database.ref(`users/${currentUser.username}/history`).set([]);
+                    database.ref(`users/${_getDataOwner()}/history`).set([]);
                 }
                 
                 loadHistory();
@@ -4440,7 +4895,7 @@
             if (!isFirebaseReady || !currentUser || _notifListenerActive) return;
             _notifListenerActive = true;
             
-            const ref = database.ref(`users/${currentUser.username}/lastCalc`);
+            const ref = database.ref(`users/${_getDataOwner()}/lastCalc`);
             ref.on('value', (snap) => {
                 if (!snap.exists()) return;
                 const data = snap.val();
@@ -4522,7 +4977,7 @@
                 try { personelListeleri = JSON.parse(saved); } catch {}
             }
             if (isFirebaseReady && currentUser) {
-                database.ref(`users/${currentUser.username}/personel`).on('value', (snap) => {
+                database.ref(`users/${_getDataOwner()}/personel`).on('value', (snap) => {
                     if (snap.exists()) {
                         personelListeleri = snap.val();
                         localStorage.setItem('brix_personel', JSON.stringify(personelListeleri));
@@ -4534,7 +4989,7 @@
         function savePersonelData() {
             localStorage.setItem('brix_personel', JSON.stringify(personelListeleri));
             if (isFirebaseReady && currentUser) {
-                database.ref(`users/${currentUser.username}/personel`).set(personelListeleri);
+                database.ref(`users/${_getDataOwner()}/personel`).set(personelListeleri);
             }
         }
         
@@ -4545,7 +5000,7 @@
                 try { activeVardiya = JSON.parse(saved); } catch { activeVardiya = null; }
             }
             if (isFirebaseReady && currentUser) {
-                database.ref(`users/${currentUser.username}/activeVardiya`).on('value', (snap) => {
+                database.ref(`users/${_getDataOwner()}/activeVardiya`).on('value', (snap) => {
                     if (snap.exists()) {
                         activeVardiya = snap.val();
                         localStorage.setItem('brix_active_vardiya', JSON.stringify(activeVardiya));
@@ -4566,7 +5021,7 @@
                 localStorage.removeItem('brix_active_vardiya');
             }
             if (isFirebaseReady && currentUser) {
-                database.ref(`users/${currentUser.username}/activeVardiya`).set(activeVardiya);
+                database.ref(`users/${_getDataOwner()}/activeVardiya`).set(activeVardiya);
             }
         }
         
@@ -4699,7 +5154,7 @@
                 });
                 localStorage.setItem('calculationHistory', JSON.stringify(history));
                 if (isFirebaseReady && currentUser) {
-                    database.ref(`users/${currentUser.username}/history`).set(history);
+                    database.ref(`users/${_getDataOwner()}/history`).set(history);
                 }
             } catch {}
             
@@ -4707,14 +5162,14 @@
             vardiyaUrunler = [];
             localStorage.removeItem('brix_vardiya_urunler');
             if (isFirebaseReady && currentUser) {
-                database.ref(`users/${currentUser.username}/vardiyaUrunler`).set(null);
+                database.ref(`users/${_getDataOwner()}/vardiyaUrunler`).set(null);
             }
             
             // Aktif vardiyayı sil
             activeVardiya = null;
             localStorage.removeItem('brix_active_vardiya');
             if (isFirebaseReady && currentUser) {
-                database.ref(`users/${currentUser.username}/activeVardiya`).set(null);
+                database.ref(`users/${_getDataOwner()}/activeVardiya`).set(null);
             }
             
             renderUrunList();
@@ -4858,6 +5313,7 @@
         
         // Vardiya başlat veya güncelle
         function startVardiya() {
+            if (!_requirePerm('vardiya_manage')) return;
             const btn = document.getElementById('vardiyaStartBtn');
             const isEdit = btn.dataset.mode === 'edit';
             
@@ -4929,7 +5385,7 @@
                 try { vardiyaUrunler = JSON.parse(saved); } catch { vardiyaUrunler = []; }
             }
             if (isFirebaseReady && currentUser) {
-                database.ref(`users/${currentUser.username}/vardiyaUrunler`).on('value', (snap) => {
+                database.ref(`users/${_getDataOwner()}/vardiyaUrunler`).on('value', (snap) => {
                     vardiyaUrunler = snap.exists() ? (snap.val() || []) : [];
                     localStorage.setItem('brix_vardiya_urunler', JSON.stringify(vardiyaUrunler));
                     renderUrunList();
@@ -4942,7 +5398,7 @@
         function saveUrunler() {
             localStorage.setItem('brix_vardiya_urunler', JSON.stringify(vardiyaUrunler));
             if (isFirebaseReady && currentUser) {
-                database.ref(`users/${currentUser.username}/vardiyaUrunler`).set(vardiyaUrunler);
+                database.ref(`users/${_getDataOwner()}/vardiyaUrunler`).set(vardiyaUrunler);
             }
         }
         
@@ -5146,7 +5602,7 @@
         // Kayıtlı ürünleri Firebase'den yükle
         function loadSavedProducts() {
             if (!isFirebaseReady || !currentUser) return;
-            database.ref('users/' + currentUser.username + '/savedProducts').on('value', (snap) => {
+            database.ref('users/' + _getDataOwner() + '/savedProducts').on('value', (snap) => {
                 savedProducts = [];
                 if (snap.exists()) {
                     const data = snap.val();
@@ -5212,7 +5668,7 @@
             if (!p) return;
             if (!confirm('"' + p.isim + '" ürünü kayıtlılardan silinsin mi?')) return;
             savedProducts.splice(idx, 1);
-            database.ref('users/' + currentUser.username + '/savedProducts').set(savedProducts.length > 0 ? savedProducts : null).catch(function(err) {
+            database.ref('users/' + _getDataOwner() + '/savedProducts').set(savedProducts.length > 0 ? savedProducts : null).catch(function(err) {
                 console.error('savedProducts silme hatası:', err);
             });
         }
@@ -5258,17 +5714,17 @@
                 savedProducts.push(cleanProduct);
             }
             
-            database.ref('users/' + currentUser.username + '/savedProducts').set(savedProducts).catch(function(err) {
+            database.ref('users/' + _getDataOwner() + '/savedProducts').set(savedProducts).catch(function(err) {
                 console.error('savedProducts yazma hatası:', err);
             });
         }
         
         // Sekme değiştir
         function switchAppTab(tab) {
-            // Rol kontrolü
-            var role = (currentUser && currentUser.role) ? currentUser.role : 'admin';
+            // Rol kontrolü — admin sekmesi her zaman erişilebilir (içerik şifre ile korunuyor)
+            var role = (currentUser && currentUser.role) ? _migrateRole(currentUser.role) : 'yonetici';
             var allowed = getAllowedTabs(role);
-            if (allowed.indexOf(tab) < 0 && tab !== 'brix') { tab = allowed[0] || 'brix'; }
+            if (tab !== 'admin' && allowed.indexOf(tab) < 0 && tab !== 'brix') { tab = allowed[0] || 'brix'; }
 
             var tabs = ['brix', 'past', 'admin'];
             var sections = ['brixSection', 'pastSection', 'adminSection'];
@@ -5288,7 +5744,10 @@
             var content = document.getElementById('adminContent');
             if (!gate || !content) return;
 
-            if (sessionStorage.getItem('adminAuthed') === '1') {
+            // Hatırla: localStorage; oturumluk: sessionStorage
+            var authed = (localStorage.getItem('adminAuthedRemember') === '1') || (sessionStorage.getItem('adminAuthed') === '1');
+
+            if (authed) {
                 gate.style.display = 'none';
                 content.style.display = 'block';
                 renderAdminPanel();
@@ -5309,7 +5768,7 @@
             var msg = document.getElementById('adminLoginMsg');
             if (!userInput || !passInput || !msg) return;
 
-            var uVal = (userInput.value || '').trim().toLowerCase();
+            var uVal = _normUserKey(userInput.value || '');
             var pVal = (passInput.value || '').trim();
 
             if (!uVal || !pVal) {
@@ -5328,20 +5787,43 @@
             msg.textContent = 'Doğrulanıyor...';
 
             try {
-                var snap = await database.ref('users/' + currentUser.username).once('value');
-                var data = snap.val() || {};
-                var storedUser = data.adminUser || '';
-                var storedHash = data.adminPassHash || '';
+                // Tüm kullanıcı node'larını tara — adminUser === uVal olan hesabı bul
+                // (adminPassHash her zaman lisans sahibinin node'unda tutulur: users/{owner}/adminPassHash)
+                var allSnap = await database.ref('users').once('value');
+                var allUsers = allSnap.val() || {};
+                var matchedOwner = null;
+                var matchedHash = null;
+                for (var _k in allUsers) {
+                    var _u = allUsers[_k] || {};
+                    if (_normUserKey(_u.adminUser || '') === uVal && _u.adminPassHash) {
+                        matchedOwner = _k;  // "goknur" gibi lisans sahibinin key'i
+                        matchedHash = _u.adminPassHash;
+                        break;
+                    }
+                }
 
-                if (!storedUser || !storedHash) {
+                if (!matchedOwner || !matchedHash) {
                     msg.style.color = '#ef4444';
-                    msg.textContent = 'Bu lisans için yönetici hesabı tanımlanmamış. Lisans üreticinden atayın.';
+                    msg.textContent = '"' + uVal + '" adlı yönetici tanımlanmamış. Lisans üreticisinden tanımlayın.';
                     return;
                 }
 
                 var enteredHash = await _sha256hex(pVal);
-                if (uVal === storedUser && enteredHash === storedHash) {
-                    sessionStorage.setItem('adminAuthed', '1');
+                if (enteredHash === matchedHash) {
+                    var rememberCb = document.getElementById('adminLoginRemember');
+                    if (rememberCb && rememberCb.checked) {
+                        localStorage.setItem('adminAuthedRemember', '1');
+                        localStorage.setItem('adminAuthedRememberFor', matchedOwner);
+                        localStorage.setItem('adminAuthedAs', matchedOwner);
+                        sessionStorage.removeItem('adminAuthed');
+                        sessionStorage.removeItem('adminAuthedAs');
+                    } else {
+                        sessionStorage.setItem('adminAuthed', '1');
+                        sessionStorage.setItem('adminAuthedAs', matchedOwner);
+                        localStorage.removeItem('adminAuthedRemember');
+                        localStorage.removeItem('adminAuthedRememberFor');
+                        localStorage.removeItem('adminAuthedAs');
+                    }
                     passInput.value = '';
                     msg.style.display = 'none';
                     _enterAdminTab();
@@ -5357,6 +5839,10 @@
 
         function adminLogout() {
             sessionStorage.removeItem('adminAuthed');
+            sessionStorage.removeItem('adminAuthedAs');
+            localStorage.removeItem('adminAuthedRemember');
+            localStorage.removeItem('adminAuthedRememberFor');
+            localStorage.removeItem('adminAuthedAs');
             _enterAdminTab();
         }
 
@@ -5400,35 +5886,49 @@
         // ==================== YETKİ SİSTEMİ ====================
         // Tüm yetkiler
         var ALL_PERMISSIONS = [
-            { key: 'brix_view', label: 'Brix-Asitlik Görüntüle', tab: 'brix' },
-            { key: 'brix_calculate', label: 'Hesaplama Yap', tab: 'brix' },
-            { key: 'tank_manage', label: 'Tank Ekle/Düzenle/Sil', tab: 'brix' },
-            { key: 'tank_approve', label: 'Tank Onayla', tab: 'brix' },
-            { key: 'vardiya_manage', label: 'Vardiya Yönetimi', tab: 'brix' },
-            { key: 'past_view', label: 'Pastörizasyon Görüntüle', tab: 'past' },
-            { key: 'past_hat_manage', label: 'Hat Ekle/Düzenle/Sil', tab: 'past' },
-            { key: 'past_timer', label: 'Dolum Başlat/Durdur', tab: 'past' },
-            { key: 'past_cip', label: 'CIP Yönetimi', tab: 'past' },
-            { key: 'past_ariza', label: 'Arıza/Mola Bildirimi', tab: 'past' },
-            { key: 'approved_view', label: 'Onaylanan Tanklar Görüntüle', tab: 'approved' },
-            { key: 'approved_manage', label: 'Onay Geri Al', tab: 'approved' },
-            { key: 'admin_view', label: 'Yönetim Paneli', tab: 'admin' },
-            { key: 'admin_roles', label: 'Rol Yönetimi', tab: 'admin' }
+            { key: 'brix_view', label: 'Brix-Asitlik Görüntüle', tab: 'brix', desc: 'Brix-Asitlik sekmesini açabilir; tankları, geçmişi ve ölçümleri görür. Sadece okuma — ekleme/değişiklik yapamaz.' },
+            { key: 'brix_calculate', label: 'Hesaplama Yap', tab: 'brix', desc: 'Hammadde girip brix/asitlik hesaplaması yapabilir ve geçmişe kayıt ekler.' },
+            { key: 'tank_manage', label: 'Tank Ekle/Düzenle/Sil', tab: 'brix', desc: 'Tank listesini yönetebilir: yeni tank ekler, varolanı düzenler veya siler.' },
+            { key: 'tank_approve', label: 'Tank Onayla', tab: 'brix', desc: 'Hesaplaması tamamlanan tankı "Onayla" ile onaylı tanklar listesine gönderir (pastörizasyon için hazır hale getirir).' },
+            { key: 'vardiya_manage', label: 'Vardiya Yönetimi', tab: 'brix', desc: 'Vardiya başlatma/bitirme, personel seçme, ürün/hammadde atama ve vardiya raporunu yönetir.' },
+            { key: 'past_view', label: 'Pastörizasyon Görüntüle', tab: 'past', desc: 'Pastörizasyon sekmesini açabilir; hatları, aktif sayaçları ve biten tankları görür (sadece okuma).' },
+            { key: 'past_hat_manage', label: 'Hat Ekle/Düzenle/Sil', tab: 'past', desc: 'Pastörizasyon hatlarını yönetir: yeni hat ekler, akış hızı/tank atamalarını değiştirir, hat siler.' },
+            { key: 'past_timer', label: 'Dolum Başlat/Durdur', tab: 'past', desc: 'Tank dolum sayacını başlatır, duraklatır, "Pastörizeye Al" ile alıma geçirir ve tankı bitirir.' },
+            { key: 'past_cip', label: 'CIP Yönetimi', tab: 'past', desc: 'Hat temizleme (CIP) süreçlerini başlatır, fazları yönetir ve CIP sürelerini ayarlar.' },
+            { key: 'past_ariza', label: 'Arıza/Mola Bildirimi', tab: 'past', desc: 'Hatlarda arıza veya mola kaydı açar/kapatır; süre ve neden bilgisi ekler.' },
+            { key: 'approved_view', label: 'Onaylanan Tanklar Görüntüle', tab: 'approved', desc: 'Onaylanmış tanklar listesini (pastörizasyona hazır olanları) görür.' },
+            { key: 'approved_manage', label: 'Onay Geri Al', tab: 'approved', desc: 'Yanlışlıkla onaylanmış bir tankın onayını geri alabilir (tekrar düzenlenebilir hale getirir).' },
+            { key: 'admin_view', label: 'Yönetim Paneli', tab: 'admin', desc: 'Yönetim sekmesini açabilir; kullanıcı listesini görür, durumları/rolleri inceler.' },
+            { key: 'admin_roles', label: 'Rol Yönetimi', tab: 'admin', desc: 'Kullanıcılara rol atar, yeni özel rol oluşturur, rol siler. Kullanıcı silme/şifre sıfırlama da burada.' }
         ];
 
-        // Varsayılan roller
+        // Varsayılan roller — sadece 2 rol: Yönetici (tüm yetkiler) ve Deneme Sürümü (brix görüntüle + hesapla)
         var DEFAULT_ROLES = {
-            'admin': { label: 'Yönetici', perms: ALL_PERMISSIONS.map(function(p) { return p.key; }) },
-            'pastorize_lideri': { label: 'Pastörize Lideri', perms: ['past_view','past_hat_manage','past_timer','past_cip','past_ariza','approved_view','approved_manage'] },
-            'tank_operatoru': { label: 'Tank Operatörü', perms: ['brix_view','brix_calculate','tank_manage','tank_approve','vardiya_manage','approved_view'] },
-            'operator': { label: 'Operatör', perms: ['brix_view','brix_calculate'] }
+            'yonetici': { label: 'Yönetici', perms: ALL_PERMISSIONS.map(function(p) { return p.key; }) },
+            'deneme': { label: 'Deneme Sürümü', perms: ['brix_view','brix_calculate'] }
         };
+
+        // Eski rol adlarını yeni rollere eşleştir (geri dönük uyumluluk)
+        var ROLE_MIGRATIONS = {
+            'admin': 'yonetici',
+            'pastorize_lideri': 'yonetici',
+            'tank_operatoru': 'yonetici',
+            'operator': 'deneme'
+        };
+        function _migrateRole(role) {
+            if (!role) return role;
+            if (DEFAULT_ROLES[role]) return role;
+            // Özel rol olarak tanımlanmışsa (aynı anahtar olsa bile) migrasyona dokunma
+            if (typeof _customRoles !== 'undefined' && _customRoles && _customRoles[role]) return role;
+            if (ROLE_MIGRATIONS[role]) return ROLE_MIGRATIONS[role];
+            return role; // custom rol olabilir, dokunma
+        }
 
         var _customRoles = {}; // Firebase'den yüklenir
 
         function loadRoles(cb) {
             if (!isFirebaseReady || !currentUser) { if (cb) cb(); return; }
-            database.ref('roles').once('value').then(function(snap) {
+            database.ref('users/' + _getDataOwner() + '/roles').once('value').then(function(snap) {
                 _customRoles = snap.val() || {};
                 if (cb) cb();
             }).catch(function() { if (cb) cb(); });
@@ -5442,10 +5942,10 @@
         }
 
         function getUserPerms() {
-            var role = (currentUser && currentUser.role) ? currentUser.role : 'admin';
+            var role = (currentUser && currentUser.role) ? _migrateRole(currentUser.role) : 'yonetici';
             var roles = getAllRoles();
             if (roles[role]) return roles[role].perms || [];
-            return DEFAULT_ROLES['admin'].perms; // bilinmeyen rol → tam yetki
+            return DEFAULT_ROLES['yonetici'].perms; // bilinmeyen rol → tam yetki
         }
 
         function hasPermission(permKey) {
@@ -5453,8 +5953,9 @@
         }
 
         function getAllowedTabs(role) {
+            role = _migrateRole(role);
             var roles = getAllRoles();
-            var perms = (roles[role] && roles[role].perms) ? roles[role].perms : DEFAULT_ROLES['admin'].perms;
+            var perms = (roles[role] && roles[role].perms) ? roles[role].perms : DEFAULT_ROLES['yonetici'].perms;
             var tabs = [];
             var tabMap = { brix: ['brix_view'], past: ['past_view'], admin: ['admin_view'] };
             for (var t in tabMap) {
@@ -5466,17 +5967,56 @@
         }
 
         function applyRoleUI() {
-            var role = (currentUser && currentUser.role) ? currentUser.role : 'admin';
+            var role = (currentUser && currentUser.role) ? _migrateRole(currentUser.role) : 'yonetici';
+            if (currentUser && currentUser.role !== role) {
+                // Bellek içi rolü de güncelle ki runtime guard tutarlı olsun
+                currentUser.role = role;
+                try { localStorage.setItem('currentUser', JSON.stringify(currentUser)); } catch(e) {}
+            }
             loadRoles(function() {
                 var allowed = getAllowedTabs(role);
-                var tabIds = ['tabBrix', 'tabPast', 'tabAdmin'];
-                var tabKeys = ['brix', 'past', 'admin'];
+                // Brix ve Past sekmelerini role göre göster/gizle
+                var tabIds = ['tabBrix', 'tabPast'];
+                var tabKeys = ['brix', 'past'];
                 for (var ri = 0; ri < tabIds.length; ri++) {
                     var el = document.getElementById(tabIds[ri]);
                     if (el) el.style.display = allowed.indexOf(tabKeys[ri]) >= 0 ? '' : 'none';
                 }
+                // Yönetim sekmesi her zaman görünür — içeriğe erişim ayrı şifre ile korunuyor
+                var adminTabEl = document.getElementById('tabAdmin');
+                if (adminTabEl) adminTabEl.style.display = '';
+
+                // Permission-based element visibility — [data-perm] öznitelikli her öğeyi yetkiye göre gizle
+                try {
+                    var perms = getUserPerms();
+                    var permEls = document.querySelectorAll('[data-perm]');
+                    for (var pei = 0; pei < permEls.length; pei++) {
+                        var pe = permEls[pei];
+                        var need = pe.getAttribute('data-perm');
+                        if (!need) continue;
+                        // Birden fazla yetki "," ile ayrılmış olabilir — hepsi gerekli
+                        var needArr = need.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+                        var ok = needArr.every(function(n){ return perms.indexOf(n) >= 0; });
+                        if (!ok) {
+                            pe.style.display = 'none';
+                        } else {
+                            // Sadece data-perm kaynaklı gizlemeyi geri al
+                            if (pe.style.display === 'none') pe.style.display = '';
+                        }
+                    }
+                } catch(e) { console.warn('applyRoleUI perm walk failed', e); }
+
                 switchAppTab(allowed[0] || 'brix');
             });
+        }
+
+        // Çalışma zamanı yetki koruması — fonksiyonların ilk satırında çağrılabilir
+        function _requirePerm(permKey, silentReturn) {
+            if (hasPermission(permKey)) return true;
+            if (!silentReturn) {
+                alert('\u26d4 Bu i\u015flem i\u00e7in yetkiniz yok.\nRol\u00fcn\u00fczde "' + permKey + '" yetkisi bulunmuyor.');
+            }
+            return false;
         }
 
         // Onaylanan Tanklar sekmesini render et
@@ -5522,13 +6062,15 @@
                     }
                 }
 
-                // Timer aktif mi?
+                // Timer aktif mi? Yoksa tamamlandı mı?
                 var timerStatus = '';
                 var timerStatusClass = '';
+                var hasActiveTimer = false;
                 if (typeof pastTimers !== 'undefined') {
                     for (var tid in pastTimers) {
                         var pt = pastTimers[tid];
                         if (String(pt.historyId) === hIdStr) {
+                            hasActiveTimer = true;
                             if (pt.mode === 'intake') { timerStatus = ' (Past\u00f6rizede)'; timerStatusClass = 'color:#7c3aed;'; }
                             else if (pt.paused) { timerStatus = ' (Duraklat\u0131lm\u0131\u015f)'; timerStatusClass = 'color:#f59e0b;'; }
                             else { timerStatus = ' (Dolumda)'; timerStatusClass = 'color:#22c55e;'; }
@@ -5536,24 +6078,62 @@
                         }
                     }
                 }
+                // Aktif timer yoksa — pastFinished'te veya history.finishedAt'ta var mı diye bak
+                var isFinished = false;
+                if (!hasActiveTimer) {
+                    if (h.finishedAt) {
+                        isFinished = true;
+                    } else if (typeof pastFinished !== 'undefined') {
+                        for (var pfi = 0; pfi < pastFinished.length; pfi++) {
+                            if (String(pastFinished[pfi].historyId) === hIdStr) { isFinished = true; break; }
+                        }
+                    }
+                }
+                if (isFinished) {
+                    timerStatus = ' (Tamamland\u0131 \u2714)';
+                    timerStatusClass = 'color:#16a34a;';
+                }
+                // Hat kartından gizlendi mi? (X ile kaldırılmış)
+                var isHidden = !!h.hiddenFromLine;
+                var hiddenBadge = isHidden
+                    ? '<span style="font-size:10px;font-weight:700;color:#ea580c;margin-left:6px;background:#fff7ed;padding:2px 6px;border-radius:6px;border:1px solid #fed7aa;">Hat kart\u0131ndan gizli</span>'
+                    : '';
 
-                html += '<div class="hat-approved-box" style="margin:8px 12px;">';
+                html += '<div class="hat-approved-box" style="margin:8px 12px;' + (isHidden ? 'background:#fffbeb;border-color:#fcd34d;' : '') + '">';
                 html += '<div class="hat-approved-header">';
-                html += '<div><div class="hat-approved-title">' + (h.tank || '') + (timerStatus ? '<span style="font-size:10px;font-weight:600;' + timerStatusClass + '">' + timerStatus + '</span>' : '') + '</div>';
+                html += '<div><div class="hat-approved-title">' + (h.tank || '') + (timerStatus ? '<span style="font-size:10px;font-weight:600;' + timerStatusClass + '">' + timerStatus + '</span>' : '') + hiddenBadge + '</div>';
                 html += '<div class="hat-approved-meta">' + (h.approvedUrun || '') + (hatName ? ' \u00b7 Hat: ' + hatName : '') + (dtStr ? ' \u00b7 ' + dtStr : '') + '</div></div>';
                 html += '<div class="hat-approved-stats">';
                 if (h.targetBrix) html += '<div class="hat-stat-chip">Brix: <strong>' + h.targetBrix + '</strong></div>';
                 if (tonKg) html += '<div class="hat-stat-chip">Tonaj: <strong>' + (tonKg/1000).toFixed(2) + ' t</strong></div>';
                 html += '</div></div>';
-                html += '<div style="display:flex;gap:6px;margin-top:6px;">';
-                html += '<button class="hat-remove-btn" onclick="undoTankOnayFromApproved(\'' + hIdStr + '\')" style="flex:1">Onay\u0131 Geri Al</button>';
-                html += '<button class="hat-remove-btn" onclick="removeFromReport(' + h.id + ')" style="flex:1;background:#ef4444;color:#fff;border-color:#ef4444;">Rapordan Sil</button>';
+                // Butonlar: gizliyse "Pastörizeye Gönder" göster
+                html += '<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">';
+                if (isHidden) {
+                    html += '<button class="hat-remove-btn" data-perm="approved_manage" onclick="sendApprovedTankToPastorize(\'' + hIdStr + '\')" style="flex:1;background:#16a34a;color:#fff;border-color:#16a34a;">\u21A9 Past\u00f6rizeye G\u00f6nder</button>';
+                }
+                html += '<button class="hat-remove-btn" data-perm="approved_manage" onclick="undoTankOnayFromApproved(\'' + hIdStr + '\')" style="flex:1">Onay\u0131 Geri Al</button>';
+                html += '<button class="hat-remove-btn" data-perm="approved_manage" onclick="removeFromReport(' + h.id + ')" style="flex:1;background:#ef4444;color:#fff;border-color:#ef4444;">Rapordan Sil</button>';
                 html += '</div>';
                 html += '</div>';
             }
             container.innerHTML = html;
+
+            // Yetki tabanlı görünürlüğü yeniden uygula
+            try {
+                if (typeof getUserPerms === 'function') {
+                    var _perms = getUserPerms();
+                    var _els = container.querySelectorAll('[data-perm]');
+                    for (var _ei = 0; _ei < _els.length; _ei++) {
+                        var _p = _els[_ei].getAttribute('data-perm');
+                        var _needArr = _p.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+                        var _ok = _needArr.every(function(n){ return _perms.indexOf(n) >= 0; });
+                        if (!_ok) _els[_ei].style.display = 'none';
+                    }
+                }
+            } catch(e) {}
         }
-        
+
         // ==================== YÖNETİM PANELİ ====================
         function renderAdminPanel() {
             var usersContainer = document.getElementById('adminUsersContainer');
@@ -5565,19 +6145,23 @@
                 return;
             }
 
-            // Yetki checkbox grid'ini doldur
+            // Yetki checkbox grid'ini doldur (açıklamalı)
             if (permsGrid && !permsGrid.hasChildNodes()) {
                 var pgHtml = '';
                 for (var pi = 0; pi < ALL_PERMISSIONS.length; pi++) {
                     var p = ALL_PERMISSIONS[pi];
-                    pgHtml += '<label style="display:flex;align-items:center;gap:4px;font-size:11px;padding:4px;cursor:pointer;">';
-                    pgHtml += '<input type="checkbox" value="' + p.key + '" style="accent-color:#1a1a1a;">';
-                    pgHtml += '<span>' + p.label + '</span></label>';
+                    var descAttr = (p.desc || '').replace(/"/g, '&quot;');
+                    pgHtml += '<label title="' + descAttr + '" style="display:flex;align-items:flex-start;gap:6px;font-size:11px;padding:6px 4px;cursor:pointer;border-radius:6px;transition:background 0.15s;" onmouseover="this.style.background=\'#f1f5f9\'" onmouseout="this.style.background=\'transparent\'">';
+                    pgHtml += '<input type="checkbox" value="' + p.key + '" style="accent-color:#1a1a1a;margin-top:2px;flex-shrink:0;">';
+                    pgHtml += '<span style="display:flex;flex-direction:column;gap:2px;min-width:0;">';
+                    pgHtml += '<span style="font-weight:700;color:#1a1a1a;">' + p.label + '</span>';
+                    if (p.desc) pgHtml += '<span style="font-size:10px;color:#64748b;line-height:1.4;font-weight:400;">' + p.desc + '</span>';
+                    pgHtml += '</span></label>';
                 }
                 permsGrid.innerHTML = pgHtml;
             }
 
-            // Roller listesi
+            // Roller listesi (yetkiler açıklama ipucu ile)
             loadRoles(function() {
                 if (rolesContainer) {
                     var allRoles = getAllRoles();
@@ -5585,10 +6169,16 @@
                     for (var rk in allRoles) {
                         var role = allRoles[rk];
                         var isDefault = !!DEFAULT_ROLES[rk];
-                        var permLabels = [];
+                        // Her yetki için etiket + açıklama eşleştir
+                        var permBadges = [];
                         for (var pli = 0; pli < (role.perms || []).length; pli++) {
                             for (var ali = 0; ali < ALL_PERMISSIONS.length; ali++) {
-                                if (ALL_PERMISSIONS[ali].key === role.perms[pli]) { permLabels.push(ALL_PERMISSIONS[ali].label); break; }
+                                var perm = ALL_PERMISSIONS[ali];
+                                if (perm.key === role.perms[pli]) {
+                                    var tip = (perm.desc || '').replace(/"/g, '&quot;');
+                                    permBadges.push('<span title="' + tip + '" style="display:inline-block;background:#e2e8f0;color:#1e293b;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;margin:2px 4px 2px 0;cursor:help;">' + perm.label + '</span>');
+                                    break;
+                                }
                             }
                         }
                         rHtml += '<div style="padding:8px 0;border-bottom:1px solid #f0f0f0;">';
@@ -5600,7 +6190,8 @@
                             rHtml += '<span style="font-size:9px;color:#a0aec0;font-weight:600;">Varsay\u0131lan</span>';
                         }
                         rHtml += '</div>';
-                        rHtml += '<div style="font-size:10px;color:#718096;margin-top:4px;line-height:1.6;">' + permLabels.join(', ') + '</div>';
+                        rHtml += '<div style="margin-top:6px;line-height:1.6;">' + permBadges.join('') + '</div>';
+                        rHtml += '<div style="font-size:9px;color:#a0aec0;margin-top:4px;font-style:italic;">\u{1F4A1} Yetki üzerine gelerek ne işe yaradığını görebilirsiniz.</div>';
                         rHtml += '</div>';
                     }
                     rHtml += '</div>';
@@ -5617,14 +6208,45 @@
                     }
                 }, 5000);
 
-                database.ref('users').once('value').then(function(snapshot) {
+                var adminAs = sessionStorage.getItem('adminAuthedAs') || localStorage.getItem('adminAuthedAs') || '';
+                if (!adminAs) {
                     clearTimeout(_adminTimeout);
-                    var users = snapshot.val() || {};
+                    usersContainer.innerHTML = '<div style="padding:16px;text-align:center;color:#a0aec0;font-size:12px;">Yönetici oturumu bulunamadı.</div>';
+                    return;
+                }
+                // Ana hesabın kendi bilgilerini ve sub-user'larını ayrı ayrı çek
+                Promise.all([
+                    database.ref('users/' + adminAs).once('value'),
+                    database.ref('users/' + adminAs + '/subUsers').once('value')
+                ]).then(function(results) {
+                    clearTimeout(_adminTimeout);
+                    var subUsersData = results[1].val() || {};
                     var allRoles = getAllRoles();
+
+                    // Sadece alt-kullanıcıları göster; ana hesap zaten üstteki "Yönetici" bilgi kutusunda var.
+                    // Ana hesaba otomatik rol atamıyoruz; liste sub-user yönetimine odaklı kalsın.
+                    var users = {};
+                    for (var sk in subUsersData) {
+                        users[sk] = subUsersData[sk];
+                    }
                     var userKeys = Object.keys(users);
+                    var parentKey = _normUserKey(adminAs);
+                    // Başlık + bilgi kutusu
+                    var headerHtml = '';
+                    headerHtml += '<div style="padding:10px 12px;background:#f0f9ff;border-bottom:1px solid #bae6fd;">';
+                    headerHtml += '<div style="font-size:11px;color:#0c4a6e;line-height:1.5;">\u{1F6E1}\uFE0F <b>Yönetici:</b> ' + (adminAs || '—') + ' \u2014 bu panel bu yöneticiye bağlı kullanıcıları gösterir.</div>';
+                    headerHtml += '</div>';
+                    var canManage = true; // Yönetim paneline girebilmek için zaten şifre doğrulandı
+                    if (canManage) {
+                        headerHtml += '<div style="padding:10px 12px;background:#fefce8;border-bottom:1px solid #fde68a;">';
+                        headerHtml += '<div style="font-size:12px;font-weight:700;color:#713f12;margin-bottom:4px;">\u2139\uFE0F Kullan\u0131c\u0131 Ekleme</div>';
+                        headerHtml += '<div style="font-size:11px;color:#713f12;line-height:1.5;">Yeni bir kullan\u0131c\u0131 eklemek i\u00e7in: O ki\u015fi giri\u015f ekran\u0131nda <b>Ana Hesap Ad\u0131n\u0131z\u0131</b> + <b>\u015eifrenizi</b> + kendi <b>Kullan\u0131c\u0131 Ad\u0131</b>\u2019n\u0131 girerek giri\u015f yaps\u0131n. Sistem onu otomatik olarak <b>Deneme S\u00fcr\u00fcm\u00fc</b> rol\u00fcyle kaydedecek; siz a\u015fa\u011f\u0131daki listeden rol\u00fcn\u00fc de\u011fi\u015ftirebilirsiniz.</div>';
+                        headerHtml += '<button onclick="renderAdminPanel()" style="margin-top:8px;background:#1a1a1a;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;">\u{1F501} Listeyi Yenile</button>';
+                        headerHtml += '</div>';
+                    }
 
                     if (userKeys.length === 0) {
-                        usersContainer.innerHTML = '<div style="padding:16px;text-align:center;color:#a0aec0;font-size:12px;">Kay\u0131tl\u0131 kullan\u0131c\u0131 bulunamad\u0131.</div>';
+                        usersContainer.innerHTML = headerHtml + '<div style="padding:16px;text-align:center;color:#a0aec0;font-size:12px;">Bu ana hesaba ba\u011fl\u0131 alt-kullan\u0131c\u0131 yok. Yeni bir kullan\u0131c\u0131 giri\u015f yap\u0131nca otomatik listelenir.</div>';
                         return;
                     }
 
@@ -5635,14 +6257,15 @@
                         return bOn - aOn;
                     });
 
-                    var html = '<div style="padding:12px;">';
+                    var html = headerHtml + '<div style="padding:12px;">';
                     for (var ui = 0; ui < userKeys.length; ui++) {
                         var uname = userKeys[ui];
                         var u = users[uname];
-                        var r = u.role || 'operator';
+                        var r = _migrateRole(u.role || 'deneme');
                         var rLabel = allRoles[r] ? allRoles[r].label : r;
                         var isOnline = !!u.online;
-                        var isSelf = currentUser && currentUser.username === uname;
+                        var isSelf = currentUser && _normUserKey(currentUser.username) === _normUserKey(uname);
+                        var isMainAccount = (_normUserKey(uname) === parentKey);
 
                         // Son görülme zamanı
                         var lastSeenStr = '';
@@ -5672,14 +6295,21 @@
                         html += '<div style="font-size:10px;color:#718096;font-weight:600;">' + rLabel + (lastSeenStr ? ' \u00b7 ' + lastSeenStr : '') + '</div>';
                         html += '</div></div>';
                         html += '<div style="display:flex;gap:4px;align-items:center;">';
-                        html += '<select onchange="changeUserRole(\'' + uname + '\',this.value)" style="border:1.5px solid #e0e0e0;border-radius:6px;padding:6px 8px;font-size:11px;min-width:120px;">';
+                        // Yönetici hesabı üzerinde rol değişikliği yapılmaz; diğer tüm kullanıcılar düzenlenebilir
+                        var isAdminAccount = (_normUserKey(uname) === _normUserKey(adminAs));
+                        var disableEdit = isAdminAccount;
+                        html += '<select onchange="changeUserRole(\'' + uname + '\',this.value)"' + (disableEdit ? ' disabled' : '') + ' style="border:1.5px solid #e0e0e0;border-radius:6px;padding:6px 8px;font-size:11px;min-width:120px;' + (disableEdit ? 'opacity:0.6;cursor:not-allowed;' : '') + '">';
                         for (var rk in allRoles) {
                             html += '<option value="' + rk + '"' + (r === rk ? ' selected' : '') + '>' + allRoles[rk].label + '</option>';
                         }
                         html += '</select>';
-                        if (!isSelf) {
-                            html += '<button onclick="revokeUserRole(\'' + uname + '\')" title="Rol\u00fc Geri Al" style="background:#f59e0b;color:#fff;border:none;border-radius:6px;padding:6px 8px;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap;">Rol Kald\u0131r</button>';
+                        if (!isAdminAccount) {
+                            html += '<button onclick="resetSubUserPassword(\'' + uname + '\')" title="\u015eifre S\u0131f\u0131rla" style="background:#6366f1;color:#fff;border:none;border-radius:6px;padding:6px 8px;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap;">\u015eifre</button>';
+                            html += '<button onclick="revokeUserRole(\'' + uname + '\')" title="Rol\u00fc Geri Al" style="background:#f59e0b;color:#fff;border:none;border-radius:6px;padding:6px 8px;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap;">Rol</button>';
                             html += '<button onclick="deleteUserFromPanel(\'' + uname + '\')" title="Kullan\u0131c\u0131y\u0131 Sil" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 8px;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap;">Sil</button>';
+                        }
+                        if (isAdminAccount) {
+                            html += '<span style="font-size:9px;color:#7c3aed;font-weight:700;padding:4px 8px;background:#ede9fe;border-radius:4px;">\u{1F6E1}\uFE0F Y\u00D6NET\u0130C\u0130</span>';
                         }
                         html += '</div>';
                         html += '</div></div>';
@@ -5709,16 +6339,16 @@
                 html += '<div style="margin-top:8px;font-size:11px;color:#334155;line-height:1.6;">';
                 html += '<div style="font-weight:700;margin-bottom:4px;">1. Firebase konsoluna gidin:</div>';
                 html += '<a href="https://console.firebase.google.com/project/brix-asitlik/database/brix-asitlik-default-rtdb/rules" target="_blank" style="color:#1e40af;text-decoration:underline;word-break:break-all;">console.firebase.google.com/project/brix-asitlik/database/.../rules</a>';
-                html += '<div style="font-weight:700;margin-top:8px;margin-bottom:4px;">2. Kurallar sekmesine a\u015fa\u011f\u0131daki JSON\'u yap\u0131\u015ft\u0131r\u0131n (sadece /users ve /roles a\u00e7\u0131k, di\u011fer her \u015fey kapal\u0131):</div>';
-                html += '<pre id="fbRulesBlock" style="background:#0f172a;color:#e2e8f0;padding:8px;border-radius:4px;font-size:10px;overflow:auto;margin:0;white-space:pre;">{\n  "rules": {\n    "users": {\n      ".read": true,\n      "$username": {\n        ".read": true,\n        ".write": true\n      }\n    },\n    "roles": {\n      ".read": true,\n      "$roleKey": {\n        ".write": true\n      }\n    }\n  }\n}</pre>';
+                html += '<div style="font-weight:700;margin-top:8px;margin-bottom:4px;">2. Kurallar sekmesine a\u015fa\u011f\u0131daki JSON\'u yap\u0131\u015ft\u0131r\u0131n (hiyerar\u015fik yap\u0131: /users/$username/subUsers + /userIndex):</div>';
+                html += '<pre id="fbRulesBlock" style="background:#0f172a;color:#e2e8f0;padding:8px;border-radius:4px;font-size:10px;overflow:auto;margin:0;white-space:pre;">{\n  "rules": {\n    "users": {\n      "$username": {\n        ".read": true,\n        ".write": true,\n        "subUsers": {\n          "$subUser": { ".read": true, ".write": true }\n        },\n        "roles": { ".read": true, ".write": true }\n      }\n    },\n    "userIndex": {\n      ".read": true,\n      ".write": true\n    }\n  }\n}</pre>';
                 html += '<button onclick="(function(){var t=document.getElementById(\'fbRulesBlock\').innerText;if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){alert(\'Kurallar panoya kopyaland\u0131.\');});}else{alert(t);}})()" style="margin-top:6px;background:#1a1a1a;color:#fff;border:none;border-radius:4px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;">Kopyala</button>';
                 html += '<div style="font-weight:700;margin-top:8px;margin-bottom:4px;">3. "Yay\u0131nla" butonuna bas\u0131n, ard\u0131ndan bu paneli "Yenile" ile tekrar y\u00fckleyin.</div>';
-                html += '<div style="margin-top:6px;color:#64748b;font-size:10px;line-height:1.5;">\u{1F6E1}\uFE0F Bu kural sadece uygulaman\u0131n kulland\u0131\u011f\u0131 <b>/users</b> (kullan\u0131c\u0131lar, roller, ge\u00e7mi\u015f) ve <b>/roles</b> (\u00f6zel rol tan\u0131mlar\u0131) yollar\u0131n\u0131 a\u00e7ar. Di\u011fer her yol (\u00f6rn. /admin, /config, /secrets vb.) varsay\u0131lan olarak <b>kapal\u0131</b> kal\u0131r \u2014 yanl\u0131\u015fl\u0131kla farkl\u0131 bir yola veri kaz\u0131nsa bile d\u0131\u015far\u0131 s\u0131zmaz.</div>';
+                html += '<div style="margin-top:6px;color:#64748b;font-size:10px;line-height:1.5;">\u{1F6E1}\uFE0F Bu kural sadece uygulaman\u0131n kulland\u0131\u011f\u0131 <b>/users</b> (kullan\u0131c\u0131lar, alt-kullan\u0131c\u0131lar, roller, ge\u00e7mi\u015f) ve <b>/userIndex</b> (h\u0131zl\u0131 alt-kullan\u0131c\u0131 arama) yollar\u0131n\u0131 a\u00e7ar. Di\u011fer her yol varsay\u0131lan olarak <b>kapal\u0131</b> kal\u0131r.</div>';
                 html += '</div></details>';
             }
 
             if (currentUser) {
-                var r = currentUser.role || 'admin';
+                var r = _migrateRole(currentUser.role || 'yonetici');
                 var rLabel = allRoles[r] ? allRoles[r].label : r;
                 html += '<div style="padding:10px 0;border-bottom:1px solid #f0f0f0;">';
                 html += '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">';
@@ -5765,8 +6395,12 @@
 
         function changeUserRole(uname, role) {
             if (!isFirebaseReady) return;
-            database.ref('users/' + uname + '/role').set(role).then(function() {
-                if (currentUser && currentUser.username === uname) {
+            var key = _normUserKey(uname);
+            var adminAs = sessionStorage.getItem('adminAuthedAs') || localStorage.getItem('adminAuthedAs') || '';
+            // Ana hesabın rolü değiştirilemez
+            if (key === _normUserKey(adminAs)) return;
+            database.ref('users/' + adminAs + '/subUsers/' + key + '/role').set(role).then(function() {
+                if (currentUser && _normUserKey(currentUser.username) === key) {
                     currentUser.role = role;
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
                     applyRoleUI();
@@ -5775,43 +6409,125 @@
         }
 
         function revokeUserRole(uname) {
-            if (!confirm('"' + uname + '" kullan\u0131c\u0131s\u0131n\u0131n rol\u00fc kald\u0131r\u0131lacak (varsay\u0131lan Operat\u00f6r rol\u00fcne d\u00fc\u015fecek). Emin misiniz?')) return;
+            if (!confirm('"' + uname + '" kullanıcısının rolü kaldırılacak (varsayılan Deneme Sürümü rolüne düşecek). Emin misiniz?')) return;
             if (!isFirebaseReady) return;
-            database.ref('users/' + uname + '/role').set('operator').then(function() {
-                if (currentUser && currentUser.username === uname) {
-                    currentUser.role = 'operator';
+            var key = _normUserKey(uname);
+            var adminAs = sessionStorage.getItem('adminAuthedAs') || localStorage.getItem('adminAuthedAs') || '';
+            database.ref('users/' + adminAs + '/subUsers/' + key + '/role').set('deneme').then(function() {
+                if (currentUser && _normUserKey(currentUser.username) === key) {
+                    currentUser.role = 'deneme';
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
                     applyRoleUI();
                 }
                 renderAdminPanel();
-            }).catch(function(err) { alert('Rol kald\u0131r\u0131lamad\u0131: ' + err.message); });
+            }).catch(function(err) { alert('Rol kaldırılamadı: ' + err.message); });
         }
 
+
         function deleteUserFromPanel(uname) {
-            if (!confirm('"' + uname + '" kullan\u0131c\u0131s\u0131 tamamen silinecek. Bu i\u015flem geri al\u0131namaz. Emin misiniz?')) return;
+            if (!confirm('"' + uname + '" kullanıcısı tamamen silinecek. Bu işlem geri alınamaz. Emin misiniz?')) return;
             if (!isFirebaseReady) return;
-            database.ref('users/' + uname).remove().then(function() {
+            var key = _normUserKey(uname);
+            var adminAs = sessionStorage.getItem('adminAuthedAs') || localStorage.getItem('adminAuthedAs') || '';
+            Promise.all([
+                database.ref('users/' + adminAs + '/subUsers/' + key).remove(),
+                database.ref('userIndex/' + key).remove()
+            ]).then(function() {
                 renderAdminPanel();
-            }).catch(function(err) { alert('Kullan\u0131c\u0131 silinemedi: ' + err.message); });
+            }).catch(function(err) { alert('Kullanıcı silinemedi: ' + err.message); });
+        }
+
+        // Sub-user oluştur (ana hesap altına bağlar)
+        async function createSubUser() {
+            if (!currentUser || currentUser.isSubUser) { alert('Sub-user kullan\u0131c\u0131 ekleyemez.'); return; }
+            if (!isFirebaseReady) { alert('Firebase ba\u011flant\u0131s\u0131 yok.'); return; }
+            var msg = document.getElementById('subUserMsg');
+            var showMsg = function(text, ok) {
+                if (!msg) return;
+                msg.textContent = text;
+                msg.style.display = 'block';
+                msg.style.background = ok ? '#dcfce7' : '#fee2e2';
+                msg.style.color = ok ? '#166534' : '#991b1b';
+                if (ok) setTimeout(function() { msg.style.display = 'none'; }, 3000);
+            };
+            var unameEl = document.getElementById('newSubUserName');
+            var dispEl = document.getElementById('newSubUserDisplay');
+            var passEl = document.getElementById('newSubUserPass');
+            var roleEl = document.getElementById('newSubUserRole');
+            if (!unameEl || !passEl) return;
+            var uname = _normUserKey(unameEl.value || '');
+            var disp = (dispEl.value || '').trim();
+            var pass = passEl.value || '';
+            var role = _migrateRole(roleEl.value || 'deneme');
+            if (!uname || !pass) { showMsg('Kullan\u0131c\u0131 ad\u0131 ve \u015fifre zorunludur.', false); return; }
+            if (uname.length < 3) { showMsg('Kullan\u0131c\u0131 ad\u0131 en az 3 karakter olmal\u0131.', false); return; }
+            // . # $ / [ ] Firebase'de yasak — _normUserKey zaten alt çizgiye çevirdi ama yine de uyar
+            if (/[\.\#\$\/\[\]]/.test(uname)) { showMsg('Kullan\u0131c\u0131 ad\u0131nda \u015fu karakterler kullan\u0131lamaz: . # $ / [ ]', false); return; }
+            // Çakışma kontrolü + yeni yol
+            try {
+                var adminAs = sessionStorage.getItem('adminAuthedAs') || localStorage.getItem('adminAuthedAs') || '';
+                if (!adminAs) { showMsg('Yönetici oturumu bulunamadı.', false); return; }
+                // Çakışma kontrolü: userIndex'e bak
+                var existsIdx = await database.ref('userIndex/' + uname).once('value');
+                if (existsIdx.exists() && _normUserKey(existsIdx.val()) !== _normUserKey(adminAs)) {
+                    showMsg('Bu kullanıcı adı başka bir hesapta kullanımında.', false);
+                    return;
+                }
+                var existsSub = await database.ref('users/' + adminAs + '/subUsers/' + uname).once('value');
+                if (existsSub.exists()) {
+                    showMsg('Bu kullanıcı adı zaten bu hesapta mevcut.', false);
+                    return;
+                }
+                var passHash = await _sha256hex(pass);
+                await database.ref('users/' + adminAs + '/subUsers/' + uname).set({
+                    displayName: disp || uname,
+                    role: role,
+                    passwordHash: passHash,
+                    createdAt: new Date().toISOString()
+                });
+                await database.ref('userIndex/' + uname).set(adminAs);
+                showMsg('✅ "' + uname + '" kullanıcısı oluşturuldu.', true);
+                unameEl.value = ''; if (dispEl) dispEl.value = ''; passEl.value = '';
+                renderAdminPanel();
+            } catch(err) {
+                showMsg('Oluşturulamadı: ' + (err && err.message ? err.message : 'hata'), false);
+            }
+        }
+
+        // Sub-user şifresini sıfırla
+        async function resetSubUserPassword(uname) {
+            if (!currentUser || currentUser.isSubUser) return;
+            var newPass = prompt('"' + uname + '" i\u00e7in yeni \u015fifre girin (en az 4 karakter):');
+            if (!newPass) return;
+            if (newPass.length < 4) { alert('\u015eifre en az 4 karakter olmal\u0131.'); return; }
+            if (!isFirebaseReady) { alert('Firebase ba\u011flant\u0131s\u0131 yok.'); return; }
+            try {
+                var hash = await _sha256hex(newPass);
+                var adminAs = sessionStorage.getItem('adminAuthedAs') || localStorage.getItem('adminAuthedAs') || '';
+                await database.ref('users/' + adminAs + '/subUsers/' + _normUserKey(uname) + '/passwordHash').set(hash);
+                alert('✅ Şifre güncellendi.');
+            } catch(err) {
+                alert('Şifre güncellenemedi: ' + (err && err.message ? err.message : 'hata'));
+            }
         }
 
         function manualAssignRole() {
             var input = document.getElementById('manualUserInput');
             var roleSelect = document.getElementById('manualRoleSelect');
             if (!input || !roleSelect) return;
-            var uname = (input.value || '').trim().toLowerCase();
+            var uname = _normUserKey(input.value || '');
             var role = roleSelect.value;
-            if (!uname) { alert('Kullan\u0131c\u0131 ad\u0131 girin.'); return; }
-            if (!isFirebaseReady) { alert('Firebase ba\u011flant\u0131s\u0131 yok.'); return; }
-            database.ref('users/' + uname).update({
-                username: uname,
+            if (!uname) { alert('Kullanıcı adı girin.'); return; }
+            if (!isFirebaseReady) { alert('Firebase bağlantısı yok.'); return; }
+            var adminAs = sessionStorage.getItem('adminAuthedAs') || localStorage.getItem('adminAuthedAs') || '';
+            database.ref('users/' + adminAs + '/subUsers/' + uname).update({
                 role: role
             }).then(function() {
                 input.value = '';
-                alert(uname + ' kullan\u0131c\u0131s\u0131na "' + role + '" rol\u00fc atand\u0131.');
+                alert(uname + ' kullanıcısına "' + role + '" rolü atandı.');
                 renderAdminPanel();
             }).catch(function(err) {
-                alert('Rol atanamad\u0131: ' + err.message);
+                alert('Rol atanamadı: ' + err.message);
             });
         }
 
@@ -5842,7 +6558,7 @@
             if (!isFirebaseReady) return;
 
             var roleData = { label: roleName, perms: selectedPerms };
-            database.ref('roles/' + roleKey).set(roleData).then(function() {
+            database.ref('users/' + _getDataOwner() + '/roles/' + roleKey).set(roleData).then(function() {
                 _customRoles[roleKey] = roleData;
                 nameInput.value = '';
                 // Checkbox'ları temizle
@@ -5859,7 +6575,7 @@
             if (DEFAULT_ROLES[roleKey]) { alert('Varsay\u0131lan roller silinemez.'); return; }
             if (!confirm('"' + roleKey + '" rol\u00fcn\u00fc silmek istedi\u011finize emin misiniz?')) return;
             if (!isFirebaseReady) return;
-            database.ref('roles/' + roleKey).remove().then(function() {
+            database.ref('users/' + _getDataOwner() + '/roles/' + roleKey).remove().then(function() {
                 delete _customRoles[roleKey];
                 renderAdminPanel();
             });
@@ -5867,16 +6583,76 @@
 
         // Tank onayını geri al
         function undoTankOnay(historyItemId) {
+            if (!_requirePerm('approved_manage')) return;
             if (!confirm('Bu tank onayını geri almak istediğinize emin misiniz?')) return;
             _doUndoTankOnay(historyItemId);
         }
 
         // Onaylanan Tanklar sekmesinden çağrılır (string ID)
         function undoTankOnayFromApproved(historyItemIdStr) {
+            if (!_requirePerm('approved_manage')) return;
             if (!confirm('Bu tank onayını geri almak istediğinize emin misiniz?')) return;
             // String veya number olarak dene
             var numId = Number(historyItemIdStr);
             _doUndoTankOnay(isNaN(numId) ? historyItemIdStr : numId);
+        }
+
+        // Hat kartındaki "Onaylanan Tanklar" listesinden SADECE GÖRSEL kaldırma (X butonu).
+        // Onay bilgisi silinmez — "Onaylanan Tanklar" sekmesinde hâlâ görünür ve oradan
+        // "Pastörizeye Gönder" ile tekrar hat kartına döndürülebilir.
+        function removeApprovedTank(historyItemIdStr, lineId) {
+            if (!_requirePerm('approved_manage')) return;
+            if (!confirm('Bu tank\u0131 hat kart\u0131ndan kald\u0131rmak istedi\u011finize emin misiniz?\n\n(Onay silinmez — "Onaylanan Tanklar" sekmesinde kalmaya devam eder.\nYanl\u0131\u015fl\u0131kla kald\u0131rd\u0131ysan\u0131z oradan "Past\u00f6rizeye G\u00f6nder" ile geri ekleyebilirsiniz.)')) return;
+
+            var history = [];
+            try { history = JSON.parse(localStorage.getItem('calculationHistory') || '[]'); } catch(e) { return; }
+            var item = history.find(function(h) { return String(h.id) === String(historyItemIdStr); });
+            if (!item) return;
+
+            // Bu tanka bağlı aktif timer varsa durdur (UI tutarlılığı)
+            for (var tid in pastTimers) {
+                if (String(pastTimers[tid].historyId) === String(historyItemIdStr)) {
+                    if (pastTimers[tid].intervalId) clearInterval(pastTimers[tid].intervalId);
+                    delete pastTimers[tid];
+                }
+            }
+            if (typeof savePastTimers === 'function') savePastTimers();
+
+            // Sadece hat-kartı görünürlüğünü kapat
+            item.hiddenFromLine = true;
+            localStorage.setItem('calculationHistory', JSON.stringify(history));
+            if (isFirebaseReady && currentUser) {
+                _fbWrite('users/' + _getDataOwner() + '/history', history);
+            }
+
+            if (typeof loadHistory === 'function') loadHistory();
+            if (typeof renderPastLines === 'function') renderPastLines();
+            if (typeof renderApprovedTanks === 'function') renderApprovedTanks();
+        }
+
+        // "Onaylanan Tanklar" sekmesinden tankı hat kartına geri gönder
+        function sendApprovedTankToPastorize(historyItemIdStr) {
+            if (!_requirePerm('approved_manage')) return;
+            var history = [];
+            try { history = JSON.parse(localStorage.getItem('calculationHistory') || '[]'); } catch(e) { return; }
+            var item = history.find(function(h) { return String(h.id) === String(historyItemIdStr); });
+            if (!item) return;
+            // Tamamlanmış tankı tekrar gönderiyorsa ek onay iste
+            if (item.finishedAt) {
+                if (!confirm('Bu tank daha \u00f6nce tamamlanm\u0131\u015ft\u0131. Past\u00f6rizeye tekrar g\u00f6nderilsin mi?\n\n(Tamamland\u0131 bilgisi silinecek, tank hat kart\u0131nda "dolum ba\u015flat\u0131labilir" olarak g\u00f6r\u00fcnecek.)')) return;
+                delete item.finishedAt;
+                delete item.finishedProcessedTonaj;
+                delete item.finishedKalanTonaj;
+            }
+            // hiddenFromLine bayrağını kaldır — hat kartında tekrar görünür
+            delete item.hiddenFromLine;
+            localStorage.setItem('calculationHistory', JSON.stringify(history));
+            if (isFirebaseReady && currentUser) {
+                _fbWrite('users/' + _getDataOwner() + '/history', history);
+            }
+            if (typeof loadHistory === 'function') loadHistory();
+            if (typeof renderPastLines === 'function') renderPastLines();
+            if (typeof renderApprovedTanks === 'function') renderApprovedTanks();
         }
 
         function _doUndoTankOnay(historyItemId) {
@@ -5908,10 +6684,14 @@
             delete item.approved;
             delete item.approvedUrun;
             delete item.approvedAt;
+            delete item.hiddenFromLine;  // stale bayrağı da temizle
+            delete item.finishedAt;
+            delete item.finishedProcessedTonaj;
+            delete item.finishedKalanTonaj;
 
             localStorage.setItem('calculationHistory', JSON.stringify(history));
             if (isFirebaseReady && currentUser) {
-                database.ref('users/' + currentUser.username + '/history').set(history);
+                database.ref('users/' + _getDataOwner() + '/history').set(history);
             }
 
             loadHistory();
@@ -5928,6 +6708,7 @@
         
         // Kalite modalını aç (ürün seçim adımı)
         function openKaliteModal(historyIndex) {
+            if (!_requirePerm('tank_approve')) return;
             if (!activeVardiya) {
                 alert('Aktif bir vardiya yok!');
                 return;
@@ -5999,6 +6780,10 @@
                     history[pendingApprovalIndex].approved = true;
                     history[pendingApprovalIndex].approvedUrun = vardiyaUrunler[selectedKaliteUrunIdx].isim;
                     history[pendingApprovalIndex].approvedAt = new Date().toISOString();
+                    delete history[pendingApprovalIndex].hiddenFromLine;  // yeni onayda hat-kartı gizliliği sıfırlansın
+                    delete history[pendingApprovalIndex].finishedAt;
+                    delete history[pendingApprovalIndex].finishedProcessedTonaj;
+                    delete history[pendingApprovalIndex].finishedKalanTonaj;
                     
                     // Ürüne tank bilgisi ve kalite verisi ekle
                     if (!vardiyaUrunler[selectedKaliteUrunIdx].tankKayitlari) {
@@ -6019,7 +6804,7 @@
                     // History kaydet
                     localStorage.setItem('calculationHistory', JSON.stringify(history));
                     if (isFirebaseReady && currentUser) {
-                        database.ref(`users/${currentUser.username}/history`).set(history);
+                        database.ref(`users/${_getDataOwner()}/history`).set(history);
                     }
                     
                     // Ürünleri kaydet
@@ -6341,7 +7126,7 @@
             
             // Firebase'e de kaydet (senkronizasyon için)
             if (isFirebaseReady && currentUser) {
-                database.ref(`users/${currentUser.username}/tanks`).set(tanks);
+                database.ref(`users/${_getDataOwner()}/tanks`).set(tanks);
             }
         }
 
@@ -6387,6 +7172,7 @@
 
         // Tank silme - Index ile
         window.deleteTankByIndex = function(index) {
+            if (!_requirePerm('tank_manage')) return;
             const tank = tanks[index];
             if (!tank) return;
             
@@ -6433,6 +7219,7 @@
 
         // Tank düzenleme - Index ile
         window.editTankByIndex = function(index) {
+            if (!_requirePerm('tank_manage')) return;
             const tank = tanks[index];
             if (!tank) return;
 
@@ -6504,6 +7291,7 @@
 
         // Tank ekle veya güncelle
         function addTank() {
+            if (!_requirePerm('tank_manage')) return;
             const name = document.getElementById('newTankName').value;
             const diameter = parseFloat(document.getElementById('newTankDiameter').value);
             const excess = parseFloat(document.getElementById('newTankExcess').value);
@@ -6867,6 +7655,46 @@
     ];
     var cipSessions = {};
     var cipIntervals = {};
+    // lineId -> pending leftover tonnage (bitirTank'tan, pastorizeAl'de tüketilir)
+    var pastLineLeftovers = {};
+    try { pastLineLeftovers = JSON.parse(localStorage.getItem('pastLineLeftovers') || '{}') || {}; } catch(e) { pastLineLeftovers = {}; }
+
+    // ==================== PER-PATH ECHO DETECTION (senkron kilit) ====================
+    // Global _fbSyncLock yerine path-bazlı son-yazılan-değer hash'i tutuyoruz.
+    // Firebase listener gelen veri ile son-yazılan-değeri karşılaştırır; eşleşirse "kendi echo"muz — yoksayılır.
+    // Böylece pastTimers'ın auto-save'i CIP güncellemelerini bloke etmiyor.
+    var _lastWrittenSig = {};  // path -> JSON.stringify(value)
+
+    function _fbWrite(path, value) {
+        try {
+            var sig = JSON.stringify(value === undefined ? null : value);
+            _lastWrittenSig[path] = sig;
+            database.ref(path).set(value);
+            // 4 saniye sonra temizle (güvenlik; normalde listener'ın kendisi temizler)
+            setTimeout(function() {
+                if (_lastWrittenSig[path] === sig) delete _lastWrittenSig[path];
+            }, 4000);
+        } catch(e) {}
+    }
+
+    function _fbIsEcho(path, snapshotVal) {
+        var expected = _lastWrittenSig[path];
+        if (expected === undefined) return false;
+        var got;
+        try { got = JSON.stringify(snapshotVal === undefined ? null : snapshotVal); } catch(e) { return false; }
+        if (got === expected) {
+            delete _lastWrittenSig[path];
+            return true;
+        }
+        return false;
+    }
+
+    function savePastLineLeftovers() {
+        try { localStorage.setItem('pastLineLeftovers', JSON.stringify(pastLineLeftovers)); } catch(e) {}
+        if (typeof isFirebaseReady !== 'undefined' && isFirebaseReady && typeof currentUser !== 'undefined' && currentUser) {
+            _fbWrite('users/' + _getDataOwner() + '/pastLineLeftovers', pastLineLeftovers);
+        }
+    }
 
     function savePastTimers() {
         var data = {};
@@ -6888,27 +7716,21 @@
         try { localStorage.setItem('pastTimers', JSON.stringify(data)); } catch(e) {}
         // Firebase'e senkronize et
         if (typeof isFirebaseReady !== 'undefined' && isFirebaseReady && typeof currentUser !== 'undefined' && currentUser) {
-            _fbSyncLock = true;
-            try { database.ref('users/' + currentUser.username + '/pastTimers').set(data); } catch(e) {}
-            setTimeout(function() { _fbSyncLock = false; }, 1500);
+            _fbWrite('users/' + _getDataOwner() + '/pastTimers', data);
         }
     }
 
     function savePastFinished() {
         localStorage.setItem('pastFinished', JSON.stringify(pastFinished));
         if (typeof isFirebaseReady !== 'undefined' && isFirebaseReady && typeof currentUser !== 'undefined' && currentUser) {
-            _fbSyncLock = true;
-            try { database.ref('users/' + currentUser.username + '/pastFinished').set(pastFinished); } catch(e) {}
-            setTimeout(function() { _fbSyncLock = false; }, 1500);
+            _fbWrite('users/' + _getDataOwner() + '/pastFinished', pastFinished);
         }
     }
 
     function saveCipSessions() {
         localStorage.setItem('cipSessions', JSON.stringify(cipSessions));
         if (typeof isFirebaseReady !== 'undefined' && isFirebaseReady && typeof currentUser !== 'undefined' && currentUser) {
-            _fbSyncLock = true;
-            try { database.ref('users/' + currentUser.username + '/cipSessions').set(cipSessions); } catch(e) {}
-            setTimeout(function() { _fbSyncLock = false; }, 1500);
+            _fbWrite('users/' + _getDataOwner() + '/cipSessions', cipSessions);
         }
     }
 
@@ -6972,31 +7794,46 @@
     function savePastLines() {
         localStorage.setItem('pastLines', JSON.stringify(pastLines));
         if (typeof isFirebaseReady !== 'undefined' && isFirebaseReady && typeof currentUser !== 'undefined' && currentUser) {
-            _fbSyncLock = true;
-            try { database.ref('users/' + currentUser.username + '/pastLines').set(pastLines); } catch(e) {}
-            setTimeout(function() { _fbSyncLock = false; }, 1500);
+            _fbWrite('users/' + _getDataOwner() + '/pastLines', pastLines);
         }
     }
 
+    // Eski global lock — hâlâ referans edilirse patlamasın diye boş bırakıyoruz (okunabilir ama artık kullanılmıyor)
     var _fbSyncLock = false;
+    var _pastFbInitKey = null;
     function initPastFirebase() {
         if (typeof isFirebaseReady === 'undefined' || !isFirebaseReady || typeof currentUser === 'undefined' || !currentUser) return;
-        var uref = 'users/' + currentUser.username;
+        var owner = _getDataOwner();
+        if (!owner) return;
+        // Aynı sahibe zaten bağlıysa tekrar kurma (idempotent)
+        if (_pastFbInitKey === owner) return;
+        // Önceki sahibin listener'ları varsa kapat
+        if (_pastFbInitKey) {
+            try {
+                var prev = 'users/' + _pastFbInitKey;
+                database.ref(prev + '/pastLines').off();
+                database.ref(prev + '/pastTimers').off();
+                database.ref(prev + '/pastFinished').off();
+                database.ref(prev + '/cipSessions').off();
+                database.ref(prev + '/pastLineLeftovers').off();
+            } catch(e) {}
+        }
+        _pastFbInitKey = owner;
+        var uref = 'users/' + owner;
 
         // pastLines senkronizasyonu
         database.ref(uref + '/pastLines').on('value', function(snapshot) {
-            if (_fbSyncLock) return;
-            if (snapshot.exists()) {
-                pastLines = snapshot.val() || [];
-                localStorage.setItem('pastLines', JSON.stringify(pastLines));
-                renderPastLines();
-            }
+            var val = snapshot.exists() ? (snapshot.val() || []) : [];
+            if (_fbIsEcho(uref + '/pastLines', val)) return;
+            pastLines = val;
+            localStorage.setItem('pastLines', JSON.stringify(pastLines));
+            renderPastLines();
         });
 
         // pastTimers senkronizasyonu
         database.ref(uref + '/pastTimers').on('value', function(snapshot) {
-            if (_fbSyncLock) return;
             var data = snapshot.val() || {};
+            if (_fbIsEcho(uref + '/pastTimers', data)) return;
             var now = Date.now();
             // Mevcut interval'ları temizle
             for (var ot in pastTimers) {
@@ -7022,18 +7859,51 @@
 
         // pastFinished senkronizasyonu
         database.ref(uref + '/pastFinished').on('value', function(snapshot) {
-            if (_fbSyncLock) return;
-            pastFinished = snapshot.val() || [];
+            var val = snapshot.val() || [];
+            if (_fbIsEcho(uref + '/pastFinished', val)) return;
+            pastFinished = val;
             localStorage.setItem('pastFinished', JSON.stringify(pastFinished));
             renderPastLines();
         });
 
-        // cipSessions senkronizasyonu
+        // cipSessions senkronizasyonu — echo bazlı (path-izole)
         database.ref(uref + '/cipSessions').on('value', function(snapshot) {
-            if (_fbSyncLock) return;
-            cipSessions = snapshot.val() || {};
+            var val = snapshot.val() || {};
+            if (_fbIsEcho(uref + '/cipSessions', val)) return;
+            cipSessions = val;
             localStorage.setItem('cipSessions', JSON.stringify(cipSessions));
+            // Remote'tan gelen durumu local interval'lara yansıt:
+            //   - aktif aşaması olmayan hatların interval'ını kapat
+            //   - aktif ama bizde interval olmayanları başlat (gecikmesiz start/next sync için)
+            for (var exLid in cipIntervals) {
+                var exCip = cipSessions[exLid];
+                var exActive = exCip && exCip.phases && exCip.phases[exCip.currentPhase] && exCip.phases[exCip.currentPhase].status === 'active';
+                if (!exActive) {
+                    clearInterval(cipIntervals[exLid]);
+                    delete cipIntervals[exLid];
+                }
+            }
+            for (var acLid in cipSessions) {
+                var acCip = cipSessions[acLid];
+                if (!acCip || !acCip.phases) continue;
+                var acPhase = acCip.phases[acCip.currentPhase];
+                if (!acPhase || acPhase.status !== 'active') continue;
+                if (cipIntervals[acLid]) continue;
+                // endTime yoksa (eski state) remainingMs'den türet — senkron başlangıç için
+                if (!acPhase.endTime || acPhase.endTime < Date.now() - 86400000) {
+                    acPhase.endTime = Date.now() + (acPhase.remainingMs || 0);
+                }
+                cipIntervals[acLid] = setInterval((function(lid){ return function(){ tickCip(lid); }; })(acLid), 1000);
+            }
             renderPastLines();
+        });
+
+        // pastLineLeftovers senkronizasyonu (pastorizeAl'den kalan, startTimer'da tüketilir)
+        database.ref(uref + '/pastLineLeftovers').on('value', function(snapshot) {
+            var val = snapshot.val() || {};
+            if (_fbIsEcho(uref + '/pastLineLeftovers', val)) return;
+            pastLineLeftovers = val;
+            try { localStorage.setItem('pastLineLeftovers', JSON.stringify(pastLineLeftovers)); } catch(e) {}
         });
     }
 
@@ -7041,6 +7911,7 @@
     var _arizaMenuOpen = null;
 
     function toggleArizaMenu(event, lineId) {
+        if (!_requirePerm('past_ariza')) return;
         event.stopPropagation();
         // Zaten arıza varsa direkt kaldır
         var line = null;
@@ -7101,6 +7972,7 @@
     }
 
     function removeAriza(lineId) {
+        if (!_requirePerm('past_ariza')) return;
         for (var i = 0; i < pastLines.length; i++) {
             if (pastLines[i].id === lineId) {
                 delete pastLines[i].ariza;
@@ -7112,6 +7984,7 @@
     }
 
     function openHatModal(id) {
+        if (!_requirePerm('past_hat_manage')) return;
         editingHatId = id || null;
         hatModalSelectedTankIds = [];
         if (id) {
@@ -7173,6 +8046,7 @@
     }
 
     function deleteHat(id) {
+        if (!_requirePerm('past_hat_manage')) return;
         if (!confirm('Bu hattı silmek istediğinize emin misiniz?')) return;
         var toDelete = [];
         for (var tid in pastTimers) { if (pastTimers[tid].lineId === id) toDelete.push(tid); }
@@ -7266,7 +8140,7 @@
             }
             localStorage.setItem('calculationHistory', JSON.stringify(history));
             if (typeof isFirebaseReady !== 'undefined' && isFirebaseReady && typeof currentUser !== 'undefined' && currentUser) {
-                database.ref('users/' + currentUser.username + '/history').set(history);
+                database.ref('users/' + _getDataOwner() + '/history').set(history);
             }
         } catch(e) {}
 
@@ -7326,7 +8200,8 @@
             }
             var approved = [];
             for (var k = 0; k < history.length; k++) {
-                if (history[k].approved && lineNames.indexOf(history[k].tank) >= 0) approved.push(history[k]);
+                // hiddenFromLine=true olanları hat kartında gösterme (onay bilgisi hâlâ korunur)
+                if (history[k].approved && !history[k].hiddenFromLine && lineNames.indexOf(history[k].tank) >= 0) approved.push(history[k]);
             }
             approved.sort(function(a, b) { return (b.approvedAt || '') > (a.approvedAt || '') ? 1 : -1; });
             return approved;
@@ -7398,6 +8273,8 @@
                     var tonajPct = tonajKg > 0 ? (remainTonaj / tonajKg) : 1;
 
                     approvedBoxes += '<div class="hat-approved-box' + boxWarn + '">';
+                    // Kaldır (X) butonu — yuvarlak saydam, sağ üst köşede
+                    approvedBoxes += '<button class="hat-approved-remove" data-perm="approved_manage" title="Onayl\u0131 tank\u0131 kald\u0131r" onclick="removeApprovedTank(\'' + h.id + '\',\'' + line.id + '\')">\u00D7</button>';
                     approvedBoxes += '<div class="hat-approved-header">';
                     approvedBoxes += '<div><div class="hat-approved-title">' + (h.tank || '') + '</div>';
                     approvedBoxes += '<div class="hat-approved-meta">' + (h.approvedUrun || '') + (approvedDate ? ' \u00b7 ' + approvedDate : '') + '</div></div>';
@@ -7432,21 +8309,21 @@
 
                     // Ana buton
                     if (!isIntake) {
-                        approvedBoxes += '<button class="' + btnClass + '" onclick="handleTimerBtn(\'' + line.id + '\',' + h.id + ')">' + btnLabel + '</button>';
+                        approvedBoxes += '<button class="' + btnClass + '" data-perm="past_timer" onclick="handleTimerBtn(\'' + line.id + '\',' + h.id + ')">' + btnLabel + '</button>';
                     }
 
                     // Pastörizeye Al + Bitir butonları (aktif timer varsa)
                     if (isRunning && !isIntake) {
                         approvedBoxes += '<div class="hat-action-btns">';
-                        approvedBoxes += '<button class="hat-pastorize-btn" onclick="pastorizeAl(\'' + timerId + '\')">Past\u00f6rizeye Al</button>';
-                        approvedBoxes += '<button class="hat-bitir-btn" onclick="bitirTank(\'' + timerId + '\')">Bitir</button>';
+                        approvedBoxes += '<button class="hat-pastorize-btn" data-perm="past_timer" onclick="pastorizeAl(\'' + timerId + '\')">Past\u00f6rizeye Al</button>';
+                        approvedBoxes += '<button class="hat-bitir-btn" data-perm="past_timer" onclick="bitirTank(\'' + timerId + '\')">Bitir</button>';
                         approvedBoxes += '</div>';
                     }
                     // Intake modunda
                     if (isIntake) {
                         approvedBoxes += '<button class="hat-dolum-btn intake" disabled>Past\u00f6rize Al\u0131m\u0131nda...</button>';
                         approvedBoxes += '<div class="hat-action-btns">';
-                        approvedBoxes += '<button class="hat-bitir-btn" onclick="bitirTank(\'' + timerId + '\')" style="flex:1">Bitir</button>';
+                        approvedBoxes += '<button class="hat-bitir-btn" data-perm="past_timer" onclick="bitirTank(\'' + timerId + '\')" style="flex:1">Bitir</button>';
                         approvedBoxes += '</div>';
                     }
 
@@ -7454,7 +8331,6 @@
                     approvedBoxes += '<div class="hat-countdown-label">' + (isIntake ? 'Al\u0131m S\u00fcresi' : 'Kalan S\u00fcre') + '</div>';
                     approvedBoxes += '<div class="hat-countdown-time" id="ct_' + timerId + '">--:--</div>';
                     approvedBoxes += '<div class="hat-countdown-sub" id="cs_' + timerId + '"></div>';
-                    approvedBoxes += '<div class="hat-countdown-bar"><div class="hat-countdown-bar-fill" id="cb_' + timerId + '" style="width:100%"></div></div>';
                     approvedBoxes += '</div></div>';
                 }
             }
@@ -7481,16 +8357,16 @@
             html += '<div class="hat-card-header">';
             html += '<div class="hat-card-name-group">';
             html += '<div class="hat-card-name">' + (line.ad || '') + '</div>';
-            html += '<button class="hat-ariza-btn' + arizaClass + '" onclick="toggleArizaMenu(event,\'' + line.id + '\')" title="Ar\u0131za Bildir">';
+            html += '<button class="hat-ariza-btn' + arizaClass + '" data-perm="past_ariza" onclick="toggleArizaMenu(event,\'' + line.id + '\')" title="Ar\u0131za Bildir">';
             html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
             html += '</button>';
             html += '</div>';
             html += '<div class="hat-card-actions">';
             if (!cipSessions[line.id]) {
-                html += '<button class="cip-start-btn" onclick="startCip(\'' + line.id + '\')">CIP Ba\u015flat</button>';
+                html += '<button class="cip-start-btn" data-perm="past_cip" onclick="startCip(\'' + line.id + '\')">CIP Ba\u015flat</button>';
             }
-            html += '<button class="hat-icon-btn" onclick="openHatModal(\'' + line.id + '\')">D\u00fczenle</button>';
-            html += '<button class="hat-icon-btn danger" onclick="deleteHat(\'' + line.id + '\')">Sil</button>';
+            html += '<button class="hat-icon-btn" data-perm="past_hat_manage" onclick="openHatModal(\'' + line.id + '\')">D\u00fczenle</button>';
+            html += '<button class="hat-icon-btn danger" data-perm="past_hat_manage" onclick="deleteHat(\'' + line.id + '\')">Sil</button>';
             html += '</div></div>';
             html += '<div class="hat-body">';
             html += '<div class="hat-akis-row">';
@@ -7519,7 +8395,7 @@
                 finishedBoxes += '<div class="hat-approved-stats">';
                 if (ft.tonaj) finishedBoxes += '<div class="hat-stat-chip">Tonaj: <strong>' + (ft.tonaj/1000).toFixed(2) + ' t</strong></div>';
                 finishedBoxes += '</div></div>';
-                finishedBoxes += '<button class="hat-remove-btn" onclick="removeFinishedTank(' + fi + ')">Kald\u0131r</button>';
+                finishedBoxes += '<button class="hat-remove-btn" data-perm="past_timer" onclick="removeFinishedTank(' + fi + ',' + (ft.historyId || 'null') + ')">Kald\u0131r</button>';
                 finishedBoxes += '</div>';
             }
             html += finishedBoxes;
@@ -7534,14 +8410,42 @@
         }
         container.innerHTML = html;
 
+        // Yetki tabanlı görünürlüğü yeniden uygula (dinamik butonlar için)
+        if (typeof applyRoleUI === 'function' && typeof currentUser !== 'undefined' && currentUser) {
+            try {
+                var _perms = getUserPerms();
+                var _els = container.querySelectorAll('[data-perm]');
+                for (var _ei = 0; _ei < _els.length; _ei++) {
+                    var _p = _els[_ei].getAttribute('data-perm');
+                    var _needArr = _p.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+                    var _ok = _needArr.every(function(n){ return _perms.indexOf(n) >= 0; });
+                    if (!_ok) _els[_ei].style.display = 'none';
+                }
+            } catch(e) {}
+        }
+
         for (var activeTid in pastTimers) {
             updateCountdownUI(activeTid);
         }
 
+        // Aktif olmayan CIP intervalları varsa temizle (sync bozulmasını önler)
+        for (var exLid in cipIntervals) {
+            var exCip = cipSessions[exLid];
+            var exActive = exCip && exCip.phases && exCip.phases[exCip.currentPhase] && exCip.phases[exCip.currentPhase].status === 'active';
+            if (!exActive) {
+                clearInterval(cipIntervals[exLid]);
+                delete cipIntervals[exLid];
+            }
+        }
         // Aktif CIP timer'larını yeniden başlat
         for (var cipLid in cipSessions) {
             var cipS = cipSessions[cipLid];
             if (cipS && cipS.phases[cipS.currentPhase] && cipS.phases[cipS.currentPhase].status === 'active') {
+                // endTime tutarsızsa (eski/eksik) remainingMs'den yeniden üret
+                var cipPhase = cipS.phases[cipS.currentPhase];
+                if (!cipPhase.endTime || cipPhase.endTime < Date.now() - 86400000) {
+                    cipPhase.endTime = Date.now() + (cipPhase.remainingMs || 0);
+                }
                 if (!cipIntervals[cipLid]) {
                     cipIntervals[cipLid] = setInterval((function(lid){ return function(){ tickCip(lid); }; })(cipLid), 1000);
                 }
@@ -7551,6 +8455,7 @@
     }
 
     function handleTimerBtn(lineId, historyId) {
+        if (!_requirePerm('past_timer')) return;
         var timerId = lineId + '_' + historyId;
         var timer = pastTimers[timerId];
         if (!timer) { startTimer(lineId, historyId); }
@@ -7558,15 +8463,29 @@
         else { pauseTimer(timerId); }
     }
 
-    // Pastörizeye Al — dolum durur, alım süresi başlar
+    // Pastörizeye Al — dolum durur, alım süresi başlar.
+    // Bu tankın KALAN tonajı (plan - işlenen) bir sonraki tanka aktarılır.
     function pastorizeAl(timerId) {
+        if (!_requirePerm('past_timer')) return;
         var timer = pastTimers[timerId];
         if (!timer || timer.paused) return;
+
         // Şimdiye kadar işlenen tonaj (processedTonajBase destekli)
         var elapsed = Date.now() - timer.startTime;
         var pBase = timer.processedTonajBase || 0;
         var pPhase = timer.tonaj - pBase;
-        timer.processedTonaj = pBase + (timer.durationMs > 0 ? (elapsed / timer.durationMs) * pPhase : 0);
+        var processedNow = pBase + (timer.durationMs > 0 ? (elapsed / timer.durationMs) * pPhase : 0);
+        processedNow = Math.min(processedNow, timer.tonaj);
+        timer.processedTonaj = processedNow;
+
+        // KALAN tonajı (plan - işlenen) bir sonraki tanka aktar
+        var kalanTonaj = Math.max(0, timer.tonaj - processedNow);
+        if (kalanTonaj > 10) {
+            pastLineLeftovers[timer.lineId] = (pastLineLeftovers[timer.lineId] || 0) + kalanTonaj;
+            savePastLineLeftovers();
+            alert('Kalan ' + Math.round(kalanTonaj) + ' kg, bu hattaki bir sonraki tanka otomatik eklenecek.');
+        }
+
         timer.mode = 'intake';
         timer.intakeStartTime = Date.now();
         // Dolum timer'ını durdurmuyoruz, sayaç devam ediyor ama artık alım süresi gösteriyor
@@ -7576,6 +8495,7 @@
 
     // Bitir — kalan tonajı hesapla, timer'ı sonlandır
     function bitirTank(timerId) {
+        if (!_requirePerm('past_timer')) return;
         var timer = pastTimers[timerId];
         if (!timer) return;
 
@@ -7605,40 +8525,8 @@
         delete pastTimers[timerId];
         savePastTimers();
 
-        // Kalan tonaj varsa kullanıcıya bildir
-        if (kalanTonaj > 10) {
-            alert('Biten: ' + Math.round(processedTonaj) + ' kg\nKalan: ' + Math.round(kalanTonaj) + ' kg\n\nKalan tonaj bir sonraki tanka otomatik eklenecek.');
-            // Aynı hattaki sıradaki onaylı tanka kalan tonajı aktar
-            var approvedList = [];
-            try {
-                var line = null;
-                for (var i = 0; i < pastLines.length; i++) { if (pastLines[i].id === lineId) { line = pastLines[i]; break; } }
-                if (line) approvedList = getApprovedTanksForLine(line);
-            } catch(e) {}
-
-            // Bir sonraki tankı bul (timer'ı henüz başlamamış)
-            for (var ni = 0; ni < approvedList.length; ni++) {
-                var nh = approvedList[ni];
-                var ntid = lineId + '_' + nh.id;
-                if (!pastTimers[ntid] && nh.id !== historyId) {
-                    // Bu tanka kalan tonajı ekle
-                    try {
-                        var hist = JSON.parse(localStorage.getItem('calculationHistory') || '[]');
-                        for (var hi = 0; hi < hist.length; hi++) {
-                            if (hist[hi].id === nh.id) {
-                                hist[hi].totalTonnage = (parseFloat(hist[hi].totalTonnage) || 0) + kalanTonaj;
-                                break;
-                            }
-                        }
-                        localStorage.setItem('calculationHistory', JSON.stringify(hist));
-                        if (typeof isFirebaseReady !== 'undefined' && isFirebaseReady && typeof currentUser !== 'undefined' && currentUser) {
-                            database.ref('users/' + currentUser.username + '/history').set(hist);
-                        }
-                    } catch(e) {}
-                    break;
-                }
-            }
-        }
+        // NOT: Bitir sadece bitirir — kalan tonaj bir sonraki tanka EKLENMEZ.
+        // Kalan tonajın bir sonraki tanka aktarılması için "Pastörizeye Al" kullanılmalıdır.
 
         renderPastLines();
     }
@@ -7659,6 +8547,15 @@
 
         var tonaj = parseFloat(h.totalTonnage);
         if (!tonaj || tonaj <= 0) { alert('Gecersiz tonaj.'); return; }
+
+        // Önceki tanktan kalan var mı? Varsa bu yeni tanka ekle
+        var inheritedLeftover = pastLineLeftovers[lineId] || 0;
+        if (inheritedLeftover > 10) {
+            tonaj = Math.round(tonaj + inheritedLeftover);
+            delete pastLineLeftovers[lineId];
+            savePastLineLeftovers();
+            alert('Önceki tanktan kalan ' + Math.round(inheritedLeftover) + ' kg bu tanka eklendi.\nYeni toplam tonaj: ' + tonaj + ' kg');
+        }
 
         var durationMs = (tonaj / (akisHizi * 1000)) * 3600000;
         var now = Date.now();
@@ -7790,10 +8687,28 @@
         if (cs) {
             if (isIntake) {
                 cs.textContent = 'Past\u00f6rize al\u0131m\u0131 devam ediyor';
-            } else {
+            } else if (timer.paused) {
+                cs.textContent = 'Duraklat\u0131ld\u0131';
+            } else if (timer.endTime) {
+                // Tahmini bitiş saati: HH:MM — 24 saatten uzunsa gün bilgisi de ekle
                 var endDate = new Date(timer.endTime);
+                var nowDate = new Date();
                 var endStr = ('0'+endDate.getHours()).slice(-2) + ':' + ('0'+endDate.getMinutes()).slice(-2);
-                cs.textContent = (timer.tonaj / 1000).toFixed(1) + ' t \u00b7 ' + (timer.paused ? 'Duraklatildi' : (endStr + ' sona erer'));
+                var sameDay = endDate.toDateString() === nowDate.toDateString();
+                var dayStr = '';
+                if (!sameDay) {
+                    // Yarın mı yoksa başka gün mü?
+                    var tomorrow = new Date(nowDate);
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    if (endDate.toDateString() === tomorrow.toDateString()) {
+                        dayStr = ' (yar\u0131n)';
+                    } else {
+                        dayStr = ' (' + ('0'+(endDate.getMonth()+1)).slice(-2) + '/' + ('0'+endDate.getDate()).slice(-2) + ')';
+                    }
+                }
+                cs.textContent = '\u{1F3C1} Biti\u015f: ' + endStr + dayStr;
+            } else {
+                cs.textContent = '';
             }
         }
 
@@ -7846,15 +8761,47 @@
 
     // ==================== BİTEN TANK YÖNETİMİ ====================
 
-    function removeFinishedTank(index) {
-        // Sadece pastörizasyon UI'dan kaldır — Excel raporunda kalır
+    function removeFinishedTank(index, historyId) {
+        // Kaldır: tankı pastörize (hat kartı) tarafından tamamen kaldırır.
+        //   - pastFinished'tan siler (Tank Bitti kutusu kaybolur)
+        //   - history'deki onaylı kaydı "hat kartından gizli" yapar (onay kutusu kaybolur)
+        //   - finishedAt'ı history item'a kopyalar — "Onaylanan Tanklar" sayfası
+        //     pastFinished olmasa bile "Tamamlandı ✓" olarak gösterebilsin diye.
+        //   - Excel raporunda (vardiyaUrunler.tankKayitlari) aynen kalır.
+        var ft = pastFinished[index];
+        if (!ft) return;
+
+        // History item'a bitiş bilgilerini kopyala ve hat kartından gizle
+        try {
+            var history = JSON.parse(localStorage.getItem('calculationHistory') || '[]');
+            var targetId = (historyId !== null && historyId !== undefined && historyId !== 'null') ? historyId : ft.historyId;
+            if (targetId !== null && targetId !== undefined) {
+                var item = history.find(function(h) { return String(h.id) === String(targetId); });
+                if (item) {
+                    item.finishedAt = ft.finishedAt || new Date().toISOString();
+                    if (typeof ft.processedTonaj !== 'undefined') item.finishedProcessedTonaj = ft.processedTonaj;
+                    if (typeof ft.kalanTonaj !== 'undefined') item.finishedKalanTonaj = ft.kalanTonaj;
+                    item.hiddenFromLine = true;
+                    localStorage.setItem('calculationHistory', JSON.stringify(history));
+                    if (typeof isFirebaseReady !== 'undefined' && isFirebaseReady && typeof currentUser !== 'undefined' && currentUser) {
+                        _fbWrite('users/' + _getDataOwner() + '/history', history);
+                    }
+                }
+            }
+        } catch(e) { console.warn('removeFinishedTank history update failed:', e); }
+
+        // pastFinished'tan sil
         pastFinished.splice(index, 1);
         savePastFinished();
+
+        if (typeof loadHistory === 'function') loadHistory();
         renderPastLines();
+        if (typeof renderApprovedTanks === 'function') renderApprovedTanks();
     }
 
     // Rapordan Sil — tankKayitlari'ndan kaldırır (Excel raporundan çıkar)
     function removeFromReport(historyItemId) {
+        if (!_requirePerm('approved_manage')) return;
         if (!confirm('Bu tank Excel raporundan silinecek. Emin misiniz?')) return;
         try {
             var history = JSON.parse(localStorage.getItem('calculationHistory') || '[]');
@@ -7879,7 +8826,7 @@
                 delete item.approvedAt;
                 localStorage.setItem('calculationHistory', JSON.stringify(history));
                 if (typeof isFirebaseReady !== 'undefined' && isFirebaseReady && typeof currentUser !== 'undefined' && currentUser) {
-                    database.ref('users/' + currentUser.username + '/history').set(history);
+                    database.ref('users/' + _getDataOwner() + '/history').set(history);
                 }
             }
         } catch(e) {}
@@ -7891,6 +8838,7 @@
     // ==================== CIP SİSTEMİ ====================
 
     function startCip(lineId) {
+        if (!_requirePerm('past_cip')) return;
         cipSessions[lineId] = {
             lineId: lineId,
             currentPhase: 0,
@@ -7912,6 +8860,7 @@
     }
 
     function cipStartPhase(lineId) {
+        if (!_requirePerm('past_cip')) return;
         var cip = cipSessions[lineId];
         if (!cip) return;
         var phase = cip.phases[cip.currentPhase];
@@ -7931,6 +8880,7 @@
     }
 
     function cipPausePhase(lineId) {
+        if (!_requirePerm('past_cip')) return;
         var cip = cipSessions[lineId];
         if (!cip) return;
         var phase = cip.phases[cip.currentPhase];
@@ -7945,6 +8895,7 @@
     }
 
     function cipNextPhase(lineId) {
+        if (!_requirePerm('past_cip')) return;
         var cip = cipSessions[lineId];
         if (!cip) return;
         var phase = cip.phases[cip.currentPhase];
@@ -7991,10 +8942,19 @@
         var cip = cipSessions[lineId];
         if (!cip) return;
         var phase = cip.phases[cip.currentPhase];
-        if (!phase || phase.status !== 'active') return;
+        if (!phase || phase.status !== 'active') {
+            // Aktif değilse bu interval'ı temizle (senkron bozulmaları önlemek için)
+            if (cipIntervals[lineId]) { clearInterval(cipIntervals[lineId]); delete cipIntervals[lineId]; }
+            return;
+        }
 
+        // endTime her zaman source of truth (mutlak zaman damgası, cihazlar arası sync)
+        // Yok veya tutarsızsa remainingMs'den türet ve kaydet
+        if (!phase.endTime || phase.endTime < Date.now() - 86400000) {
+            phase.endTime = Date.now() + (phase.remainingMs || 0);
+        }
         var remaining = Math.max(0, phase.endTime - Date.now());
-        phase.remainingMs = remaining;
+        // NOT: phase.remainingMs burada YAZMIYORUZ — endTime kaynak, sync bozulmasın
 
         // Countdown UI güncelle
         var el = document.getElementById('cip_cd_' + lineId + '_' + cip.currentPhase);
@@ -8064,8 +9024,13 @@
                 if (phase.status === 'waiting') {
                     html += '<div class="cip-phase-dur"><input type="number" value="' + phase.durationMin + '" min="1" onchange="cipUpdateDuration(\'' + lineId + '\',' + pi + ',this.value)"><span>dk</span></div>';
                 } else {
-                    // Aktif/paused — countdown göster
-                    var rem = phase.remainingMs || 0;
+                    // Aktif/paused — countdown göster (aktifse endTime'dan, paused ise remainingMs'den)
+                    var rem;
+                    if (phase.status === 'active' && phase.endTime) {
+                        rem = Math.max(0, phase.endTime - Date.now());
+                    } else {
+                        rem = phase.remainingMs || 0;
+                    }
                     var rmm = Math.floor(rem / 60000), rss = Math.floor((rem % 60000) / 1000);
                     html += '<div class="cip-countdown" id="cip_cd_' + lineId + '_' + pi + '">' + p2(rmm) + ':' + p2(rss) + '</div>';
                 }
